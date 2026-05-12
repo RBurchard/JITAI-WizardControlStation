@@ -1,0 +1,88 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:OcdWizard.ControlStation.ViewModels"
+             x:Class="OcdWizard.ControlStation.Views.ParticipantPanel"
+             x:DataType="vm:ParticipantViewModel">
+
+    <Border BorderBrush="#444" BorderThickness="1" CornerRadius="6" Margin="4" Padding="10">
+        <StackPanel Spacing="8">
+
+            <!-- Header with status indicator -->
+            <Grid ColumnDefinitions="Auto,*,Auto">
+                <Ellipse Grid.Column="0" Width="12" Height="12" Margin="0,0,6,0"
+                         Fill="{Binding IsConnected, Converter={StaticResource BoolToBrushConverter}}" />
+                <TextBlock Grid.Column="1" Text="{Binding Label}" FontSize="18" FontWeight="Bold" />
+                <TextBlock Grid.Column="2" Text="{Binding ConnectionStatus}" FontSize="11"
+                           Foreground="#888" VerticalAlignment="Center" />
+            </Grid>
+
+            <!-- IP + Connect -->
+            <Grid ColumnDefinitions="*,Auto,Auto">
+                <TextBox Grid.Column="0" Text="{Binding IpAddress}" Watermark="Device IP (e.g. 192.168.1.42)"
+                         Margin="0,0,4,0" />
+                <Button Grid.Column="1" Content="Connect" Command="{Binding ConnectCommand}"
+                        Margin="0,0,4,0" />
+                <Button Grid.Column="2" Content="Disconnect" Command="{Binding DisconnectCommand}" />
+            </Grid>
+
+            <!-- BPM -->
+            <Grid ColumnDefinitions="80,*,40" RowDefinitions="Auto">
+                <TextBlock Grid.Column="0" Text="Heart Rate:" VerticalAlignment="Center" />
+                <ProgressBar Grid.Column="1" Minimum="0" Maximum="200"
+                             Value="{Binding CurrentBpm}" Margin="4,0" />
+                <TextBlock Grid.Column="2" Text="{Binding CurrentBpm, StringFormat={}{0:F0}}"
+                           VerticalAlignment="Center" HorizontalAlignment="Right" />
+            </Grid>
+
+            <!-- Movement -->
+            <Grid ColumnDefinitions="80,*,40" RowDefinitions="Auto">
+                <TextBlock Grid.Column="0" Text="Movement:" VerticalAlignment="Center" />
+                <ProgressBar Grid.Column="1" Minimum="0" Maximum="1"
+                             Value="{Binding MovementLevel}" Margin="4,0"
+                             Foreground="#F4A261" />
+                <TextBlock Grid.Column="2"
+                           Text="{Binding MovementLevel, StringFormat={}{0:P0}}"
+                           VerticalAlignment="Center" HorizontalAlignment="Right" />
+            </Grid>
+
+            <!-- Trigger controls -->
+            <Grid ColumnDefinitions="*,*">
+                <ComboBox Grid.Column="0" SelectedItem="{Binding SelectedGameType}"
+                          Margin="0,0,4,0">
+                    <ComboBoxItem Content="None" />
+                    <ComboBoxItem Content="STAND_STILL" />
+                    <ComboBoxItem Content="TRIVIA" />
+                    <ComboBoxItem Content="SIMON_SAYS" />
+                    <ComboBoxItem Content="LOCK_PICKING" />
+                </ComboBox>
+                <ComboBox Grid.Column="1" SelectedItem="{Binding SelectedNotificationType}">
+                    <ComboBoxItem Content="VIBRATION1" />
+                    <ComboBoxItem Content="VIBRATION2" />
+                    <ComboBoxItem Content="SOUND" />
+                    <ComboBoxItem Content="VIBRATION_SOUND" />
+                </ComboBox>
+            </Grid>
+
+            <Grid ColumnDefinitions="*,Auto">
+                <Button Grid.Column="0" Content="TRIGGER OCD DISTRACTION"
+                        Command="{Binding TriggerCommand}"
+                        Background="#C0392B" Foreground="White"
+                        FontWeight="Bold" HorizontalAlignment="Stretch"
+                        Margin="0,0,4,0" />
+                <Button Grid.Column="1" Content="Stop" Command="{Binding StopCommand}" />
+            </Grid>
+
+            <!-- Event log -->
+            <TextBlock Text="Event Log" FontWeight="SemiBold" Margin="0,4,0,2" />
+            <ListBox ItemsSource="{Binding EventLog}"
+                     MaxHeight="180" ScrollViewer.VerticalScrollBarVisibility="Auto">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding}" FontSize="11" FontFamily="Consolas, Courier New" />
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+
+        </StackPanel>
+    </Border>
+</UserControl>

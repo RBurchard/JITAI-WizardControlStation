@@ -1,0 +1,71 @@
+{
+  "version": 2,
+  "dgSpecHash": "zVs6dpwbbow=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\Sebas\\Documents\\GitHub\\OcdWizard.ControlStation\\OcdWizard.ControlStation.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Sebas\\.nuget\\packages\\avalonia\\11.2.7\\avalonia.11.2.7.nupkg.sha512",
+    "C:\\Users\\Sebas\\.nuget\\packages\\avalonia.angle.windows.natives\\2.1.22045.20230930\\avalonia.angle.windows.natives.2.1.22045.20230930.nupkg.sha512",
+    "C:\\Users\\Sebas\\.nuget\\packages\\avalonia.buildservices\\0.0.31\\avalonia.buildservices.0.0.31.nupkg.sha512",
+    "C:\\Users\\Sebas\\.nuget\\packages\\avalonia.controls.colorpicker\\11.2.7\\avalonia.controls.colorpicker.11.2.7.nupkg.sha512",
+    "C:\\Users\\Sebas\\.nuget\\packages\\avalonia.controls.datagrid\\11.2.7\\avalonia.controls.datagrid.11.2.7.nupkg.sha512",
+    "C:\\Users\\Sebas\\.nuget\\packages\\avalonia.desktop\\11.2.7\\avalonia.desktop.11.2.7.nupkg.sha512",
+    "C:\\Users\\Sebas\\.nuget\\packages\\avalonia.diagnostics\\11.2.7\\avalonia.diagnostics.11.2.7.nupkg.sha512",
+    "C:\\Users\\Sebas\\.nuget\\packages\\avalonia.fonts.inter\\11.2.7\\avalonia.fonts.inter.11.2.7.nupkg.sha512",
+    "C:\\Users\\Sebas\\.nuget\\packages\\avalonia.freedesktop\\11.2.7\\avalonia.freedesktop.11.2.7.nupkg.sha512",
+    "C:\\Users\\Sebas\\.nuget\\packages\\avalonia.native\\11.2.7\\avalonia.native.11.2.7.nupkg.sha512",
+    "C:\\Users\\Sebas\\.nuget\\packages\\avalonia.remote.protocol\\11.2.7\\avalonia.remote.protocol.11.2.7.nupkg.sha512",
+    "C:\\Users\\Sebas\\.nuget\\packages\\avalonia.skia\\11.2.7\\avalonia.skia.11.2.7.nupkg.sha512",
+    "C:\\Users\\Sebas\\.nuget\\packages\\avalonia.themes.fluent\\11.2.7\\avalonia.themes.fluent.11.2.7.nupkg.sha512",
+    "C:\\Users\\Sebas\\.nuget\\packages\\avalonia.themes.simple\\11.2.7\\avalonia.themes.simple.11.2.7.nupkg.sha512",
+    "C:\\Users\\Sebas\\.nuget\\packages\\avalonia.win32\\11.2.7\\avalonia.win32.11.2.7.nupkg.sha512",
+    "C:\\Users\\Sebas\\.nuget\\packages\\avalonia.x11\\11.2.7\\avalonia.x11.11.2.7.nupkg.sha512",
+    "C:\\Users\\Sebas\\.nuget\\packages\\communitytoolkit.mvvm\\8.4.0\\communitytoolkit.mvvm.8.4.0.nupkg.sha512",
+    "C:\\Users\\Sebas\\.nuget\\packages\\dapper\\2.1.35\\dapper.2.1.35.nupkg.sha512",
+    "C:\\Users\\Sebas\\.nuget\\packages\\harfbuzzsharp\\7.3.0.3\\harfbuzzsharp.7.3.0.3.nupkg.sha512",
+    "C:\\Users\\Sebas\\.nuget\\packages\\harfbuzzsharp.nativeassets.linux\\7.3.0.3\\harfbuzzsharp.nativeassets.linux.7.3.0.3.nupkg.sha512",
+    "C:\\Users\\Sebas\\.nuget\\packages\\harfbuzzsharp.nativeassets.macos\\7.3.0.3\\harfbuzzsharp.nativeassets.macos.7.3.0.3.nupkg.sha512",
+    "C:\\Users\\Sebas\\.nuget\\packages\\harfbuzzsharp.nativeassets.webassembly\\7.3.0.3\\harfbuzzsharp.nativeassets.webassembly.7.3.0.3.nupkg.sha512",
+    "C:\\Users\\Sebas\\.nuget\\packages\\harfbuzzsharp.nativeassets.win32\\7.3.0.3\\harfbuzzsharp.nativeassets.win32.7.3.0.3.nupkg.sha512",
+    "C:\\Users\\Sebas\\.nuget\\packages\\microcom.runtime\\0.11.0\\microcom.runtime.0.11.0.nupkg.sha512",
+    "C:\\Users\\Sebas\\.nuget\\packages\\microsoft.data.sqlite\\9.0.5\\microsoft.data.sqlite.9.0.5.nupkg.sha512",
+    "C:\\Users\\Sebas\\.nuget\\packages\\microsoft.data.sqlite.core\\9.0.5\\microsoft.data.sqlite.core.9.0.5.nupkg.sha512",
+    "C:\\Users\\Sebas\\.nuget\\packages\\skiasharp\\2.88.9\\skiasharp.2.88.9.nupkg.sha512",
+    "C:\\Users\\Sebas\\.nuget\\packages\\skiasharp.nativeassets.linux\\2.88.9\\skiasharp.nativeassets.linux.2.88.9.nupkg.sha512",
+    "C:\\Users\\Sebas\\.nuget\\packages\\skiasharp.nativeassets.macos\\2.88.9\\skiasharp.nativeassets.macos.2.88.9.nupkg.sha512",
+    "C:\\Users\\Sebas\\.nuget\\packages\\skiasharp.nativeassets.webassembly\\2.88.9\\skiasharp.nativeassets.webassembly.2.88.9.nupkg.sha512",
+    "C:\\Users\\Sebas\\.nuget\\packages\\skiasharp.nativeassets.win32\\2.88.9\\skiasharp.nativeassets.win32.2.88.9.nupkg.sha512",
+    "C:\\Users\\Sebas\\.nuget\\packages\\sqlitepclraw.bundle_e_sqlite3\\2.1.10\\sqlitepclraw.bundle_e_sqlite3.2.1.10.nupkg.sha512",
+    "C:\\Users\\Sebas\\.nuget\\packages\\sqlitepclraw.core\\2.1.10\\sqlitepclraw.core.2.1.10.nupkg.sha512",
+    "C:\\Users\\Sebas\\.nuget\\packages\\sqlitepclraw.lib.e_sqlite3\\2.1.10\\sqlitepclraw.lib.e_sqlite3.2.1.10.nupkg.sha512",
+    "C:\\Users\\Sebas\\.nuget\\packages\\sqlitepclraw.provider.e_sqlite3\\2.1.10\\sqlitepclraw.provider.e_sqlite3.2.1.10.nupkg.sha512",
+    "C:\\Users\\Sebas\\.nuget\\packages\\system.text.json\\9.0.5\\system.text.json.9.0.5.nupkg.sha512",
+    "C:\\Users\\Sebas\\.nuget\\packages\\tmds.dbus.protocol\\0.20.0\\tmds.dbus.protocol.0.20.0.nupkg.sha512"
+  ],
+  "logs": [
+    {
+      "code": "NU1510",
+      "level": "Warning",
+      "message": "PackageReference System.Text.Json will not be pruned. Consider removing this package from your dependencies, as it is likely unnecessary.",
+      "projectPath": "C:\\Users\\Sebas\\Documents\\GitHub\\OcdWizard.ControlStation\\OcdWizard.ControlStation.csproj",
+      "warningLevel": 1,
+      "filePath": "C:\\Users\\Sebas\\Documents\\GitHub\\OcdWizard.ControlStation\\OcdWizard.ControlStation.csproj",
+      "libraryId": "System.Text.Json",
+      "targetGraphs": [
+        "net10.0"
+      ]
+    },
+    {
+      "code": "NU1903",
+      "level": "Warning",
+      "message": "Package 'Tmds.DBus.Protocol' 0.20.0 has a known high severity vulnerability, https://github.com/advisories/GHSA-xrw6-gwf8-vvr9",
+      "projectPath": "C:\\Users\\Sebas\\Documents\\GitHub\\OcdWizard.ControlStation\\OcdWizard.ControlStation.csproj",
+      "warningLevel": 1,
+      "filePath": "C:\\Users\\Sebas\\Documents\\GitHub\\OcdWizard.ControlStation\\OcdWizard.ControlStation.csproj",
+      "libraryId": "Tmds.DBus.Protocol",
+      "targetGraphs": [
+        "net10.0"
+      ]
+    }
+  ]
+}

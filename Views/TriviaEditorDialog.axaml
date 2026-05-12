@@ -1,0 +1,80 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:OcdWizard.ControlStation.ViewModels"
+        xmlns:models="using:OcdWizard.ControlStation.Models"
+        x:Class="OcdWizard.ControlStation.Views.TriviaEditorDialog"
+        x:DataType="vm:TriviaEditorViewModel"
+        Title="Trivia Question Editor"
+        Width="700" Height="540"
+        WindowStartupLocation="CenterOwner">
+
+    <Grid RowDefinitions="*,Auto" Margin="12">
+        <Grid Grid.Row="0" ColumnDefinitions="220,*">
+
+            <!-- Question list -->
+            <DockPanel Grid.Column="0" Margin="0,0,8,0">
+                <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Spacing="4" Margin="0,8,0,0">
+                    <Button Content="+ Add" Command="{Binding AddQuestionCommand}" />
+                    <Button Content="Remove" Command="{Binding RemoveQuestionCommand}"
+                            CommandParameter="{Binding SelectedQuestion}" />
+                </StackPanel>
+                <ListBox ItemsSource="{Binding Questions}"
+                         SelectedItem="{Binding SelectedQuestion}"
+                         ScrollViewer.VerticalScrollBarVisibility="Auto">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate x:DataType="models:TriviaQuestion">
+                            <TextBlock Text="{Binding Question}" TextTrimming="CharacterEllipsis"
+                                       MaxWidth="190" />
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </DockPanel>
+
+            <!-- Editor panel -->
+            <ScrollViewer Grid.Column="1">
+                <StackPanel Spacing="10" IsVisible="{Binding SelectedQuestion, Converter={x:Static ObjectConverters.IsNotNull}}">
+                    <TextBlock Text="Question:" FontWeight="SemiBold" />
+                    <TextBox Text="{Binding SelectedQuestion.Question}" TextWrapping="Wrap"
+                             AcceptsReturn="True" Height="70" />
+
+                    <TextBlock Text="Answers:" FontWeight="SemiBold" />
+                    <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto">
+                        <RadioButton Grid.Row="0" Grid.Column="0" GroupName="correct"
+                                     IsChecked="{Binding SelectedQuestion.CorrectIndex, Converter={StaticResource IndexToBoolConverter}, ConverterParameter=0}"
+                                     Content="A" VerticalAlignment="Center" Margin="0,0,6,4" />
+                        <TextBox Grid.Row="0" Grid.Column="1" Margin="0,0,0,4"
+                                 Text="{Binding SelectedQuestion.Answers[0]}" />
+
+                        <RadioButton Grid.Row="1" Grid.Column="0" GroupName="correct"
+                                     IsChecked="{Binding SelectedQuestion.CorrectIndex, Converter={StaticResource IndexToBoolConverter}, ConverterParameter=1}"
+                                     Content="B" VerticalAlignment="Center" Margin="0,0,6,4" />
+                        <TextBox Grid.Row="1" Grid.Column="1" Margin="0,0,0,4"
+                                 Text="{Binding SelectedQuestion.Answers[1]}" />
+
+                        <RadioButton Grid.Row="2" Grid.Column="0" GroupName="correct"
+                                     IsChecked="{Binding SelectedQuestion.CorrectIndex, Converter={StaticResource IndexToBoolConverter}, ConverterParameter=2}"
+                                     Content="C" VerticalAlignment="Center" Margin="0,0,6,4" />
+                        <TextBox Grid.Row="2" Grid.Column="1" Margin="0,0,0,4"
+                                 Text="{Binding SelectedQuestion.Answers[2]}" />
+
+                        <RadioButton Grid.Row="3" Grid.Column="0" GroupName="correct"
+                                     IsChecked="{Binding SelectedQuestion.CorrectIndex, Converter={StaticResource IndexToBoolConverter}, ConverterParameter=3}"
+                                     Content="D" VerticalAlignment="Center" Margin="0,0,6,0" />
+                        <TextBox Grid.Row="3" Grid.Column="1"
+                                 Text="{Binding SelectedQuestion.Answers[3]}" />
+                    </Grid>
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
+
+        <!-- Bottom bar -->
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right"
+                    Margin="0,12,0,0">
+            <TextBlock Text="{Binding PushStatus}" VerticalAlignment="Center" Foreground="#888" />
+            <Button Content="Save Locally" Command="{Binding SaveCommand}" />
+            <Button Content="Push to Devices" Command="{Binding PushToDevicesCommand}"
+                    Background="#2980B9" Foreground="White" />
+            <Button Content="Close" Click="OnCloseClick" />
+        </StackPanel>
+    </Grid>
+</Window>

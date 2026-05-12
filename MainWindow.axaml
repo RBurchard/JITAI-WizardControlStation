@@ -1,0 +1,71 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:OcdWizard.ControlStation.ViewModels"
+        xmlns:views="using:OcdWizard.ControlStation.Views"
+        x:Class="OcdWizard.ControlStation.MainWindow"
+        x:DataType="vm:MainViewModel"
+        Title="OCD Wizard — Control Station"
+        Width="1100" Height="700"
+        MinWidth="900" MinHeight="560">
+
+    <Window.Resources>
+        <vm:MainViewModel x:Key="DesignVm" />
+    </Window.Resources>
+
+    <DockPanel>
+
+        <!-- Top bar -->
+        <Border DockPanel.Dock="Top" Background="#1A1A2E" Padding="12,8">
+            <Grid ColumnDefinitions="*,Auto,Auto,Auto">
+                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                    <TextBlock Text="OCD Wizard Control Station" FontSize="20" FontWeight="Bold"
+                               Foreground="White" VerticalAlignment="Center" />
+                    <TextBox Text="{Binding SessionName}" Width="180"
+                             Watermark="Session name" VerticalAlignment="Center" />
+                </StackPanel>
+                <Button Grid.Column="1" Content="▶ Start Session"
+                        Command="{Binding StartSessionCommand}"
+                        IsEnabled="{Binding SessionActive, Converter={x:Static BoolConverters.Not}}"
+                        Background="#27AE60" Foreground="White" Margin="4,0" />
+                <Button Grid.Column="2" Content="■ Stop Session"
+                        Command="{Binding StopSessionCommand}"
+                        IsEnabled="{Binding SessionActive}"
+                        Background="#C0392B" Foreground="White" Margin="4,0" />
+                <TextBlock Grid.Column="3" Text="{Binding StatusMessage}"
+                           Foreground="#AAA" VerticalAlignment="Center" Margin="8,0,0,0" FontSize="12" />
+            </Grid>
+        </Border>
+
+        <!-- Bottom toolbar -->
+        <Border DockPanel.Dock="Bottom" Background="#111" Padding="12,6">
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <Button Content="Export CSV" Command="{Binding ExportCommand}"
+                        CommandParameter="{Binding $parent[Window].StorageProvider}" />
+                <Button Content="Manage Trivia"
+                        Click="OnManageTriviaClick"
+                        Background="#2C3E50" Foreground="White" />
+                <TextBlock Text="{Binding StatusMessage}" Foreground="#888"
+                           VerticalAlignment="Center" FontSize="11" Margin="12,0,0,0" />
+            </StackPanel>
+        </Border>
+
+        <!-- Main content: two participant panels -->
+        <Grid ColumnDefinitions="*,*" Margin="4">
+            <ContentControl Grid.Column="0" Content="{Binding Participant1}">
+                <ContentControl.ContentTemplate>
+                    <DataTemplate DataType="vm:ParticipantViewModel">
+                        <views:ParticipantPanel DataContext="{Binding}" />
+                    </DataTemplate>
+                </ContentControl.ContentTemplate>
+            </ContentControl>
+            <ContentControl Grid.Column="1" Content="{Binding Participant2}">
+                <ContentControl.ContentTemplate>
+                    <DataTemplate DataType="vm:ParticipantViewModel">
+                        <views:ParticipantPanel DataContext="{Binding}" />
+                    </DataTemplate>
+                </ContentControl.ContentTemplate>
+            </ContentControl>
+        </Grid>
+
+    </DockPanel>
+</Window>
