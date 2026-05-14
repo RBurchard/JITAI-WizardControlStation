@@ -35,8 +35,8 @@
                       PlaceholderText="Scan to discover devices…"
                       HorizontalAlignment="Stretch" />
 
-            <!-- BPM -->
-            <Grid ColumnDefinitions="80,*,40" RowDefinitions="Auto">
+            <!-- Heart Rate -->
+            <Grid ColumnDefinitions="80,*,40">
                 <TextBlock Grid.Column="0" Text="Heart Rate:" VerticalAlignment="Center" />
                 <ProgressBar Grid.Column="1" Minimum="0" Maximum="200"
                              Value="{Binding CurrentBpm}" Margin="4,0" />
@@ -44,18 +44,33 @@
                            VerticalAlignment="Center" HorizontalAlignment="Right" />
             </Grid>
 
-            <!-- Movement -->
-            <Grid ColumnDefinitions="80,*,40" RowDefinitions="Auto">
-                <TextBlock Grid.Column="0" Text="Movement:" VerticalAlignment="Center" />
-                <ProgressBar Grid.Column="1" Minimum="0" Maximum="1"
-                             Value="{Binding MovementLevel}" Margin="4,0"
-                             Foreground="#F4A261" />
-                <TextBlock Grid.Column="2"
-                           Text="{Binding MovementLevel, StringFormat={}{0:P0}}"
+            <!-- Accelerometer X / Y / Z -->
+            <Grid ColumnDefinitions="80,*,55">
+                <TextBlock Grid.Column="0" Text="Accel X:" VerticalAlignment="Center" />
+                <ProgressBar Grid.Column="1" Minimum="0" Maximum="20"
+                             Value="{Binding AccelX, Converter={StaticResource AbsValueConverter}}"
+                             Margin="4,0" Foreground="#F4A261" />
+                <TextBlock Grid.Column="2" Text="{Binding AccelX, StringFormat={}{0:F2}}"
+                           VerticalAlignment="Center" HorizontalAlignment="Right" />
+            </Grid>
+            <Grid ColumnDefinitions="80,*,55">
+                <TextBlock Grid.Column="0" Text="Accel Y:" VerticalAlignment="Center" />
+                <ProgressBar Grid.Column="1" Minimum="0" Maximum="20"
+                             Value="{Binding AccelY, Converter={StaticResource AbsValueConverter}}"
+                             Margin="4,0" Foreground="#A8DADC" />
+                <TextBlock Grid.Column="2" Text="{Binding AccelY, StringFormat={}{0:F2}}"
+                           VerticalAlignment="Center" HorizontalAlignment="Right" />
+            </Grid>
+            <Grid ColumnDefinitions="80,*,55">
+                <TextBlock Grid.Column="0" Text="Accel Z:" VerticalAlignment="Center" />
+                <ProgressBar Grid.Column="1" Minimum="0" Maximum="20"
+                             Value="{Binding AccelZ, Converter={StaticResource AbsValueConverter}}"
+                             Margin="4,0" Foreground="#81B29A" />
+                <TextBlock Grid.Column="2" Text="{Binding AccelZ, StringFormat={}{0:F2}}"
                            VerticalAlignment="Center" HorizontalAlignment="Right" />
             </Grid>
 
-            <!-- Trigger controls -->
+            <!-- Game Type / Notification Type -->
             <Grid ColumnDefinitions="*,*">
                 <ComboBox Grid.Column="0" SelectedItem="{Binding SelectedGameType}"
                           Margin="0,0,4,0">
@@ -72,6 +87,41 @@
                     <ComboBoxItem Content="VIBRATION_SOUND" />
                 </ComboBox>
             </Grid>
+
+            <!-- Trivia editor (visible only when TRIVIA is selected) -->
+            <Border IsVisible="{Binding IsTrivia}" BorderBrush="#555" BorderThickness="1"
+                    CornerRadius="4" Padding="6">
+                <StackPanel Spacing="4">
+                    <TextBlock Text="Trivia Question" FontWeight="SemiBold" FontSize="11" />
+                    <TextBox Text="{Binding TriviaQuestionText}" Watermark="Question…" />
+                    <Grid ColumnDefinitions="16,*">
+                        <TextBlock Grid.Column="0" Text="A" VerticalAlignment="Center" FontSize="11" />
+                        <TextBox Grid.Column="1" Text="{Binding TriviaAnswerA}" Watermark="Answer A" />
+                    </Grid>
+                    <Grid ColumnDefinitions="16,*">
+                        <TextBlock Grid.Column="0" Text="B" VerticalAlignment="Center" FontSize="11" />
+                        <TextBox Grid.Column="1" Text="{Binding TriviaAnswerB}" Watermark="Answer B" />
+                    </Grid>
+                    <Grid ColumnDefinitions="16,*">
+                        <TextBlock Grid.Column="0" Text="C" VerticalAlignment="Center" FontSize="11" />
+                        <TextBox Grid.Column="1" Text="{Binding TriviaAnswerC}" Watermark="Answer C" />
+                    </Grid>
+                    <Grid ColumnDefinitions="16,*">
+                        <TextBlock Grid.Column="0" Text="D" VerticalAlignment="Center" FontSize="11" />
+                        <TextBox Grid.Column="1" Text="{Binding TriviaAnswerD}" Watermark="Answer D" />
+                    </Grid>
+                    <Grid ColumnDefinitions="Auto,*">
+                        <TextBlock Grid.Column="0" Text="Correct:" VerticalAlignment="Center"
+                                   Margin="0,0,6,0" FontSize="11" />
+                        <ComboBox Grid.Column="1" SelectedItem="{Binding TriviaCorrectAnswer}">
+                            <ComboBoxItem Content="A" />
+                            <ComboBoxItem Content="B" />
+                            <ComboBoxItem Content="C" />
+                            <ComboBoxItem Content="D" />
+                        </ComboBox>
+                    </Grid>
+                </StackPanel>
+            </Border>
 
             <Grid ColumnDefinitions="*,Auto">
                 <Button Grid.Column="0" Content="TRIGGER OCD DISTRACTION"

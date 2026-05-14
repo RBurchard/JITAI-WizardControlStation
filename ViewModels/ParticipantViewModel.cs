@@ -22,12 +22,21 @@ public partial class ParticipantViewModel : ObservableObject
     [ObservableProperty] private string _connectionStatus = "Not connected";
     [ObservableProperty] private bool _isConnected;
     [ObservableProperty] private float _currentBpm;
-    [ObservableProperty] private float _movementLevel;
+    [ObservableProperty] private float _accelX;
+    [ObservableProperty] private float _accelY;
+    [ObservableProperty] private float _accelZ;
     [ObservableProperty] private string _ipAddress = "";
     [ObservableProperty] private string _selectedGameType = "None";
     [ObservableProperty] private string _selectedNotificationType = "VIBRATION1";
     [ObservableProperty] private bool _isScanning;
     [ObservableProperty] private DiscoveredDevice? _selectedDevice;
+    [ObservableProperty] private bool _isTrivia;
+    [ObservableProperty] private string _triviaQuestionText = "";
+    [ObservableProperty] private string _triviaAnswerA = "";
+    [ObservableProperty] private string _triviaAnswerB = "";
+    [ObservableProperty] private string _triviaAnswerC = "";
+    [ObservableProperty] private string _triviaAnswerD = "";
+    [ObservableProperty] private string _triviaCorrectAnswer = "A";
 
     public ObservableCollection<string> EventLog { get; } = [];
     public ObservableCollection<DiscoveredDevice> DiscoveredDevices { get; } = [];
@@ -37,6 +46,8 @@ public partial class ParticipantViewModel : ObservableObject
         if (value != null)
             IpAddress = $"{value.Address}:{value.Port}";
     }
+
+    partial void OnSelectedGameTypeChanged(string value) => IsTrivia = value == "TRIVIA";
 
     public ParticipantViewModel(string label, DatabaseService db)
     {
@@ -74,7 +85,21 @@ public partial class ParticipantViewModel : ObservableObject
     private async Task TriggerAsync()
     {
         var gameType = SelectedGameType == "None" ? null : SelectedGameType;
-        var req = new InterventionRequest(SelectedNotificationType, GameType: gameType);
+
+        TriviaQuestion? trivia = null;
+        if (SelectedGameType == "TRIVIA")
+        {
+            var idx = TriviaCorrectAnswer switch { "B" => 1, "C" => 2, "D" => 3, _ => 0 };
+            trivia = new TriviaQuestion
+            {
+                Id = 1,
+                Question = TriviaQuestionText,
+                Answers = [TriviaAnswerA, TriviaAnswerB, TriviaAnswerC, TriviaAnswerD],
+                CorrectIndex = idx
+            };
+        }
+
+        var req = new InterventionRequest(SelectedNotificationType, GameType: gameType, TriviaQuestion: trivia);
         var ok = await _device.TriggerInterventionAsync(req);
         AppendLog(ok ? $"Triggered {SelectedNotificationType} {gameType ?? ""}" : "Trigger failed");
 
@@ -130,8 +155,9 @@ public partial class ParticipantViewModel : ObservableObject
             {
                 var last = batch.Snapshots[^1];
                 CurrentBpm = last.HeartRate;
-                var mag = MathF.Sqrt(last.AccelX * last.AccelX + last.AccelY * last.AccelY + last.AccelZ * last.AccelZ);
-                MovementLevel = Math.Clamp((mag - 9.8f) / 5f, 0f, 1f);
+                AccelX = last.AccelX;
+                AccelY = last.AccelY;
+                AccelZ = last.AccelZ;
             }
 
             if (_participantId != null)

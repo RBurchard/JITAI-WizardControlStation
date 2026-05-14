@@ -13,5 +13,6 @@
                                          TrueBrush="#27AE60"
                                          FalseBrush="#555" />
         <converters:IndexToBoolConverter x:Key="IndexToBoolConverter" />
+        <converters:AbsValueConverter x:Key="AbsValueConverter" />
     </Application.Resources>
 </Application>
