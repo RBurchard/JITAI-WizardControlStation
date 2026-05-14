@@ -16,14 +16,24 @@
                            Foreground="#888" VerticalAlignment="Center" />
             </Grid>
 
-            <!-- IP + Connect -->
-            <Grid ColumnDefinitions="*,Auto,Auto">
+            <!-- IP + Connect + Scan -->
+            <Grid ColumnDefinitions="*,Auto,Auto,Auto">
                 <TextBox Grid.Column="0" Text="{Binding IpAddress}" Watermark="Device IP (e.g. 192.168.1.42)"
                          Margin="0,0,4,0" />
-                <Button Grid.Column="1" Content="Connect" Command="{Binding ConnectCommand}"
+                <Button Grid.Column="1" Content="Scan"
+                        Command="{Binding ScanCommand}"
+                        IsEnabled="{Binding !IsScanning}"
                         Margin="0,0,4,0" />
-                <Button Grid.Column="2" Content="Disconnect" Command="{Binding DisconnectCommand}" />
+                <Button Grid.Column="2" Content="Connect" Command="{Binding ConnectCommand}"
+                        Margin="0,0,4,0" />
+                <Button Grid.Column="3" Content="Disconnect" Command="{Binding DisconnectCommand}" />
             </Grid>
+
+            <!-- Discovered devices dropdown (filled after scan) -->
+            <ComboBox ItemsSource="{Binding DiscoveredDevices}"
+                      SelectedItem="{Binding SelectedDevice}"
+                      PlaceholderText="Scan to discover devices…"
+                      HorizontalAlignment="Stretch" />
 
             <!-- BPM -->
             <Grid ColumnDefinitions="80,*,40" RowDefinitions="Auto">

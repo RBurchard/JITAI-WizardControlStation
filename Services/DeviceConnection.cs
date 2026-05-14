@@ -26,18 +26,43 @@ public class DeviceConnection : IDisposable
 
     public async Task<bool> ConnectAsync(string address)
     {
-        var hostAndPort = address.Contains(':') ? address : $"{address}:8080";
-        _baseUrl = $"http://{hostAndPort}";
-        _wsUrl = $"ws://{hostAndPort}/stream";
+        if (!TryBuildUris(address, out var baseUrl, out var wsUrl, out var error))
+        {
+            IsConnected = false;
+            StatusChanged?.Invoke($"Failed: {error}");
+            return false;
+        }
+
+        _baseUrl = baseUrl;
+        _wsUrl = wsUrl;
 
         try
         {
-            var resp = await _http.GetAsync($"{_baseUrl}/status");
-            resp.EnsureSuccessStatusCode();
+            using var resp = await _http.GetAsync($"{_baseUrl}/status");
+            var body = await resp.Content.ReadAsStringAsync();
+            if (!resp.IsSuccessStatusCode)
+            {
+                IsConnected = false;
+                StatusChanged?.Invoke($"Failed: {(int)resp.StatusCode} {resp.ReasonPhrase}{FormatBody(body)}");
+                return false;
+            }
+
             IsConnected = true;
             StatusChanged?.Invoke("Connected");
             _ = StartWebSocketAsync();
             return true;
+        }
+        catch (TaskCanceledException)
+        {
+            IsConnected = false;
+            StatusChanged?.Invoke("Failed: request timed out");
+            return false;
+        }
+        catch (HttpRequestException ex)
+        {
+            IsConnected = false;
+            StatusChanged?.Invoke($"Failed: {ex.Message}");
+            return false;
         }
         catch (Exception ex)
         {
@@ -45,6 +70,53 @@ public class DeviceConnection : IDisposable
             StatusChanged?.Invoke($"Failed: {ex.Message}");
             return false;
         }
+    }
+
+    private static bool TryBuildUris(string address, out string baseUrl, out string wsUrl, out string error)
+    {
+        baseUrl = "";
+        wsUrl = "";
+        error = "Invalid address";
+
+        if (string.IsNullOrWhiteSpace(address))
+        {
+            error = "Address is empty";
+            return false;
+        }
+
+        var trimmed = address.Trim();
+        var hasScheme = trimmed.StartsWith("http://", StringComparison.OrdinalIgnoreCase)
+            || trimmed.StartsWith("https://", StringComparison.OrdinalIgnoreCase);
+        if (!hasScheme)
+        {
+            var hostAndPort = trimmed.Contains(':') ? trimmed : $"{trimmed}:8080";
+            trimmed = $"http://{hostAndPort}";
+        }
+
+        if (!Uri.TryCreate(trimmed, UriKind.Absolute, out var baseUri))
+        {
+            error = "Address is not a valid URI";
+            return false;
+        }
+
+        var baseBuilder = new UriBuilder(baseUri) { Path = "" };
+        baseUrl = baseBuilder.Uri.ToString().TrimEnd('/');
+
+        var wsBuilder = new UriBuilder(baseUri)
+        {
+            Scheme = baseUri.Scheme.Equals("https", StringComparison.OrdinalIgnoreCase) ? "wss" : "ws",
+            Path = "/stream"
+        };
+        wsUrl = wsBuilder.Uri.ToString();
+        return true;
+    }
+
+    private static string FormatBody(string body)
+    {
+        if (string.IsNullOrWhiteSpace(body)) return "";
+        var compact = body.Replace("\r", " ").Replace("\n", " ").Trim();
+        if (compact.Length > 200) compact = compact[..200] + "...";
+        return $" - {compact}";
     }
 
     private async Task StartWebSocketAsync()

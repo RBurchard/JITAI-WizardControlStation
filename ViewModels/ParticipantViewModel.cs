@@ -6,6 +6,7 @@ using CommunityToolkit.Mvvm.Input;
 using OcdWizard.ControlStation.Database;
 using OcdWizard.ControlStation.Models;
 using OcdWizard.ControlStation.Services;
+using Avalonia.Threading;
 
 namespace OcdWizard.ControlStation.ViewModels;
 
@@ -25,8 +26,17 @@ public partial class ParticipantViewModel : ObservableObject
     [ObservableProperty] private string _ipAddress = "";
     [ObservableProperty] private string _selectedGameType = "None";
     [ObservableProperty] private string _selectedNotificationType = "VIBRATION1";
+    [ObservableProperty] private bool _isScanning;
+    [ObservableProperty] private DiscoveredDevice? _selectedDevice;
 
     public ObservableCollection<string> EventLog { get; } = [];
+    public ObservableCollection<DiscoveredDevice> DiscoveredDevices { get; } = [];
+
+    partial void OnSelectedDeviceChanged(DiscoveredDevice? value)
+    {
+        if (value != null)
+            IpAddress = $"{value.Address}:{value.Port}";
+    }
 
     public ParticipantViewModel(string label, DatabaseService db)
     {
@@ -83,6 +93,27 @@ public partial class ParticipantViewModel : ObservableObject
         var req = new InterventionRequest("CANCEL");
         await _device.TriggerInterventionAsync(req);
         AppendLog("Sent CANCEL");
+    }
+
+    [RelayCommand]
+    private async Task ScanAsync()
+    {
+        IsScanning = true;
+        AppendLog("Scanning for JITAI Wizard devices…");
+        Dispatcher.UIThread.Post(() => DiscoveredDevices.Clear());
+
+        var devices = await DeviceDiscovery.ScanAsync(timeoutMs: 3000);
+
+        Dispatcher.UIThread.Post(() =>
+        {
+            foreach (var d in devices)
+                DiscoveredDevices.Add(d);
+        });
+
+        AppendLog(devices.Count > 0
+            ? $"Found {devices.Count} device(s)"
+            : "No devices found — ensure phone app is running on the same network");
+        IsScanning = false;
     }
 
     public void SetSession(string sessionId)
