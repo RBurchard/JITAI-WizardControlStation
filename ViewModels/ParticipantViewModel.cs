@@ -25,6 +25,9 @@ public partial class ParticipantViewModel : ObservableObject
     [ObservableProperty] private float _accelX;
     [ObservableProperty] private float _accelY;
     [ObservableProperty] private float _accelZ;
+    private float _prevAccelX = float.NaN;
+    private float _prevAccelY = float.NaN;
+    private float _prevAccelZ = float.NaN;
     [ObservableProperty] private string _ipAddress = "";
     [ObservableProperty] private string _selectedGameType = "None";
     [ObservableProperty] private string _selectedNotificationType = "VIBRATION1";
@@ -155,9 +158,15 @@ public partial class ParticipantViewModel : ObservableObject
             {
                 var last = batch.Snapshots[^1];
                 CurrentBpm = last.HeartRate;
-                AccelX = last.AccelX;
-                AccelY = last.AccelY;
-                AccelZ = last.AccelZ;
+                if (!float.IsNaN(_prevAccelX))
+                {
+                    AccelX = last.AccelX - _prevAccelX;
+                    AccelY = last.AccelY - _prevAccelY;
+                    AccelZ = last.AccelZ - _prevAccelZ;
+                }
+                _prevAccelX = last.AccelX;
+                _prevAccelY = last.AccelY;
+                _prevAccelZ = last.AccelZ;
             }
 
             if (_participantId != null)

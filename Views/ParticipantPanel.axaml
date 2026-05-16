@@ -46,24 +46,24 @@
 
             <!-- Accelerometer X / Y / Z -->
             <Grid ColumnDefinitions="80,*,55">
-                <TextBlock Grid.Column="0" Text="Accel X:" VerticalAlignment="Center" />
-                <ProgressBar Grid.Column="1" Minimum="0" Maximum="20"
+                <TextBlock Grid.Column="0" Text="ΔX:" VerticalAlignment="Center" />
+                <ProgressBar Grid.Column="1" Minimum="0" Maximum="5"
                              Value="{Binding AccelX, Converter={StaticResource AbsValueConverter}}"
                              Margin="4,0" Foreground="#F4A261" />
                 <TextBlock Grid.Column="2" Text="{Binding AccelX, StringFormat={}{0:F2}}"
                            VerticalAlignment="Center" HorizontalAlignment="Right" />
             </Grid>
             <Grid ColumnDefinitions="80,*,55">
-                <TextBlock Grid.Column="0" Text="Accel Y:" VerticalAlignment="Center" />
-                <ProgressBar Grid.Column="1" Minimum="0" Maximum="20"
+                <TextBlock Grid.Column="0" Text="ΔY:" VerticalAlignment="Center" />
+                <ProgressBar Grid.Column="1" Minimum="0" Maximum="5"
                              Value="{Binding AccelY, Converter={StaticResource AbsValueConverter}}"
                              Margin="4,0" Foreground="#A8DADC" />
                 <TextBlock Grid.Column="2" Text="{Binding AccelY, StringFormat={}{0:F2}}"
                            VerticalAlignment="Center" HorizontalAlignment="Right" />
             </Grid>
             <Grid ColumnDefinitions="80,*,55">
-                <TextBlock Grid.Column="0" Text="Accel Z:" VerticalAlignment="Center" />
-                <ProgressBar Grid.Column="1" Minimum="0" Maximum="20"
+                <TextBlock Grid.Column="0" Text="ΔZ:" VerticalAlignment="Center" />
+                <ProgressBar Grid.Column="1" Minimum="0" Maximum="5"
                              Value="{Binding AccelZ, Converter={StaticResource AbsValueConverter}}"
                              Margin="4,0" Foreground="#81B29A" />
                 <TextBlock Grid.Column="2" Text="{Binding AccelZ, StringFormat={}{0:F2}}"
