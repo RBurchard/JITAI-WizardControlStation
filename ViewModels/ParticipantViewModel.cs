@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -18,6 +19,11 @@ public partial class ParticipantViewModel : ObservableObject
     private string? _sessionId;
 
     public string Label { get; }
+
+    public IReadOnlyList<string> GameTypes { get; } =
+        ["None", "STAND_STILL", "TRIVIA", "SIMON_SAYS", "LOCK_PICKING"];
+    public IReadOnlyList<string> NotificationTypes { get; } =
+        ["VIBRATION1", "VIBRATION2", "SOUND", "VIBRATION_SOUND"];
 
     [ObservableProperty] private string _connectionStatus = "Not connected";
     [ObservableProperty] private bool _isConnected;

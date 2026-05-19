@@ -73,19 +73,10 @@
             <!-- Game Type / Notification Type -->
             <Grid ColumnDefinitions="*,*">
                 <ComboBox Grid.Column="0" SelectedItem="{Binding SelectedGameType}"
-                          Margin="0,0,4,0">
-                    <ComboBoxItem Content="None" />
-                    <ComboBoxItem Content="STAND_STILL" />
-                    <ComboBoxItem Content="TRIVIA" />
-                    <ComboBoxItem Content="SIMON_SAYS" />
-                    <ComboBoxItem Content="LOCK_PICKING" />
-                </ComboBox>
-                <ComboBox Grid.Column="1" SelectedItem="{Binding SelectedNotificationType}">
-                    <ComboBoxItem Content="VIBRATION1" />
-                    <ComboBoxItem Content="VIBRATION2" />
-                    <ComboBoxItem Content="SOUND" />
-                    <ComboBoxItem Content="VIBRATION_SOUND" />
-                </ComboBox>
+                          ItemsSource="{Binding GameTypes}"
+                          Margin="0,0,4,0" />
+                <ComboBox Grid.Column="1" SelectedItem="{Binding SelectedNotificationType}"
+                          ItemsSource="{Binding NotificationTypes}" />
             </Grid>
 
             <!-- Trivia editor (visible only when TRIVIA is selected) -->
