@@ -4,67 +4,124 @@
         xmlns:views="using:OcdWizard.ControlStation.Views"
         x:Class="OcdWizard.ControlStation.MainWindow"
         x:DataType="vm:MainViewModel"
-        Title="OCD Wizard — Control Station"
-        Width="1100" Height="700"
-        MinWidth="900" MinHeight="560">
-
-    <Window.Resources>
-        <vm:MainViewModel x:Key="DesignVm" />
-    </Window.Resources>
+        Title="JITAI Wizard — Control Station"
+        Width="1200" Height="780"
+        MinWidth="780" MinHeight="560">
 
     <DockPanel>
 
-        <!-- Top bar -->
-        <Border DockPanel.Dock="Top" Background="#1A1A2E" Padding="12,8">
-            <Grid ColumnDefinitions="*,Auto,Auto,Auto">
-                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
-                    <TextBlock Text="OCD Wizard Control Station" FontSize="20" FontWeight="Bold"
-                               Foreground="White" VerticalAlignment="Center" />
-                    <TextBox Text="{Binding SessionName}" Width="180"
-                             Watermark="Session name" VerticalAlignment="Center" />
+        <!-- ── Top bar ────────────────────────────────────────────────── -->
+        <Border DockPanel.Dock="Top" Background="#12152A" Padding="16,10">
+            <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto,Auto,Auto">
+
+                <!-- Title -->
+                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="10"
+                            VerticalAlignment="Center">
+                    <TextBlock Text="🧪" FontSize="22" VerticalAlignment="Center" />
+                    <StackPanel VerticalAlignment="Center" Spacing="0">
+                        <TextBlock Text="JITAI Wizard" FontSize="17" FontWeight="Bold"
+                                   Foreground="White" />
+                        <TextBlock Text="Control Station" FontSize="10" Foreground="#6677AA" />
+                    </StackPanel>
                 </StackPanel>
-                <Button Grid.Column="1" Content="▶ Start Session"
+
+                <!-- Session name -->
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8"
+                            VerticalAlignment="Center" Margin="20,0">
+                    <TextBlock Text="Session:" Foreground="#7788AA"
+                               VerticalAlignment="Center" FontSize="12" />
+                    <TextBox Text="{Binding SessionName}" Width="200"
+                             Watermark="e.g. Participant_01" VerticalAlignment="Center" />
+                </StackPanel>
+
+                <!-- Single/Dual watch toggle -->
+                <ToggleButton Grid.Column="2"
+                              IsChecked="{Binding DualParticipantMode}"
+                              Margin="0,0,6,0"
+                              Padding="12,7"
+                              CornerRadius="6"
+                              Background="#252535"
+                              Foreground="#CCC"
+                              BorderThickness="1"
+                              BorderBrush="#3A3A55"
+                              ToolTip.Tip="Toggle between 1 and 2 participant slots">
+                    <Panel>
+                        <TextBlock Text="👤  1 Watch"
+                                   IsVisible="{Binding !DualParticipantMode}"
+                                   VerticalAlignment="Center" />
+                        <TextBlock Text="👥  2 Watches"
+                                   IsVisible="{Binding DualParticipantMode}"
+                                   VerticalAlignment="Center" />
+                    </Panel>
+                </ToggleButton>
+
+                <!-- Start session -->
+                <Button Grid.Column="3" Classes="Primary"
+                        Content="▶  Start Session"
                         Command="{Binding StartSessionCommand}"
                         IsEnabled="{Binding SessionActive, Converter={x:Static BoolConverters.Not}}"
-                        Background="#27AE60" Foreground="White" Margin="4,0" />
-                <Button Grid.Column="2" Content="■ Stop Session"
+                        Margin="0,0,6,0" />
+
+                <!-- Stop session -->
+                <Button Grid.Column="4" Classes="Danger"
+                        Content="■  Stop Session"
                         Command="{Binding StopSessionCommand}"
                         IsEnabled="{Binding SessionActive}"
-                        Background="#C0392B" Foreground="White" Margin="4,0" />
-                <TextBlock Grid.Column="3" Text="{Binding StatusMessage}"
-                           Foreground="#AAA" VerticalAlignment="Center" Margin="8,0,0,0" FontSize="12" />
+                        Margin="0,0,6,0" />
+
+                <!-- Export / Trivia -->
+                <StackPanel Grid.Column="5" Orientation="Horizontal" Spacing="6"
+                            VerticalAlignment="Center">
+                    <Button Classes="Subtle"
+                            Content="⬇  Export CSV"
+                            Command="{Binding ExportCommand}"
+                            CommandParameter="{Binding $parent[Window].StorageProvider}" />
+                    <Button Classes="Subtle"
+                            Content="📋  Trivia"
+                            Click="OnManageTriviaClick" />
+                </StackPanel>
+
+                <!-- Status -->
+                <Border Grid.Column="6" Background="#1A1D30" CornerRadius="5"
+                        Padding="10,5" Margin="10,0,0,0" VerticalAlignment="Center">
+                    <TextBlock Text="{Binding StatusMessage}"
+                               Foreground="#7799CC" FontSize="11" />
+                </Border>
             </Grid>
         </Border>
 
-        <!-- Bottom toolbar -->
-        <Border DockPanel.Dock="Bottom" Background="#111" Padding="12,6">
-            <StackPanel Orientation="Horizontal" Spacing="8">
-                <Button Content="Export CSV" Command="{Binding ExportCommand}"
-                        CommandParameter="{Binding $parent[Window].StorageProvider}" />
-                <Button Content="Manage Trivia"
-                        Click="OnManageTriviaClick"
-                        Background="#2C3E50" Foreground="White" />
-                <TextBlock Text="{Binding StatusMessage}" Foreground="#888"
-                           VerticalAlignment="Center" FontSize="11" Margin="12,0,0,0" />
-            </StackPanel>
-        </Border>
+        <!-- ── Main content ───────────────────────────────────────────── -->
+        <Grid Margin="6">
+            <!-- Single-participant layout (full width) -->
+            <ContentControl IsVisible="{Binding !DualParticipantMode}"
+                            Content="{Binding Participant1}">
+                <ContentControl.ContentTemplate>
+                    <DataTemplate DataType="vm:ParticipantViewModel">
+                        <views:ParticipantPanel DataContext="{Binding}" />
+                    </DataTemplate>
+                </ContentControl.ContentTemplate>
+            </ContentControl>
 
-        <!-- Main content: two participant panels -->
-        <Grid ColumnDefinitions="*,*" Margin="4">
-            <ContentControl Grid.Column="0" Content="{Binding Participant1}">
-                <ContentControl.ContentTemplate>
-                    <DataTemplate DataType="vm:ParticipantViewModel">
-                        <views:ParticipantPanel DataContext="{Binding}" />
-                    </DataTemplate>
-                </ContentControl.ContentTemplate>
-            </ContentControl>
-            <ContentControl Grid.Column="1" Content="{Binding Participant2}">
-                <ContentControl.ContentTemplate>
-                    <DataTemplate DataType="vm:ParticipantViewModel">
-                        <views:ParticipantPanel DataContext="{Binding}" />
-                    </DataTemplate>
-                </ContentControl.ContentTemplate>
-            </ContentControl>
+            <!-- Dual-participant layout -->
+            <Grid IsVisible="{Binding DualParticipantMode}"
+                  ColumnDefinitions="*,6,*">
+                <ContentControl Grid.Column="0" Content="{Binding Participant1}">
+                    <ContentControl.ContentTemplate>
+                        <DataTemplate DataType="vm:ParticipantViewModel">
+                            <views:ParticipantPanel DataContext="{Binding}" />
+                        </DataTemplate>
+                    </ContentControl.ContentTemplate>
+                </ContentControl>
+                <GridSplitter Grid.Column="1" Background="#2A2D45"
+                              ResizeDirection="Columns" />
+                <ContentControl Grid.Column="2" Content="{Binding Participant2}">
+                    <ContentControl.ContentTemplate>
+                        <DataTemplate DataType="vm:ParticipantViewModel">
+                            <views:ParticipantPanel DataContext="{Binding}" />
+                        </DataTemplate>
+                    </ContentControl.ContentTemplate>
+                </ContentControl>
+            </Grid>
         </Grid>
 
     </DockPanel>

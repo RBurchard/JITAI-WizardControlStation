@@ -1,139 +1,254 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:OcdWizard.ControlStation.ViewModels"
+             xmlns:views="using:OcdWizard.ControlStation.Views"
+             xmlns:ctrl="using:OcdWizard.ControlStation.Controls"
              x:Class="OcdWizard.ControlStation.Views.ParticipantPanel"
              x:DataType="vm:ParticipantViewModel">
 
-    <Border BorderBrush="#444" BorderThickness="1" CornerRadius="6" Margin="4" Padding="10">
-        <StackPanel Spacing="8">
+    <Border Classes="Card" Margin="3">
+        <DockPanel>
 
-            <!-- Header with status indicator -->
-            <Grid ColumnDefinitions="Auto,*,Auto">
-                <Ellipse Grid.Column="0" Width="12" Height="12" Margin="0,0,6,0"
-                         Fill="{Binding IsConnected, Converter={StaticResource BoolToBrushConverter}}" />
-                <TextBlock Grid.Column="1" Text="{Binding Label}" FontSize="18" FontWeight="Bold" />
-                <TextBlock Grid.Column="2" Text="{Binding ConnectionStatus}" FontSize="11"
-                           Foreground="#888" VerticalAlignment="Center" />
-            </Grid>
-
-            <!-- IP + Connect + Scan -->
-            <Grid ColumnDefinitions="*,Auto,Auto,Auto">
-                <TextBox Grid.Column="0" Text="{Binding IpAddress}" Watermark="Device IP (e.g. 192.168.1.42)"
-                         Margin="0,0,4,0" />
-                <Button Grid.Column="1" Content="Scan"
-                        Command="{Binding ScanCommand}"
-                        IsEnabled="{Binding !IsScanning}"
-                        Margin="0,0,4,0" />
-                <Button Grid.Column="2" Content="Connect" Command="{Binding ConnectCommand}"
-                        Margin="0,0,4,0" />
-                <Button Grid.Column="3" Content="Disconnect" Command="{Binding DisconnectCommand}" />
-            </Grid>
-
-            <!-- Discovered devices dropdown (filled after scan) -->
-            <ComboBox ItemsSource="{Binding DiscoveredDevices}"
-                      SelectedItem="{Binding SelectedDevice}"
-                      PlaceholderText="Scan to discover devices…"
-                      HorizontalAlignment="Stretch" />
-
-            <!-- Heart Rate -->
-            <Grid ColumnDefinitions="80,*,40">
-                <TextBlock Grid.Column="0" Text="Heart Rate:" VerticalAlignment="Center" />
-                <ProgressBar Grid.Column="1" Minimum="0" Maximum="200"
-                             Value="{Binding CurrentBpm}" Margin="4,0" />
-                <TextBlock Grid.Column="2" Text="{Binding CurrentBpm, StringFormat={}{0:F0}}"
-                           VerticalAlignment="Center" HorizontalAlignment="Right" />
-            </Grid>
-
-            <!-- Accelerometer X / Y / Z -->
-            <Grid ColumnDefinitions="80,*,55">
-                <TextBlock Grid.Column="0" Text="ΔX:" VerticalAlignment="Center" />
-                <ProgressBar Grid.Column="1" Minimum="0" Maximum="5"
-                             Value="{Binding AccelX, Converter={StaticResource AbsValueConverter}}"
-                             Margin="4,0" Foreground="#F4A261" />
-                <TextBlock Grid.Column="2" Text="{Binding AccelX, StringFormat={}{0:F2}}"
-                           VerticalAlignment="Center" HorizontalAlignment="Right" />
-            </Grid>
-            <Grid ColumnDefinitions="80,*,55">
-                <TextBlock Grid.Column="0" Text="ΔY:" VerticalAlignment="Center" />
-                <ProgressBar Grid.Column="1" Minimum="0" Maximum="5"
-                             Value="{Binding AccelY, Converter={StaticResource AbsValueConverter}}"
-                             Margin="4,0" Foreground="#A8DADC" />
-                <TextBlock Grid.Column="2" Text="{Binding AccelY, StringFormat={}{0:F2}}"
-                           VerticalAlignment="Center" HorizontalAlignment="Right" />
-            </Grid>
-            <Grid ColumnDefinitions="80,*,55">
-                <TextBlock Grid.Column="0" Text="ΔZ:" VerticalAlignment="Center" />
-                <ProgressBar Grid.Column="1" Minimum="0" Maximum="5"
-                             Value="{Binding AccelZ, Converter={StaticResource AbsValueConverter}}"
-                             Margin="4,0" Foreground="#81B29A" />
-                <TextBlock Grid.Column="2" Text="{Binding AccelZ, StringFormat={}{0:F2}}"
-                           VerticalAlignment="Center" HorizontalAlignment="Right" />
-            </Grid>
-
-            <!-- Game Type / Notification Type -->
-            <Grid ColumnDefinitions="*,*">
-                <ComboBox Grid.Column="0" SelectedItem="{Binding SelectedGameType}"
-                          ItemsSource="{Binding GameTypes}"
-                          Margin="0,0,4,0" />
-                <ComboBox Grid.Column="1" SelectedItem="{Binding SelectedNotificationType}"
-                          ItemsSource="{Binding NotificationTypes}" />
-            </Grid>
-
-            <!-- Trivia editor (visible only when TRIVIA is selected) -->
-            <Border IsVisible="{Binding IsTrivia}" BorderBrush="#555" BorderThickness="1"
-                    CornerRadius="4" Padding="6">
-                <StackPanel Spacing="4">
-                    <TextBlock Text="Trivia Question" FontWeight="SemiBold" FontSize="11" />
-                    <TextBox Text="{Binding TriviaQuestionText}" Watermark="Question…" />
-                    <Grid ColumnDefinitions="16,*">
-                        <TextBlock Grid.Column="0" Text="A" VerticalAlignment="Center" FontSize="11" />
-                        <TextBox Grid.Column="1" Text="{Binding TriviaAnswerA}" Watermark="Answer A" />
-                    </Grid>
-                    <Grid ColumnDefinitions="16,*">
-                        <TextBlock Grid.Column="0" Text="B" VerticalAlignment="Center" FontSize="11" />
-                        <TextBox Grid.Column="1" Text="{Binding TriviaAnswerB}" Watermark="Answer B" />
-                    </Grid>
-                    <Grid ColumnDefinitions="16,*">
-                        <TextBlock Grid.Column="0" Text="C" VerticalAlignment="Center" FontSize="11" />
-                        <TextBox Grid.Column="1" Text="{Binding TriviaAnswerC}" Watermark="Answer C" />
-                    </Grid>
-                    <Grid ColumnDefinitions="16,*">
-                        <TextBlock Grid.Column="0" Text="D" VerticalAlignment="Center" FontSize="11" />
-                        <TextBox Grid.Column="1" Text="{Binding TriviaAnswerD}" Watermark="Answer D" />
-                    </Grid>
-                    <Grid ColumnDefinitions="Auto,*">
-                        <TextBlock Grid.Column="0" Text="Correct:" VerticalAlignment="Center"
-                                   Margin="0,0,6,0" FontSize="11" />
-                        <ComboBox Grid.Column="1" SelectedItem="{Binding TriviaCorrectAnswer}">
-                            <ComboBoxItem Content="A" />
-                            <ComboBoxItem Content="B" />
-                            <ComboBoxItem Content="C" />
-                            <ComboBoxItem Content="D" />
-                        </ComboBox>
-                    </Grid>
-                </StackPanel>
+            <!-- ── Coloured header strip ──────────────────────────────── -->
+            <Border DockPanel.Dock="Top" CornerRadius="9,9,0,0" Padding="14,10">
+                <Border.Background>
+                    <SolidColorBrush Color="{Binding IsConnected,
+                        Converter={StaticResource BoolToBrushConverter}}" />
+                </Border.Background>
+                <Grid ColumnDefinitions="Auto,*,Auto">
+                    <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8"
+                                VerticalAlignment="Center">
+                        <Ellipse Width="10" Height="10"
+                                 Fill="{Binding IsConnected,
+                                     Converter={StaticResource BoolToBrushConverter}}" />
+                        <TextBlock Text="{Binding Label}" FontSize="16" FontWeight="Bold"
+                                   Foreground="White" />
+                    </StackPanel>
+                    <TextBlock Grid.Column="1" Text="{Binding ConnectionStatus}"
+                               Foreground="#CCDDFF" FontSize="11"
+                               VerticalAlignment="Center" Margin="12,0" />
+                    <TextBlock Grid.Column="2"
+                               Text="{Binding ParticipantKey, StringFormat='ID: {0}'}"
+                               Foreground="#AABBDD" FontSize="10"
+                               VerticalAlignment="Center" />
+                </Grid>
             </Border>
 
-            <Grid ColumnDefinitions="*,Auto">
-                <Button Grid.Column="0" Content="TRIGGER OCD DISTRACTION"
-                        Command="{Binding TriggerCommand}"
-                        Background="#C0392B" Foreground="White"
-                        FontWeight="Bold" HorizontalAlignment="Stretch"
-                        Margin="0,0,4,0" />
-                <Button Grid.Column="1" Content="Stop" Command="{Binding StopCommand}" />
-            </Grid>
+            <!-- ── Scrollable body ────────────────────────────────────── -->
+            <ScrollViewer>
+                <StackPanel Spacing="4" Margin="10,8">
 
-            <!-- Event log -->
-            <TextBlock Text="Event Log" FontWeight="SemiBold" Margin="0,4,0,2" />
-            <ListBox ItemsSource="{Binding EventLog}"
-                     MaxHeight="180" ScrollViewer.VerticalScrollBarVisibility="Auto">
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <TextBlock Text="{Binding}" FontSize="11" FontFamily="Consolas, Courier New" />
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
+                    <!-- CONNECTION CARD -->
+                    <Border Background="#1C1F30" CornerRadius="8" Padding="12,10">
+                        <StackPanel Spacing="8">
+                            <TextBlock Text="📡  CONNECTION" Classes="SectionHeader" />
+                            <Grid ColumnDefinitions="*,Auto,Auto">
+                                <TextBox Grid.Column="0" Text="{Binding IpAddress}"
+                                         Watermark="Device IP  (e.g. 192.168.1.42)"
+                                         Margin="0,0,6,0" />
+                                <Button Grid.Column="1" Classes="Subtle"
+                                        Content="🔍  Scan"
+                                        Command="{Binding ScanCommand}"
+                                        IsEnabled="{Binding !IsScanning}"
+                                        Margin="0,0,6,0" />
+                                <Button Grid.Column="2" Classes="Accent"
+                                        Content="{Binding IsConnected,
+                                            StringFormat={}{0}}"
+                                        IsVisible="False" />
+                            </Grid>
+                            <Grid ColumnDefinitions="*,Auto,Auto">
+                                <ComboBox Grid.Column="0"
+                                          ItemsSource="{Binding DiscoveredDevices}"
+                                          SelectedItem="{Binding SelectedDevice}"
+                                          PlaceholderText="Tap Scan to discover devices…"
+                                          HorizontalAlignment="Stretch"
+                                          Margin="0,0,6,0" />
+                                <Button Grid.Column="1" Classes="Accent"
+                                        Content="🔌  Connect"
+                                        Command="{Binding ConnectCommand}"
+                                        Margin="0,0,6,0" />
+                                <Button Grid.Column="2" Classes="Subtle"
+                                        Content="Disconnect"
+                                        Command="{Binding DisconnectCommand}" />
+                            </Grid>
+                        </StackPanel>
+                    </Border>
 
-        </StackPanel>
+                    <!-- MOTION VISUALISER -->
+                    <ctrl:CollapsiblePanel Title="🖐  Motion Tracker">
+                        <ctrl:CollapsiblePanel.Body>
+                            <views:MotionView DataContext="{Binding}" />
+                        </ctrl:CollapsiblePanel.Body>
+                    </ctrl:CollapsiblePanel>
+
+                    <!-- LIVE SENSORS -->
+                    <ctrl:CollapsiblePanel Title="💓  Live Sensors">
+                        <ctrl:CollapsiblePanel.Body>
+                            <StackPanel Spacing="5" Margin="10,6">
+                                <!-- Heart rate -->
+                                <Grid ColumnDefinitions="100,*,50">
+                                    <TextBlock Grid.Column="0" Text="Heart Rate"
+                                               VerticalAlignment="Center" FontSize="12" />
+                                    <ProgressBar Grid.Column="1" Minimum="0" Maximum="200"
+                                                 Value="{Binding CurrentBpm}"
+                                                 Height="10" CornerRadius="5"
+                                                 Foreground="#E84393" Margin="6,0" />
+                                    <TextBlock Grid.Column="2"
+                                               Text="{Binding CurrentBpm, StringFormat={}{0:F0} bpm}"
+                                               VerticalAlignment="Center" FontSize="11" />
+                                </Grid>
+                                <!-- Accelerometer delta -->
+                                <Grid ColumnDefinitions="100,*,55">
+                                    <TextBlock Grid.Column="0" Text="Accel ΔX"
+                                               VerticalAlignment="Center" FontSize="12" />
+                                    <ProgressBar Grid.Column="1" Minimum="0" Maximum="5"
+                                                 Value="{Binding AccelX, Converter={StaticResource AbsValueConverter}}"
+                                                 Height="10" CornerRadius="5"
+                                                 Foreground="#F4A261" Margin="6,0" />
+                                    <TextBlock Grid.Column="2"
+                                               Text="{Binding AccelX, StringFormat={}{0:F2}}"
+                                               VerticalAlignment="Center" FontSize="11" />
+                                </Grid>
+                                <Grid ColumnDefinitions="100,*,55">
+                                    <TextBlock Grid.Column="0" Text="Accel ΔY"
+                                               VerticalAlignment="Center" FontSize="12" />
+                                    <ProgressBar Grid.Column="1" Minimum="0" Maximum="5"
+                                                 Value="{Binding AccelY, Converter={StaticResource AbsValueConverter}}"
+                                                 Height="10" CornerRadius="5"
+                                                 Foreground="#A8DADC" Margin="6,0" />
+                                    <TextBlock Grid.Column="2"
+                                               Text="{Binding AccelY, StringFormat={}{0:F2}}"
+                                               VerticalAlignment="Center" FontSize="11" />
+                                </Grid>
+                                <Grid ColumnDefinitions="100,*,55">
+                                    <TextBlock Grid.Column="0" Text="Accel ΔZ"
+                                               VerticalAlignment="Center" FontSize="12" />
+                                    <ProgressBar Grid.Column="1" Minimum="0" Maximum="5"
+                                                 Value="{Binding AccelZ, Converter={StaticResource AbsValueConverter}}"
+                                                 Height="10" CornerRadius="5"
+                                                 Foreground="#81B29A" Margin="6,0" />
+                                    <TextBlock Grid.Column="2"
+                                               Text="{Binding AccelZ, StringFormat={}{0:F2}}"
+                                               VerticalAlignment="Center" FontSize="11" />
+                                </Grid>
+                            </StackPanel>
+                        </ctrl:CollapsiblePanel.Body>
+                    </ctrl:CollapsiblePanel>
+
+                    <!-- EXPERIMENT RUNNER -->
+                    <ctrl:CollapsiblePanel Title="▶  Experiment Runner">
+                        <ctrl:CollapsiblePanel.Body>
+                            <views:ExperimentRunnerView DataContext="{Binding}" />
+                        </ctrl:CollapsiblePanel.Body>
+                    </ctrl:CollapsiblePanel>
+
+                    <!-- EXPERIMENT EDITOR -->
+                    <ctrl:CollapsiblePanel Title="✏  Experiment Editor">
+                        <ctrl:CollapsiblePanel.Body>
+                            <views:ExperimentEditorView DataContext="{Binding ExperimentEditor}" />
+                        </ctrl:CollapsiblePanel.Body>
+                    </ctrl:CollapsiblePanel>
+
+                    <!-- SEND INTERVENTION -->
+                    <ctrl:CollapsiblePanel Title="📣  Send Intervention">
+                        <ctrl:CollapsiblePanel.Body>
+                            <StackPanel Spacing="10" Margin="10,8">
+
+                                <Grid ColumnDefinitions="*,8,*">
+                                    <StackPanel Grid.Column="0" Spacing="4">
+                                        <TextBlock Text="Game type" FontSize="11" Foreground="#8899BB" />
+                                        <ComboBox SelectedItem="{Binding SelectedGameType}"
+                                                  ItemsSource="{Binding GameTypes}"
+                                                  HorizontalAlignment="Stretch" />
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2" Spacing="4">
+                                        <TextBlock Text="Notification" FontSize="11" Foreground="#8899BB" />
+                                        <ComboBox SelectedItem="{Binding SelectedNotificationType}"
+                                                  ItemsSource="{Binding NotificationTypes}"
+                                                  HorizontalAlignment="Stretch" />
+                                    </StackPanel>
+                                </Grid>
+
+                                <!-- Trivia sub-panel -->
+                                <Border IsVisible="{Binding IsTrivia}"
+                                        Background="#1C1F30" BorderBrush="#333355"
+                                        BorderThickness="1" CornerRadius="7" Padding="10">
+                                    <StackPanel Spacing="6">
+                                        <TextBlock Text="Trivia Question"
+                                                   FontWeight="SemiBold" FontSize="12" />
+                                        <TextBox Text="{Binding TriviaQuestionText}"
+                                                 Watermark="Question text…" />
+                                        <Grid ColumnDefinitions="20,*">
+                                            <TextBlock Grid.Column="0" Text="A" VerticalAlignment="Center" FontSize="11" />
+                                            <TextBox Grid.Column="1" Text="{Binding TriviaAnswerA}" Watermark="Answer A" />
+                                        </Grid>
+                                        <Grid ColumnDefinitions="20,*">
+                                            <TextBlock Grid.Column="0" Text="B" VerticalAlignment="Center" FontSize="11" />
+                                            <TextBox Grid.Column="1" Text="{Binding TriviaAnswerB}" Watermark="Answer B" />
+                                        </Grid>
+                                        <Grid ColumnDefinitions="20,*">
+                                            <TextBlock Grid.Column="0" Text="C" VerticalAlignment="Center" FontSize="11" />
+                                            <TextBox Grid.Column="1" Text="{Binding TriviaAnswerC}" Watermark="Answer C" />
+                                        </Grid>
+                                        <Grid ColumnDefinitions="20,*">
+                                            <TextBlock Grid.Column="0" Text="D" VerticalAlignment="Center" FontSize="11" />
+                                            <TextBox Grid.Column="1" Text="{Binding TriviaAnswerD}" Watermark="Answer D" />
+                                        </Grid>
+                                        <Grid ColumnDefinitions="Auto,*">
+                                            <TextBlock Grid.Column="0" Text="Correct:"
+                                                       VerticalAlignment="Center" Margin="0,0,8,0" FontSize="11" />
+                                            <ComboBox Grid.Column="1"
+                                                      SelectedItem="{Binding TriviaCorrectAnswer}">
+                                                <ComboBoxItem Content="A" />
+                                                <ComboBoxItem Content="B" />
+                                                <ComboBoxItem Content="C" />
+                                                <ComboBoxItem Content="D" />
+                                            </ComboBox>
+                                        </Grid>
+                                    </StackPanel>
+                                </Border>
+
+                                <Grid ColumnDefinitions="*,8,Auto">
+                                    <Button Grid.Column="0" Classes="Danger"
+                                            Content="📣  Trigger Intervention"
+                                            Command="{Binding TriggerCommand}"
+                                            HorizontalAlignment="Stretch" />
+                                    <Button Grid.Column="2" Classes="Subtle"
+                                            Content="✕  Cancel"
+                                            Command="{Binding StopCommand}" />
+                                </Grid>
+                            </StackPanel>
+                        </ctrl:CollapsiblePanel.Body>
+                    </ctrl:CollapsiblePanel>
+
+                    <!-- SYNCED LOGS -->
+                    <ctrl:CollapsiblePanel Title="📋  Synced Logs">
+                        <ctrl:CollapsiblePanel.Body>
+                            <views:LogPanelView DataContext="{Binding}" />
+                        </ctrl:CollapsiblePanel.Body>
+                    </ctrl:CollapsiblePanel>
+
+                    <!-- EVENT LOG -->
+                    <ctrl:CollapsiblePanel Title="🔔  Event Log">
+                        <ctrl:CollapsiblePanel.Body>
+                            <ListBox ItemsSource="{Binding EventLog}"
+                                     MaxHeight="160"
+                                     Background="#0F1117"
+                                     ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                     Margin="4">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding}" FontSize="11"
+                                                   FontFamily="Consolas, Courier New"
+                                                   Foreground="#8899BB" />
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </ctrl:CollapsiblePanel.Body>
+                    </ctrl:CollapsiblePanel>
+
+                </StackPanel>
+            </ScrollViewer>
+        </DockPanel>
     </Border>
 </UserControl>

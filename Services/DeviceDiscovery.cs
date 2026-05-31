@@ -9,9 +9,13 @@ using System.Threading.Tasks;
 
 namespace OcdWizard.ControlStation.Services;
 
-public record DiscoveredDevice(string Name, string Address, int Port)
+public enum DeviceTransport { Wifi, Usb }
+
+public record DiscoveredDevice(string Name, string Address, int Port, DeviceTransport Transport = DeviceTransport.Wifi, string? AdbSerial = null)
 {
-    public override string ToString() => $"{Name} ({Address}:{Port})";
+    public override string ToString() => Transport == DeviceTransport.Usb
+        ? $"USB {Name} ({AdbSerial})"
+        : $"{Name} ({Address}:{Port})";
 }
 
 public static class DeviceDiscovery

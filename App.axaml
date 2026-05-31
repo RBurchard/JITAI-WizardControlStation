@@ -6,12 +6,122 @@
 
     <Application.Styles>
         <FluentTheme />
+
+        <!-- ── Global palette ───────────────────────────────────────────── -->
+        <Style Selector="Window">
+            <Setter Property="Background" Value="#0F1117" />
+        </Style>
+
+        <!-- ── Typography ───────────────────────────────────────────────── -->
+        <Style Selector="TextBlock.SectionHeader">
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Foreground" Value="#8899BB" />
+            <Setter Property="Margin" Value="0,10,0,4" />
+        </Style>
+
+        <Style Selector="TextBlock.CardTitle">
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Foreground" Value="White" />
+        </Style>
+
+        <!-- ── Buttons ──────────────────────────────────────────────────── -->
+        <!-- Primary (green action) -->
+        <Style Selector="Button.Primary">
+            <Setter Property="Background" Value="#1E6F3E" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="CornerRadius" Value="6" />
+            <Setter Property="Padding" Value="14,8" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+        <Style Selector="Button.Primary:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="#27AE60" />
+        </Style>
+        <Style Selector="Button.Primary:disabled /template/ ContentPresenter">
+            <Setter Property="Background" Value="#1A3D2B" />
+            <Setter Property="Opacity" Value="0.5" />
+        </Style>
+
+        <!-- Danger (red action) -->
+        <Style Selector="Button.Danger">
+            <Setter Property="Background" Value="#7A1F1F" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="CornerRadius" Value="6" />
+            <Setter Property="Padding" Value="14,8" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+        <Style Selector="Button.Danger:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="#C0392B" />
+        </Style>
+        <Style Selector="Button.Danger:disabled /template/ ContentPresenter">
+            <Setter Property="Background" Value="#3D1010" />
+            <Setter Property="Opacity" Value="0.5" />
+        </Style>
+
+        <!-- Subtle (secondary, toolbar) -->
+        <Style Selector="Button.Subtle">
+            <Setter Property="Background" Value="#252535" />
+            <Setter Property="Foreground" Value="#CCC" />
+            <Setter Property="CornerRadius" Value="6" />
+            <Setter Property="Padding" Value="10,6" />
+        </Style>
+        <Style Selector="Button.Subtle:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="#33334D" />
+        </Style>
+
+        <!-- Accent (blue) -->
+        <Style Selector="Button.Accent">
+            <Setter Property="Background" Value="#1A3A6E" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="CornerRadius" Value="6" />
+            <Setter Property="Padding" Value="10,6" />
+        </Style>
+        <Style Selector="Button.Accent:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="#2255A4" />
+        </Style>
+
+        <!-- ── Cards / Panels ───────────────────────────────────────────── -->
+        <Style Selector="Border.Card">
+            <Setter Property="Background" Value="#16192A" />
+            <Setter Property="BorderBrush" Value="#2A2D45" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="10" />
+        </Style>
+
+        <!-- ── TextBox ───────────────────────────────────────────────────── -->
+        <Style Selector="TextBox">
+            <Setter Property="Background" Value="#1C1F30" />
+            <Setter Property="BorderBrush" Value="#333355" />
+            <Setter Property="Foreground" Value="#E0E0F0" />
+            <Setter Property="CornerRadius" Value="5" />
+        </Style>
+        <Style Selector="TextBox:focus /template/ Border#PART_BorderElement">
+            <Setter Property="BorderBrush" Value="#4477CC" />
+        </Style>
+
+        <!-- ── ComboBox ──────────────────────────────────────────────────── -->
+        <Style Selector="ComboBox">
+            <Setter Property="Background" Value="#1C1F30" />
+            <Setter Property="BorderBrush" Value="#333355" />
+            <Setter Property="Foreground" Value="#E0E0F0" />
+            <Setter Property="CornerRadius" Value="5" />
+        </Style>
+
+        <!-- ── NumericUpDown ─────────────────────────────────────────────── -->
+        <Style Selector="NumericUpDown">
+            <Setter Property="Background" Value="#1C1F30" />
+            <Setter Property="BorderBrush" Value="#333355" />
+            <Setter Property="Foreground" Value="#E0E0F0" />
+            <Setter Property="CornerRadius" Value="5" />
+        </Style>
+
     </Application.Styles>
 
     <Application.Resources>
         <converters:BoolToBrushConverter x:Key="BoolToBrushConverter"
                                          TrueBrush="#27AE60"
-                                         FalseBrush="#555" />
+                                         FalseBrush="#444" />
         <converters:IndexToBoolConverter x:Key="IndexToBoolConverter" />
         <converters:AbsValueConverter x:Key="AbsValueConverter" />
     </Application.Resources>

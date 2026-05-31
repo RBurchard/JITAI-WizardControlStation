@@ -15,14 +15,20 @@ public partial class MainViewModel : ObservableObject
 {
     private readonly DatabaseService _db;
     private readonly CsvExportService _csv;
+    private readonly AdbTransport _adb = new();
+    private readonly UsbDeviceSource _usbSource;
     private string? _activeSessionId;
 
     [ObservableProperty] private string _sessionName = "New Session";
     [ObservableProperty] private bool _sessionActive;
     [ObservableProperty] private string _statusMessage = "Ready";
+    [ObservableProperty] private bool _adbMissing;
+    [ObservableProperty] private bool _dualParticipantMode = false;
+    public string AdbDownloadUrl => _adb.DownloadUrl;
 
     public ParticipantViewModel Participant1 { get; }
     public ParticipantViewModel Participant2 { get; }
+    public UsbDeviceSource UsbSource => _usbSource;
 
     private static string DbPath =>
         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
@@ -35,6 +41,18 @@ public partial class MainViewModel : ObservableObject
         _csv = new CsvExportService(_db);
         Participant1 = new ParticipantViewModel("P1", _db);
         Participant2 = new ParticipantViewModel("P2", _db);
+        _adb.AdbMissing += () => Avalonia.Threading.Dispatcher.UIThread.Post(() => AdbMissing = true);
+        _usbSource = new UsbDeviceSource(_adb);
+        _usbSource.DeviceAdded += d => Avalonia.Threading.Dispatcher.UIThread.Post(() => {
+            Participant1.AddDiscoveredDevice(d);
+            Participant2.AddDiscoveredDevice(d);
+        });
+        _usbSource.DeviceRemoved += d => Avalonia.Threading.Dispatcher.UIThread.Post(() => {
+            Participant1.RemoveDiscoveredDevice(d);
+            Participant2.RemoveDiscoveredDevice(d);
+        });
+        if (_adb.TryLocate())
+            _usbSource.Start();
         _ = InitAsync();
     }
 

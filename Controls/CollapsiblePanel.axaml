@@ -1,0 +1,26 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="OcdWizard.ControlStation.Controls.CollapsiblePanel"
+             Name="Root">
+    <Border BorderBrush="#2A2D45" BorderThickness="1" CornerRadius="8" Padding="0">
+        <DockPanel LastChildFill="True">
+            <Grid DockPanel.Dock="Top" Background="#1A1D2E" ColumnDefinitions="Auto,*,Auto,Auto" Height="34">
+                <ToggleButton Grid.Column="0" Name="ToggleBtn" Width="30" Height="30"
+                              IsChecked="True" Content="−" Background="Transparent"
+                              BorderThickness="0" Foreground="#8899BB"
+                              FontSize="14" FontWeight="Bold" />
+                <TextBlock Grid.Column="1" Name="TitleText"
+                           VerticalAlignment="Center" Margin="4,0" Foreground="#CCD6FF"
+                           FontSize="12" FontWeight="SemiBold" />
+                <Button Grid.Column="2" Content="⧉" Width="30" Height="30"
+                        Background="Transparent" Foreground="#6677AA" BorderThickness="0"
+                        ToolTip.Tip="Pop out into its own window" Click="OnPopoutClick" />
+                <Button Grid.Column="3" Content="⤵" Width="30" Height="30" Name="DockBtn"
+                        Background="Transparent" Foreground="#6677AA" BorderThickness="0"
+                        ToolTip.Tip="Dock back" IsVisible="False" Click="OnDockClick" />
+            </Grid>
+            <ContentPresenter Name="BodyHost"
+                              IsVisible="{Binding #ToggleBtn.IsChecked}" />
+        </DockPanel>
+    </Border>
+</UserControl>

@@ -10,7 +10,16 @@ public record WatchDataSnapshot(
     [property: JsonPropertyName("accelY")] float AccelY,
     [property: JsonPropertyName("accelZ")] float AccelZ,
     [property: JsonPropertyName("stepCount")] int StepCount,
-    [property: JsonPropertyName("sessionId")] string SessionId
+    [property: JsonPropertyName("sessionId")] string SessionId,
+    [property: JsonPropertyName("gyroX")] float GyroX = 0f,
+    [property: JsonPropertyName("gyroY")] float GyroY = 0f,
+    [property: JsonPropertyName("gyroZ")] float GyroZ = 0f,
+    [property: JsonPropertyName("rotationX")] float RotationX = 0f,
+    [property: JsonPropertyName("rotationY")] float RotationY = 0f,
+    [property: JsonPropertyName("rotationZ")] float RotationZ = 0f,
+    [property: JsonPropertyName("rotationW")] float RotationW = 0f,
+    [property: JsonPropertyName("barometer")] float Barometer = 0f,
+    [property: JsonPropertyName("light")] float Light = 0f
 );
 
 public record WatchDataBatch(

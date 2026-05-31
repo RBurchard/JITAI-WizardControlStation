@@ -1,0 +1,17 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:OcdWizard.ControlStation.ViewModels"
+             x:Class="OcdWizard.ControlStation.Views.ExperimentRunnerView"
+             x:DataType="vm:ParticipantViewModel">
+    <StackPanel Margin="6" Spacing="4">
+        <TextBlock Text="{Binding CurrentRunId, StringFormat='Run: {0}'}" FontSize="11" Foreground="#888" />
+        <WrapPanel Orientation="Horizontal">
+            <Button Content="▶ Start"  Command="{Binding StartExperimentCommand}" Margin="0,0,4,4" MinWidth="70" />
+            <Button Content="⏩ Auto"   Command="{Binding StartAutoCommand}"       Margin="0,0,4,4" MinWidth="70" />
+            <Button Content="⏸ Pause"  Command="{Binding PauseExperimentCommand}" Margin="0,0,4,4" MinWidth="70" />
+            <Button Content="◀ Prev"   Command="{Binding PrevEventCommand}"        Margin="0,0,4,4" MinWidth="70" />
+            <Button Content="▶ Next"   Command="{Binding NextEventCommand}"        Margin="0,0,4,4" MinWidth="70" />
+            <Button Content="■ Stop"   Command="{Binding StopExperimentCommand}"   Margin="0,0,4,4" MinWidth="70" />
+        </WrapPanel>
+    </StackPanel>
+</UserControl>

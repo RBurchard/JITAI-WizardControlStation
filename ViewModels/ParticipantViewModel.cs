@@ -15,10 +15,16 @@ public partial class ParticipantViewModel : ObservableObject
 {
     private readonly DatabaseService _db;
     private readonly DeviceConnection _device = new();
+    public ExperimentSyncService ExperimentSync { get; }
+    public LogSyncService LogSync { get; }
+    public RunLifecycleService RunLifecycle { get; }
+    public ExperimentEditorViewModel ExperimentEditor { get; }
     private string? _participantId;
     private string? _sessionId;
 
     public string Label { get; }
+    public string? CurrentRunId => RunLifecycle.CurrentRunId;
+    [ObservableProperty] private string _participantKey = "";
 
     public IReadOnlyList<string> GameTypes { get; } =
         ["None", "STAND_STILL", "TRIVIA", "SIMON_SAYS", "LOCK_PICKING"];
@@ -31,6 +37,14 @@ public partial class ParticipantViewModel : ObservableObject
     [ObservableProperty] private float _accelX;
     [ObservableProperty] private float _accelY;
     [ObservableProperty] private float _accelZ;
+    [ObservableProperty] private float _rawAccelX;
+    [ObservableProperty] private float _rawAccelY;
+    [ObservableProperty] private float _rawAccelZ;
+    [ObservableProperty] private float _rotW = 1f;
+    [ObservableProperty] private float _rotX;
+    [ObservableProperty] private float _rotY;
+    [ObservableProperty] private float _rotZ;
+    [ObservableProperty] private long _lastSnapshotTs;
     private float _prevAccelX = float.NaN;
     private float _prevAccelY = float.NaN;
     private float _prevAccelZ = float.NaN;
@@ -50,6 +64,13 @@ public partial class ParticipantViewModel : ObservableObject
     public ObservableCollection<string> EventLog { get; } = [];
     public ObservableCollection<DiscoveredDevice> DiscoveredDevices { get; } = [];
 
+    /// <summary>
+    /// Raised once per received batch with the full ordered snapshot series so the
+    /// motion view can reconstruct at the watch's true sample rate (~50 Hz) rather
+    /// than sampling only the latest value. Fired from a background thread.
+    /// </summary>
+    public event Action<IReadOnlyList<WatchDataSnapshot>>? MotionSamplesReceived;
+
     partial void OnSelectedDeviceChanged(DiscoveredDevice? value)
     {
         if (value != null)
@@ -62,6 +83,11 @@ public partial class ParticipantViewModel : ObservableObject
     {
         Label = label;
         _db = db;
+        ExperimentSync = new ExperimentSyncService(_db);
+        LogSync = new LogSyncService(_db);
+        RunLifecycle = new RunLifecycleService(_db);
+        ExperimentEditor = new ExperimentEditorViewModel(ExperimentSync);
+        LogSync.EnvelopeReceived += env => _ = RunLifecycle.OnEnvelopeAsync(env);
         _device.DataReceived += OnDataReceived;
         _device.StatusChanged += s =>
         {
@@ -79,6 +105,14 @@ public partial class ParticipantViewModel : ObservableObject
         if (ok)
         {
             _participantId ??= Guid.NewGuid().ToString();
+            if (string.IsNullOrEmpty(ParticipantKey)) ParticipantKey = _participantId;
+            var baseUrl = IpAddress.StartsWith("http", StringComparison.OrdinalIgnoreCase)
+                ? IpAddress
+                : $"http://{(IpAddress.Contains(':') ? IpAddress : IpAddress + ":8080")}";
+            ExperimentSync.SetEndpoint(baseUrl);
+            LogSync.Start(baseUrl);
+            RunLifecycle.Bind(baseUrl, _participantId, _sessionId);
+            await ExperimentSync.PullAsync();
             AppendLog($"Connected to {IpAddress}");
         }
     }
@@ -87,8 +121,33 @@ public partial class ParticipantViewModel : ObservableObject
     private void Disconnect()
     {
         _device.Disconnect();
+        LogSync.Stop();
         AppendLog("Disconnected");
     }
+
+    [RelayCommand]
+    private async Task StartExperimentAsync() => await RunLifecycle.DispatchAsync("start");
+
+    [RelayCommand]
+    private async Task StartAutoAsync() => await RunLifecycle.DispatchAsync("auto");
+
+    [RelayCommand]
+    private async Task PauseExperimentAsync() => await RunLifecycle.DispatchAsync("pause");
+
+    [RelayCommand]
+    private async Task StopExperimentAsync() => await RunLifecycle.DispatchAsync("stop");
+
+    [RelayCommand]
+    private async Task NextEventAsync() => await RunLifecycle.DispatchAsync("next");
+
+    [RelayCommand]
+    private async Task PrevEventAsync() => await RunLifecycle.DispatchAsync("prev");
+
+    [RelayCommand]
+    private async Task PushExperimentAsync(ExperimentDto experiment) => await ExperimentSync.PushAsync(experiment);
+
+    [RelayCommand]
+    private async Task PullExperimentAsync() => await ExperimentSync.PullAsync();
 
     [RelayCommand]
     private async Task TriggerAsync()
@@ -154,6 +213,20 @@ public partial class ParticipantViewModel : ObservableObject
     {
         _sessionId = sessionId;
         _participantId = Guid.NewGuid().ToString();
+        if (string.IsNullOrEmpty(ParticipantKey)) ParticipantKey = _participantId;
+        _ = _db.UpsertParticipantAsync(_participantId, sessionId, Label, IpAddress, ParticipantKey);
+    }
+
+    public void AddDiscoveredDevice(DiscoveredDevice device)
+    {
+        if (!DiscoveredDevices.Contains(device))
+            DiscoveredDevices.Add(device);
+    }
+
+    public void RemoveDiscoveredDevice(DiscoveredDevice device)
+    {
+        DiscoveredDevices.Remove(device);
+        if (SelectedDevice == device) SelectedDevice = null;
     }
 
     private void OnDataReceived(WatchDataBatch batch)
@@ -173,6 +246,17 @@ public partial class ParticipantViewModel : ObservableObject
                 _prevAccelX = last.AccelX;
                 _prevAccelY = last.AccelY;
                 _prevAccelZ = last.AccelZ;
+                RawAccelX = last.AccelX;
+                RawAccelY = last.AccelY;
+                RawAccelZ = last.AccelZ;
+                RotW = last.RotationW;
+                RotX = last.RotationX;
+                RotY = last.RotationY;
+                RotZ = last.RotationZ;
+                LastSnapshotTs = last.Timestamp;
+
+                // Hand the full series to the motion view for high-rate reconstruction.
+                MotionSamplesReceived?.Invoke(batch.Snapshots);
             }
 
             if (_participantId != null)
@@ -186,5 +270,11 @@ public partial class ParticipantViewModel : ObservableObject
         Avalonia.Threading.Dispatcher.UIThread.Post(() => EventLog.Add(entry));
     }
 
-    public void Dispose() => _device.Dispose();
+    public void Dispose()
+    {
+        _device.Dispose();
+        ExperimentSync.Dispose();
+        LogSync.Dispose();
+        RunLifecycle.Dispose();
+    }
 }
