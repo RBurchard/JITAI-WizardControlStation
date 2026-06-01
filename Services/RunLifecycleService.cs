@@ -35,6 +35,17 @@ public sealed class RunLifecycleService : IDisposable
         _sessionId = sessionId;
     }
 
+    /// <summary>
+    /// Update the participant/session context without touching the endpoint. Called when
+    /// a session starts after the device is already connected, so runs that begin later
+    /// are still linked to the correct session_id.
+    /// </summary>
+    public void SetContext(string? participantId, string? sessionId)
+    {
+        _participantId = participantId;
+        _sessionId = sessionId;
+    }
+
     public Task<bool> DispatchAsync(string command, int? targetEventIndex = null)
     {
         if (_baseUrl == null) return Task.FromResult(false);

@@ -177,12 +177,18 @@ public partial class ParticipantViewModel : ObservableObject
         var ok = await _device.TriggerInterventionAsync(req);
         AppendLog(ok ? $"Triggered {SelectedNotificationType} {gameType ?? ""}" : "Trigger failed");
 
-        if (ok && _participantId != null && _sessionId != null)
+        // Record the intervention whenever the researcher fires one, regardless of whether
+        // the wear delivery succeeded — the action itself is research data we want to keep.
+        if (_participantId != null && _sessionId != null)
         {
             await _db.InsertInterventionAsync(
                 Guid.NewGuid().ToString(), _participantId,
                 DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
                 gameType, SelectedNotificationType);
+        }
+        else
+        {
+            AppendLog("Intervention not recorded — start a session and connect first.");
         }
     }
 
@@ -221,6 +227,10 @@ public partial class ParticipantViewModel : ObservableObject
         _participantId = Guid.NewGuid().ToString();
         ParticipantKey = string.IsNullOrWhiteSpace(participantName) ? _participantId : participantName;
         await _db.UpsertParticipantAsync(_participantId, sessionId, Label, IpAddress, ParticipantKey);
+        // Keep the run-lifecycle context in sync so experiment runs started after the
+        // session begins are linked to the correct session/participant (e.g. when the
+        // device was connected before the session was started).
+        RunLifecycle.SetContext(_participantId, _sessionId);
     }
 
     public void AddDiscoveredDevice(DiscoveredDevice device)

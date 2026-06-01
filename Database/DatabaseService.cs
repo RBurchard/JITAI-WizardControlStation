@@ -23,6 +23,7 @@ public class DatabaseService
     // Diagnostics surfaced in the CSV export header so data-pipeline faults are visible.
     public volatile string? LastWatchInsertError;
     public long WatchInsertSuccessCount;
+    public volatile string? LastWriteError;
 
     public DatabaseService(string dbPath)
     {
@@ -167,11 +168,15 @@ public class DatabaseService
 
     public async Task InsertInterventionAsync(string id, string participantId, long sentAt, string? gameType, string notificationType)
     {
-        using var conn = new SqliteConnection(_connectionString);
-        await conn.ExecuteAsync(
-            "INSERT OR IGNORE INTO interventions (id, participant_id, sent_at, game_type, notification_type) " +
-            "VALUES (@id, @participantId, @sentAt, @gameType, @notificationType)",
-            new { id, participantId, sentAt, gameType, notificationType });
+        try
+        {
+            using var conn = new SqliteConnection(_connectionString);
+            await conn.ExecuteAsync(
+                "INSERT OR IGNORE INTO interventions (id, participant_id, sent_at, game_type, notification_type) " +
+                "VALUES (@id, @participantId, @sentAt, @gameType, @notificationType)",
+                new { id, participantId, sentAt, gameType, notificationType });
+        }
+        catch (Exception ex) { LastWriteError = $"InsertIntervention: {ex.GetType().Name}: {ex.Message}"; }
     }
 
     public async Task UpdateInterventionResponseAsync(string id, string response, long reactionTimeMs)
@@ -212,11 +217,15 @@ public class DatabaseService
 
     public async Task OpenRunAsync(string runId, string experimentId, string? participantId, string? sessionId, long startedAt)
     {
-        using var conn = new SqliteConnection(_connectionString);
-        await conn.ExecuteAsync(
-            "INSERT OR REPLACE INTO experiment_runs (id, experiment_id, participant_id, session_id, started_at) " +
-            "VALUES (@runId, @experimentId, @participantId, @sessionId, @startedAt)",
-            new { runId, experimentId, participantId, sessionId, startedAt });
+        try
+        {
+            using var conn = new SqliteConnection(_connectionString);
+            await conn.ExecuteAsync(
+                "INSERT OR REPLACE INTO experiment_runs (id, experiment_id, participant_id, session_id, started_at) " +
+                "VALUES (@runId, @experimentId, @participantId, @sessionId, @startedAt)",
+                new { runId, experimentId, participantId, sessionId, startedAt });
+        }
+        catch (Exception ex) { LastWriteError = $"OpenRun: {ex.GetType().Name}: {ex.Message}"; }
     }
 
     public async Task CloseRunAsync(string runId, long endedAt)
@@ -229,11 +238,15 @@ public class DatabaseService
 
     public async Task OpenDistractionAsync(string distractionId, string runId, string? eventId, string? interventionId, long startedAt)
     {
-        using var conn = new SqliteConnection(_connectionString);
-        await conn.ExecuteAsync(
-            "INSERT OR REPLACE INTO distraction_runs (id, experiment_run_id, event_id, intervention_id, started_at) " +
-            "VALUES (@distractionId, @runId, @eventId, @interventionId, @startedAt)",
-            new { distractionId, runId, eventId, interventionId, startedAt });
+        try
+        {
+            using var conn = new SqliteConnection(_connectionString);
+            await conn.ExecuteAsync(
+                "INSERT OR REPLACE INTO distraction_runs (id, experiment_run_id, event_id, intervention_id, started_at) " +
+                "VALUES (@distractionId, @runId, @eventId, @interventionId, @startedAt)",
+                new { distractionId, runId, eventId, interventionId, startedAt });
+        }
+        catch (Exception ex) { LastWriteError = $"OpenDistraction: {ex.GetType().Name}: {ex.Message}"; }
     }
 
     public async Task CloseDistractionAsync(string distractionId, long endedAt, string? response, long? reactionTimeMs)
@@ -246,11 +259,15 @@ public class DatabaseService
 
     public async Task InsertLogAsync(SessionLogEntryDto entry)
     {
-        using var conn = new SqliteConnection(_connectionString);
-        await conn.ExecuteAsync(
-            "INSERT INTO session_logs (run_id, ts, source, level, kind, payload_json) " +
-            "VALUES (@runId, @ts, @source, @level, @kind, @payloadJson)",
-            new { runId = entry.RunId, ts = entry.Ts, source = entry.Source, level = entry.Level, kind = entry.Kind, payloadJson = entry.PayloadJson });
+        try
+        {
+            using var conn = new SqliteConnection(_connectionString);
+            await conn.ExecuteAsync(
+                "INSERT INTO session_logs (run_id, ts, source, level, kind, payload_json) " +
+                "VALUES (@runId, @ts, @source, @level, @kind, @payloadJson)",
+                new { runId = entry.RunId, ts = entry.Ts, source = entry.Source, level = entry.Level, kind = entry.Kind, payloadJson = entry.PayloadJson });
+        }
+        catch (Exception ex) { LastWriteError = $"InsertLog: {ex.GetType().Name}: {ex.Message}"; }
     }
 
     public async Task<List<SessionLogEntryDto>> QueryLogsAsync(string? runId, long sinceId, int limit)
@@ -382,8 +399,14 @@ public class DatabaseService
             "SELECT COUNT(*) FROM participants WHERE session_id = @sessionId",
             new { sessionId });
         var totalWdAll = await conn.ExecuteScalarAsync<long>("SELECT COUNT(*) FROM watch_data");
+        var totalRunsAll = await conn.ExecuteScalarAsync<long>("SELECT COUNT(*) FROM experiment_runs");
+        var totalRunsSession = await conn.ExecuteScalarAsync<long>("SELECT COUNT(*) FROM experiment_runs WHERE session_id = @sessionId", new { sessionId });
+        var totalLogsAll = await conn.ExecuteScalarAsync<long>("SELECT COUNT(*) FROM session_logs");
+        var totalIntAll = await conn.ExecuteScalarAsync<long>("SELECT COUNT(*) FROM interventions");
         sb.AppendLine($"# diagnostic: participants_in_session={totalParticipants}, watch_data_for_session={totalWd}, watch_data_total_in_db={totalWdAll}");
         sb.AppendLine($"# diagnostic: watch_insert_success_count={WatchInsertSuccessCount}, last_watch_insert_error={LastWatchInsertError ?? "none"}");
+        sb.AppendLine($"# diagnostic: experiment_runs_for_session={totalRunsSession}, experiment_runs_total={totalRunsAll}, session_logs_total={totalLogsAll}, interventions_total={totalIntAll}");
+        sb.AppendLine($"# diagnostic: last_write_error={LastWriteError ?? "none"}");
         sb.AppendLine();
 
         sb.AppendLine("=== WATCH DATA ===");
