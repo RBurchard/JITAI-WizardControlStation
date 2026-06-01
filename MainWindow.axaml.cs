@@ -18,4 +18,10 @@ public partial class MainWindow : Window
         if (DataContext is MainViewModel vm)
             await vm.OpenTriviaEditorCommand.ExecuteAsync(this);
     }
+
+    private async void OnExportClick(object? sender, RoutedEventArgs e)
+    {
+        if (DataContext is MainViewModel vm)
+            await vm.ExportCommand.ExecuteAsync(this);
+    }
 }

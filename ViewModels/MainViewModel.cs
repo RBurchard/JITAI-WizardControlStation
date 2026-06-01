@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
@@ -68,8 +69,8 @@ public partial class MainViewModel : ObservableObject
         _activeSessionId = Guid.NewGuid().ToString();
         var now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
         await _db.InsertSessionAsync(_activeSessionId, now, SessionName);
-        Participant1.SetSession(_activeSessionId);
-        Participant2.SetSession(_activeSessionId);
+        await Participant1.SetSessionAsync(_activeSessionId, SessionName);
+        await Participant2.SetSessionAsync(_activeSessionId, SessionName);
         SessionActive = true;
         StatusMessage = $"Session started: {_activeSessionId[..8]}";
     }
@@ -85,26 +86,55 @@ public partial class MainViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private async Task ExportAsync(IStorageProvider? storageProvider)
+    private async Task ExportAsync(Window? owner)
     {
-        if (_activeSessionId == null || storageProvider == null)
+        if (owner == null) return;
+
+        var sessions = await _db.LoadAllSessionsAsync();
+        if (sessions.Count == 0)
         {
-            StatusMessage = "No active session to export";
+            StatusMessage = "No sessions in database";
             return;
         }
 
-        var file = await storageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
+        string sessionId;
+        string sessionName;
+
+        if (sessions.Count == 1 && sessions[0].Id == _activeSessionId)
+        {
+            // Only one session and it's the active one — skip the picker
+            sessionId = sessions[0].Id;
+            sessionName = sessions[0].Name;
+        }
+        else
+        {
+            var vm = new SessionPickerViewModel(_db, _activeSessionId);
+            var picked = await SessionPickerDialog.ShowAsync(owner, vm);
+            if (picked == null) return;
+            sessionId = picked.Id;
+            sessionName = picked.Name;
+        }
+
+        var file = await owner.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
         {
             Title = "Export Session CSV",
-            SuggestedFileName = $"session_{_activeSessionId[..8]}_{DateTime.Now:yyyyMMdd_HHmm}.csv",
+            SuggestedFileName = $"{SanitizeFileName(sessionName)}_{DateTime.Now:yyyyMMdd_HHmm}.csv",
             FileTypeChoices = [new FilePickerFileType("CSV") { Patterns = ["*.csv"] }]
         });
 
         if (file?.Path.LocalPath is string path)
         {
-            await _csv.ExportAsync(_activeSessionId, path);
+            await _csv.ExportAsync(sessionId, path);
             StatusMessage = $"Exported to {Path.GetFileName(path)}";
         }
+    }
+
+    private static string SanitizeFileName(string name)
+    {
+        var invalid = Path.GetInvalidFileNameChars();
+        return new string(name.Select(c => invalid.Contains(c) ? '_' : c).ToArray())
+            .Replace(' ', '_')
+            .TrimStart('_');
     }
 
     [RelayCommand]

@@ -115,6 +115,11 @@ public partial class ParticipantViewModel : ObservableObject
             RunLifecycle.Bind(baseUrl, _participantId, _sessionId);
             await ExperimentSync.PullAsync();
             AppendLog($"Connected to {IpAddress}");
+            if (_sessionId != null)
+            {
+                await _db.UpsertParticipantAsync(_participantId, _sessionId, Label, IpAddress, ParticipantKey);
+                await _device.PostParticipantAsync(_participantId, _sessionId, ParticipantKey, IpAddress);
+            }
         }
     }
 
@@ -210,12 +215,12 @@ public partial class ParticipantViewModel : ObservableObject
         IsScanning = false;
     }
 
-    public void SetSession(string sessionId)
+    public async Task SetSessionAsync(string sessionId, string participantName)
     {
         _sessionId = sessionId;
         _participantId = Guid.NewGuid().ToString();
-        if (string.IsNullOrEmpty(ParticipantKey)) ParticipantKey = _participantId;
-        _ = _db.UpsertParticipantAsync(_participantId, sessionId, Label, IpAddress, ParticipantKey);
+        ParticipantKey = string.IsNullOrWhiteSpace(participantName) ? _participantId : participantName;
+        await _db.UpsertParticipantAsync(_participantId, sessionId, Label, IpAddress, ParticipantKey);
     }
 
     public void AddDiscoveredDevice(DiscoveredDevice device)
@@ -232,11 +237,23 @@ public partial class ParticipantViewModel : ObservableObject
 
     private void OnDataReceived(WatchDataBatch batch)
     {
-        _ = Task.Run(async () =>
+        // DB insert runs first — completely isolated so nothing else can block it.
+        if (_participantId != null)
         {
-            if (batch.Snapshots.Count > 0)
+            var pid = _participantId;
+            _ = Task.Run(async () =>
             {
-                var last = batch.Snapshots[^1];
+                try { await _db.InsertWatchDataBatchAsync(pid, batch); }
+                catch (Exception ex) { AppendLog($"Watch data insert failed: {ex.Message}"); }
+            });
+        }
+
+        // UI updates are best-effort — a crash here can never affect data recording.
+        if (batch.Snapshots?.Count > 0)
+        {
+            var last = batch.Snapshots[^1];
+            Dispatcher.UIThread.Post(() =>
+            {
                 CurrentBpm = last.HeartRate;
                 if (!float.IsNaN(_prevAccelX))
                 {
@@ -255,14 +272,10 @@ public partial class ParticipantViewModel : ObservableObject
                 RotY = last.RotationY;
                 RotZ = last.RotationZ;
                 LastSnapshotTs = last.Timestamp;
-
-                // Hand the full series to the motion view for high-rate reconstruction.
-                MotionSamplesReceived?.Invoke(batch.Snapshots);
-            }
-
-            if (_participantId != null)
-                await _db.InsertWatchDataBatchAsync(_participantId, batch);
-        });
+            });
+            try { MotionSamplesReceived?.Invoke(batch.Snapshots); }
+            catch { }
+        }
     }
 
     private void AppendLog(string message)

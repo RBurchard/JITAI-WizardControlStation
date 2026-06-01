@@ -74,8 +74,7 @@
                             VerticalAlignment="Center">
                     <Button Classes="Subtle"
                             Content="⬇  Export CSV"
-                            Command="{Binding ExportCommand}"
-                            CommandParameter="{Binding $parent[Window].StorageProvider}" />
+                            Click="OnExportClick" />
                     <Button Classes="Subtle"
                             Content="📋  Trivia"
                             Click="OnManageTriviaClick" />

@@ -144,7 +144,11 @@ public class DeviceConnection : IDisposable
                     {
                         var json = Encoding.UTF8.GetString(buffer, 0, result.Count);
                         var batch = JsonSerializer.Deserialize<WatchDataBatch>(json);
-                        if (batch != null) DataReceived?.Invoke(batch);
+                        if (batch != null)
+                        {
+                            try { DataReceived?.Invoke(batch); }
+                            catch { /* handler errors must not kill the WebSocket loop */ }
+                        }
                     }
                     else if (result.MessageType == WebSocketMessageType.Close)
                         break;
@@ -170,6 +174,18 @@ public class DeviceConnection : IDisposable
             return resp.IsSuccessStatusCode;
         }
         catch { return false; }
+    }
+
+    public async Task PostParticipantAsync(string id, string sessionId, string label, string deviceIp)
+    {
+        if (_baseUrl == null) return;
+        try
+        {
+            var payload = JsonSerializer.Serialize(new { id, sessionId, label, deviceIp });
+            var content = new StringContent(payload, Encoding.UTF8, "application/json");
+            await _http.PostAsync($"{_baseUrl}/participant", content);
+        }
+        catch { }
     }
 
     public async Task<bool> PushTriviaAsync(List<TriviaQuestion> questions)

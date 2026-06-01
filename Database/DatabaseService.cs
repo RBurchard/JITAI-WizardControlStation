@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Dapper;
 using Microsoft.Data.Sqlite;
@@ -14,9 +15,19 @@ public class DatabaseService
     private const int CurrentSchemaVersion = 2;
     private readonly string _connectionString;
 
+    // Serializes the high-frequency watch_data writes so concurrent batches never
+    // collide on the SQLite file (which previously corrupted pooled connections and
+    // caused every insert to fail with a nested-transaction InvalidOperationException).
+    private readonly SemaphoreSlim _writeGate = new(1, 1);
+
+    // Diagnostics surfaced in the CSV export header so data-pipeline faults are visible.
+    public volatile string? LastWatchInsertError;
+    public long WatchInsertSuccessCount;
+
     public DatabaseService(string dbPath)
     {
-        _connectionString = $"Data Source={dbPath}";
+        // Default Timeout adds a busy-retry window so writers wait instead of failing.
+        _connectionString = $"Data Source={dbPath};Default Timeout=30";
     }
 
     public async Task InitializeAsync()
@@ -30,6 +41,8 @@ public class DatabaseService
 
         using var conn = new SqliteConnection(_connectionString);
         await conn.OpenAsync();
+        // WAL lets a writer proceed alongside readers and is persistent in the db file.
+        await conn.ExecuteAsync("PRAGMA journal_mode=WAL;");
         await conn.ExecuteAsync(sql);
         await RunMigrationsAsync(conn);
     }
@@ -92,30 +105,64 @@ public class DatabaseService
 
     public async Task InsertWatchDataBatchAsync(string participantId, WatchDataBatch batch)
     {
-        using var conn = new SqliteConnection(_connectionString);
-        await conn.OpenAsync();
-        using var tx = await conn.BeginTransactionAsync();
-        foreach (var s in batch.Snapshots)
+        if (batch.Snapshots == null || batch.Snapshots.Count == 0) return;
+
+        // One writer at a time on this hot path — avoids concurrent SQLite locking.
+        await _writeGate.WaitAsync();
+        try
         {
-            await conn.ExecuteAsync(
+            using var conn = new SqliteConnection(_connectionString);
+            await conn.OpenAsync();
+            using var tx = conn.BeginTransaction();
+
+            // Explicit parameters (bypass Dapper inference, which bound nothing here)
+            // built once and reused per row — the documented Sqlite bulk-insert pattern.
+            using var cmd = conn.CreateCommand();
+            cmd.Transaction = tx;
+            cmd.CommandText =
                 "INSERT INTO watch_data (participant_id, timestamp, heart_rate, accel_x, accel_y, accel_z, step_count, " +
                 "gyro_x, gyro_y, gyro_z, rot_w, rot_x, rot_y, rot_z, baro_hpa, light_lux) " +
-                "VALUES (@participantId, @timestamp, @heartRate, @accelX, @accelY, @accelZ, @stepCount, " +
-                "@gyroX, @gyroY, @gyroZ, @rotW, @rotX, @rotY, @rotZ, @baro, @light)",
-                new
-                {
-                    participantId,
-                    s.Timestamp,
-                    s.HeartRate,
-                    s.AccelX, s.AccelY, s.AccelZ,
-                    s.StepCount,
-                    s.GyroX, s.GyroY, s.GyroZ,
-                    rotW = s.RotationW, rotX = s.RotationX, rotY = s.RotationY, rotZ = s.RotationZ,
-                    baro = s.Barometer, light = s.Light
-                },
-                tx);
+                "VALUES ($pid, $ts, $hr, $ax, $ay, $az, $steps, $gx, $gy, $gz, $rw, $rx, $ry, $rz, $baro, $light)";
+            SqliteParameter P(string name)
+            {
+                var p = cmd.CreateParameter();
+                p.ParameterName = name;
+                cmd.Parameters.Add(p);
+                return p;
+            }
+            var pPid = P("$pid"); var pTs = P("$ts"); var pHr = P("$hr");
+            var pAx = P("$ax"); var pAy = P("$ay"); var pAz = P("$az");
+            var pSteps = P("$steps");
+            var pGx = P("$gx"); var pGy = P("$gy"); var pGz = P("$gz");
+            var pRw = P("$rw"); var pRx = P("$rx"); var pRy = P("$ry"); var pRz = P("$rz");
+            var pBaro = P("$baro"); var pLight = P("$light");
+
+            pPid.Value = participantId;
+            foreach (var s in batch.Snapshots)
+            {
+                pTs.Value = s.Timestamp;
+                pHr.Value = s.HeartRate;
+                pAx.Value = s.AccelX; pAy.Value = s.AccelY; pAz.Value = s.AccelZ;
+                pSteps.Value = s.StepCount;
+                pGx.Value = s.GyroX; pGy.Value = s.GyroY; pGz.Value = s.GyroZ;
+                pRw.Value = s.RotationW; pRx.Value = s.RotationX; pRy.Value = s.RotationY; pRz.Value = s.RotationZ;
+                pBaro.Value = s.Barometer; pLight.Value = s.Light;
+                cmd.ExecuteNonQuery();
+            }
+            tx.Commit();
+            WatchInsertSuccessCount += batch.Snapshots.Count;
+            LastWatchInsertError = null;
         }
-        await tx.CommitAsync();
+        catch (Exception ex)
+        {
+            // Capture rather than rethrow: the export diagnostic surfaces this so a
+            // failing pipeline is visible without spamming first-chance exceptions.
+            LastWatchInsertError = $"{ex.GetType().Name}: {ex.Message}";
+        }
+        finally
+        {
+            _writeGate.Release();
+        }
     }
 
     public async Task InsertInterventionAsync(string id, string participantId, long sentAt, string? gameType, string notificationType)
@@ -272,41 +319,117 @@ public class DatabaseService
         return result;
     }
 
+    public async Task<List<SessionSummary>> LoadAllSessionsAsync()
+    {
+        using var conn = new SqliteConnection(_connectionString);
+        var rows = await conn.QueryAsync<dynamic>(
+            "SELECT s.id, s.started_at, s.ended_at, s.notes, " +
+            "GROUP_CONCAT(DISTINCT p.participant_key) AS participants, " +
+            "GROUP_CONCAT(DISTINCT ex.name) AS experiments, " +
+            "COUNT(DISTINCT wd.id) AS watch_data_count " +
+            "FROM sessions s " +
+            "LEFT JOIN participants p ON p.session_id = s.id " +
+            "LEFT JOIN experiment_runs er ON er.session_id = s.id " +
+            "LEFT JOIN experiments ex ON ex.id = er.experiment_id " +
+            "LEFT JOIN watch_data wd ON wd.participant_id = p.id " +
+            "GROUP BY s.id ORDER BY s.started_at DESC");
+        var result = new List<SessionSummary>();
+        foreach (var r in rows)
+        {
+            result.Add(new SessionSummary(
+                Id: (string)r.id,
+                StartedAt: (long)r.started_at,
+                EndedAt: r.ended_at as long?,
+                Name: (string?)r.notes ?? "(unnamed)",
+                Participants: (string?)r.participants ?? "",
+                Experiments: (string?)r.experiments ?? "",
+                WatchDataCount: (long)r.watch_data_count));
+        }
+        return result;
+    }
+
     public async Task ExportToCsvAsync(string sessionId, string outputPath)
     {
         using var conn = new SqliteConnection(_connectionString);
         var sb = new StringBuilder();
 
+        // Session metadata header
+        var session = await conn.QueryFirstOrDefaultAsync<dynamic>(
+            "SELECT s.*, GROUP_CONCAT(DISTINCT p.participant_key) AS pkeys " +
+            "FROM sessions s LEFT JOIN participants p ON p.session_id = s.id " +
+            "WHERE s.id = @sessionId GROUP BY s.id", new { sessionId });
+        if (session != null)
+        {
+            var start = DateTimeOffset.FromUnixTimeMilliseconds((long)session.started_at).ToLocalTime();
+            var endMs = session.ended_at as long?;
+            var end = endMs.HasValue
+                ? DateTimeOffset.FromUnixTimeMilliseconds(endMs.Value).ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss")
+                : "active";
+            sb.AppendLine("=== SESSION ===");
+            sb.AppendLine($"id,{session.id}");
+            sb.AppendLine($"name,{session.notes ?? "(unnamed)"}");
+            sb.AppendLine($"started_at,{start:yyyy-MM-dd HH:mm:ss}");
+            sb.AppendLine($"ended_at,{end}");
+            sb.AppendLine($"participants,{session.pkeys ?? ""}");
+            sb.AppendLine();
+        }
+
+        // Diagnostic counts — zero counts indicate a data-linkage problem, not an empty session.
+        var totalWd = await conn.ExecuteScalarAsync<long>(
+            "SELECT COUNT(*) FROM watch_data wd JOIN participants p ON p.id = wd.participant_id WHERE p.session_id = @sessionId",
+            new { sessionId });
+        var totalParticipants = await conn.ExecuteScalarAsync<long>(
+            "SELECT COUNT(*) FROM participants WHERE session_id = @sessionId",
+            new { sessionId });
+        var totalWdAll = await conn.ExecuteScalarAsync<long>("SELECT COUNT(*) FROM watch_data");
+        sb.AppendLine($"# diagnostic: participants_in_session={totalParticipants}, watch_data_for_session={totalWd}, watch_data_total_in_db={totalWdAll}");
+        sb.AppendLine($"# diagnostic: watch_insert_success_count={WatchInsertSuccessCount}, last_watch_insert_error={LastWatchInsertError ?? "none"}");
+        sb.AppendLine();
+
         sb.AppendLine("=== WATCH DATA ===");
-        sb.AppendLine("participant_id,participant_key,timestamp,heart_rate,accel_x,accel_y,accel_z,gyro_x,gyro_y,gyro_z,rot_w,rot_x,rot_y,rot_z,baro_hpa,light_lux,step_count");
+        sb.AppendLine("participant_label,participant_key,timestamp,heart_rate,accel_x,accel_y,accel_z,gyro_x,gyro_y,gyro_z,rot_w,rot_x,rot_y,rot_z,baro_hpa,light_lux,step_count");
         var watchRows = await conn.QueryAsync<dynamic>(
-            "SELECT wd.*, p.participant_key FROM watch_data wd " +
+            "SELECT wd.*, p.participant_key, p.label FROM watch_data wd " +
             "JOIN participants p ON p.id = wd.participant_id WHERE p.session_id = @sessionId " +
             "ORDER BY wd.timestamp", new { sessionId });
         foreach (var r in watchRows)
-            sb.AppendLine($"{r.participant_id},{r.participant_key},{r.timestamp},{r.heart_rate},{r.accel_x},{r.accel_y},{r.accel_z},{r.gyro_x},{r.gyro_y},{r.gyro_z},{r.rot_w},{r.rot_x},{r.rot_y},{r.rot_z},{r.baro_hpa},{r.light_lux},{r.step_count}");
+            sb.AppendLine($"{r.label},{r.participant_key},{r.timestamp},{r.heart_rate},{r.accel_x},{r.accel_y},{r.accel_z},{r.gyro_x},{r.gyro_y},{r.gyro_z},{r.rot_w},{r.rot_x},{r.rot_y},{r.rot_z},{r.baro_hpa},{r.light_lux},{r.step_count}");
+
+        sb.AppendLine();
+        sb.AppendLine("=== SESSION LOGS ===");
+        sb.AppendLine("id,run_id,ts,source,level,kind,payload_json");
+        var logRows = await conn.QueryAsync<dynamic>(
+            "SELECT sl.* FROM session_logs sl " +
+            "JOIN experiment_runs er ON er.id = sl.run_id WHERE er.session_id = @sessionId " +
+            "ORDER BY sl.id", new { sessionId });
+        foreach (var r in logRows)
+            sb.AppendLine($"{r.id},{r.run_id},{r.ts},{r.source},{r.level},{r.kind},{EscapeCsv((string?)r.payload_json ?? "")}");
 
         sb.AppendLine();
         sb.AppendLine("=== INTERVENTIONS ===");
-        sb.AppendLine("id,participant_id,sent_at,game_type,notification_type,response,reaction_time_ms");
+        sb.AppendLine("id,participant_label,participant_key,sent_at,game_type,notification_type,response,reaction_time_ms");
         var intRows = await conn.QueryAsync<dynamic>(
-            "SELECT i.* FROM interventions i " +
+            "SELECT i.*, p.label, p.participant_key FROM interventions i " +
             "JOIN participants p ON p.id = i.participant_id WHERE p.session_id = @sessionId " +
             "ORDER BY i.sent_at", new { sessionId });
         foreach (var r in intRows)
-            sb.AppendLine($"{r.id},{r.participant_id},{r.sent_at},{r.game_type},{r.notification_type},{r.response},{r.reaction_time_ms}");
+            sb.AppendLine($"{r.id},{r.label},{r.participant_key},{r.sent_at},{r.game_type},{r.notification_type},{r.response},{r.reaction_time_ms}");
 
         sb.AppendLine();
         sb.AppendLine("=== EXPERIMENT RUNS ===");
-        sb.AppendLine("run_key,experiment_id,participant_id,started_at,ended_at");
+        sb.AppendLine("run_id,experiment_name,participant_label,started_at,ended_at");
         var runRows = await conn.QueryAsync<dynamic>(
-            "SELECT er.* FROM experiment_runs er WHERE er.session_id = @sessionId ORDER BY er.started_at", new { sessionId });
+            "SELECT er.*, ex.name AS experiment_name, p.label AS participant_label " +
+            "FROM experiment_runs er " +
+            "LEFT JOIN experiments ex ON ex.id = er.experiment_id " +
+            "LEFT JOIN participants p ON p.id = er.participant_id " +
+            "WHERE er.session_id = @sessionId ORDER BY er.started_at", new { sessionId });
         foreach (var r in runRows)
-            sb.AppendLine($"{r.id},{r.experiment_id},{r.participant_id},{r.started_at},{r.ended_at}");
+            sb.AppendLine($"{r.id},{r.experiment_name},{r.participant_label},{r.started_at},{r.ended_at}");
 
         sb.AppendLine();
         sb.AppendLine("=== DISTRACTION RUNS ===");
-        sb.AppendLine("distraction_key,run_key,event_id,intervention_id,started_at,ended_at,response,reaction_time_ms");
+        sb.AppendLine("distraction_id,run_id,event_id,intervention_id,started_at,ended_at,response,reaction_time_ms");
         var distRows = await conn.QueryAsync<dynamic>(
             "SELECT dr.* FROM distraction_runs dr " +
             "JOIN experiment_runs er ON er.id = dr.experiment_run_id WHERE er.session_id = @sessionId " +
@@ -315,6 +438,13 @@ public class DatabaseService
             sb.AppendLine($"{r.id},{r.experiment_run_id},{r.event_id},{r.intervention_id},{r.started_at},{r.ended_at},{r.response},{r.reaction_time_ms}");
 
         await File.WriteAllTextAsync(outputPath, sb.ToString());
+    }
+
+    private static string EscapeCsv(string value)
+    {
+        if (value.Contains(',') || value.Contains('"') || value.Contains('\n'))
+            return $"\"{value.Replace("\"", "\"\"")}\"";
+        return value;
     }
 
     private const string EmbeddedSchema = """

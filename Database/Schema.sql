@@ -9,7 +9,8 @@ CREATE TABLE IF NOT EXISTS participants (
     id TEXT PRIMARY KEY,
     session_id TEXT NOT NULL,
     label TEXT NOT NULL,
-    device_ip TEXT
+    device_ip TEXT,
+    participant_key TEXT
 );
 
 CREATE TABLE IF NOT EXISTS watch_data (

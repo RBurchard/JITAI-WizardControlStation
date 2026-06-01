@@ -277,8 +277,11 @@ The database is created automatically on first launch. The schema contains the f
 | session_id | TEXT | Foreign key to sessions |
 | label | TEXT | "P1" or "P2" |
 | device_ip | TEXT | IP address of the connected phone |
+| participant_key | TEXT | Researcher-assigned identifier (defaults to the GUID if not set) |
 
 ### watch_data
+
+All sensor readings streamed from the watch are stored here. Every row is one snapshot.
 
 | Column | Type | Description |
 |--------|------|-------------|
@@ -286,9 +289,18 @@ The database is created automatically on first launch. The schema contains the f
 | participant_id | TEXT | Foreign key to participants |
 | timestamp | INTEGER | Unix timestamp in milliseconds |
 | heart_rate | REAL | BPM reading from the watch |
-| accel_x | REAL | X-axis accelerometer value |
-| accel_y | REAL | Y-axis accelerometer value |
-| accel_z | REAL | Z-axis accelerometer value |
+| accel_x | REAL | X-axis accelerometer (m/s²) |
+| accel_y | REAL | Y-axis accelerometer (m/s²) |
+| accel_z | REAL | Z-axis accelerometer (m/s²) |
+| gyro_x | REAL | X-axis gyroscope (rad/s) |
+| gyro_y | REAL | Y-axis gyroscope (rad/s) |
+| gyro_z | REAL | Z-axis gyroscope (rad/s) |
+| rot_w | REAL | Rotation quaternion W component |
+| rot_x | REAL | Rotation quaternion X component |
+| rot_y | REAL | Rotation quaternion Y component |
+| rot_z | REAL | Rotation quaternion Z component |
+| baro_hpa | REAL | Barometric pressure in hPa |
+| light_lux | REAL | Ambient light in lux |
 | step_count | INTEGER | Cumulative step count |
 
 ### interventions
@@ -302,6 +314,55 @@ The database is created automatically on first launch. The schema contains the f
 | notification_type | TEXT | Notification type string |
 | response | TEXT | Participant's response, null until received |
 | reaction_time_ms | INTEGER | Time from send to response in milliseconds, null until received |
+
+### experiment_runs
+
+| Column | Type | Description |
+|--------|------|-------------|
+| id | TEXT | Run GUID (primary key) |
+| experiment_id | TEXT | ID of the experiment configuration |
+| participant_id | TEXT | Foreign key to participants |
+| session_id | TEXT | Foreign key to sessions |
+| started_at | INTEGER | Unix timestamp in milliseconds |
+| ended_at | INTEGER | Unix timestamp in milliseconds, null if run is still active |
+
+### distraction_runs
+
+| Column | Type | Description |
+|--------|------|-------------|
+| id | TEXT | Distraction GUID (primary key) |
+| experiment_run_id | TEXT | Foreign key to experiment_runs |
+| event_id | TEXT | ID of the experiment event that triggered this distraction |
+| intervention_id | TEXT | ID of the intervention delivered |
+| started_at | INTEGER | Unix timestamp in milliseconds |
+| ended_at | INTEGER | Unix timestamp in milliseconds, null until dismissed |
+| response | TEXT | Participant response string |
+| reaction_time_ms | INTEGER | Time from delivery to response in milliseconds |
+
+### session_logs
+
+Structured event log streamed from the phone in real time during experiment runs.
+
+| Column | Type | Description |
+|--------|------|-------------|
+| id | INTEGER | Auto-incremented primary key |
+| run_id | TEXT | Foreign key to experiment_runs |
+| ts | INTEGER | Unix timestamp in milliseconds |
+| source | TEXT | Origin of the log entry (e.g. "experiment", "trigger") |
+| level | TEXT | Severity level (INFO, WARN, ERROR) |
+| kind | TEXT | Event type string |
+| payload_json | TEXT | JSON payload specific to the event kind |
+
+### experiments
+
+| Column | Type | Description |
+|--------|------|-------------|
+| id | TEXT | Experiment GUID (primary key) |
+| name | TEXT | Researcher-assigned experiment name |
+| json | TEXT | Full experiment configuration as JSON |
+| version | INTEGER | Incremented on each save |
+| updated_at | INTEGER | Unix timestamp in milliseconds of last save |
+| source | TEXT | "pc" if saved from ControlStation, "phone" if synced from device |
 
 ### trivia_questions
 
@@ -319,17 +380,25 @@ The database is created automatically on first launch. The schema contains the f
 
 ## CSV Export
 
-Click "Export CSV" in the bottom toolbar. A save dialog opens. Choose a file path and confirm.
+Click "Export CSV" in the top toolbar. A session picker dialog opens listing all sessions stored in the database with their date, name, participant identifiers, experiment names, and number of sensor samples.
 
-The export contains two sections in the same file:
+Select the session you want to export and click "Export Selected." A save dialog opens to choose the output file path.
 
-**WATCH DATA** -- all sensor snapshots for the current session, with columns: participant_id, timestamp, heart_rate, accel_x, accel_y, accel_z, step_count.
+The exported CSV contains six sections separated by blank lines:
 
-**INTERVENTIONS** -- all interventions sent during the current session, with columns: id, participant_id, sent_at, game_type, notification_type, response, reaction_time_ms.
+**SESSION** -- metadata header: session ID, name, start time, end time, and participant identifiers.
 
-The export uses the session that was most recently active. If multiple sessions exist in the database, only the data associated with the last active session is exported.
+**WATCH DATA** -- all sensor snapshots for the session, one row per snapshot. Columns: participant_label, participant_key, timestamp, heart_rate, accel_x, accel_y, accel_z, gyro_x, gyro_y, gyro_z, rot_w, rot_x, rot_y, rot_z, baro_hpa, light_lux, step_count.
 
-May be updated in the Future to include more data. 
+**SESSION LOGS** -- structured experiment events received from the phone. Columns: id, run_id, ts, source, level, kind, payload_json.
+
+**INTERVENTIONS** -- all interventions sent during the session. Columns: id, participant_label, participant_key, sent_at, game_type, notification_type, response, reaction_time_ms.
+
+**EXPERIMENT RUNS** -- each experiment run started during the session. Columns: run_id, experiment_name, participant_label, started_at, ended_at.
+
+**DISTRACTION RUNS** -- each distraction task triggered within a run. Columns: distraction_id, run_id, event_id, intervention_id, started_at, ended_at, response, reaction_time_ms.
+
+If only one session exists in the database, the picker is skipped and the file dialog opens immediately.
 
 ---
 
@@ -337,19 +406,31 @@ May be updated in the Future to include more data.
 
 ### HTTP Endpoints Called by ControlStation
 
-| Method | Endpoint | Purpose |
-|--------|----------|---------|
-| GET | /status | Verify the device is reachable and retrieve session info |
-| POST | /trigger | Send an InterventionRequest to the phone (forwarded to watch) |
-| POST | /trivia | Push the full trivia question list to the phone |
-
 All HTTP requests use a 10-second timeout. The base URL is `http://{device-ip}:8080`.
 
-### WebSocket
+| Method | Endpoint | Purpose |
+|--------|----------|---------|
+| GET | /status | Verify the device is reachable; returns watch connection state, session ID, uptime, last BPM |
+| GET | /data | Returns session ID, participant label, last reaction time, last BPM, last action string |
+| GET | /participant | Returns the current participant info stored on the phone |
+| POST | /participant | Sets participant info (id, sessionId, label, deviceIp) on the phone |
+| GET | /experiment | Pull the current experiment configuration (with ETag header for conflict detection) |
+| PUT | /experiment | Push an updated experiment configuration to the phone |
+| POST | /experiment/control | Send a run command: start, auto, pause, stop, next, prev |
+| POST | /trigger | Send an InterventionRequest to the phone (forwarded to the watch) |
+| POST | /trigger/fire | Fire a manual trigger event by trigger ID |
+| GET | /logs?since=\{id\}&limit=\{n\} | Poll experiment log entries since a given log ID |
+| GET | /trivia | Pull the current trivia question bank from the phone |
+| POST | /trivia | Push the full trivia question list to the phone |
 
-ControlStation connects to `ws://{device-ip}:8080/stream` after a successful HTTP connection. The phone sends `WatchDataBatch` JSON objects over this stream as batches arrive from the watch (approximately once per second). ControlStation inserts each batch into the `watch_data` table.
+### WebSocket Connections
 
-The WebSocket reconnects automatically with a 3-second delay if the connection drops.
+| Path | Direction | Purpose |
+|------|-----------|---------|
+| /stream | Phone → ControlStation | Continuous `WatchDataBatch` JSON objects at ~1 Hz; each batch contains all sensor snapshots accumulated since the last send. ControlStation inserts each batch into `watch_data`. |
+| /events | Phone → ControlStation | `WsEnvelope` JSON objects for experiment state changes, log entries, trigger fires, run start/stop, and intervention start/finish. ControlStation uses these to populate `session_logs`, `experiment_runs`, and `distraction_runs`. |
+
+Both WebSockets reconnect automatically with a 3-second delay if the connection drops.
 
 ### UDP Discovery
 
@@ -388,8 +469,6 @@ Sent as the body of POST /trigger:
 ## Known Limitations and Notes
 
 - The application supports exactly two participants simultaneously. This is a design decision for the current study scope, not a hard technical limit.
-- The CSV export does not allow selecting a specific session by name. It exports the data for the session ID that was most recently started in the current application run. If you need data from a previous session, query the SQLite database directly.
-- Sensor data stored in `watch_data` includes only the fields that ControlStation's data model defines (heart rate, three acceleration axes, step count). The watch collects additional sensors (gyroscope, rotation vector, barometer, light) that are streamed to the phone but not currently persisted by ControlStation.
 - The HTTP server on the phone runs without authentication. Do not use this system on untrusted networks. For realsies.
-- Intervention responses (what the participant chose or whether they completed a game) are received by the phone from the watch and available via the phone's HTTP API, but ControlStation does not currently poll for them automatically. Response data in the database is only populated if the phone pushes the response as part of the watch data stream.
-- Currently there is a 90% Failed Trigger chance due to a few comm failures. 
+- Intervention responses (what the participant chose or whether they completed a game) are received by the phone from the watch and stored on the phone side. ControlStation receives them via the `/events` WebSocket as `intervention-finished` envelopes, which are written to `distraction_runs`.
+- Currently there is a 90% Failed Trigger chance due to a few comm failures.
