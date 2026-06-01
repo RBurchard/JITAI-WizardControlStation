@@ -108,6 +108,8 @@ public sealed class ExperimentSyncService : IDisposable
         catch (Exception ex) { Log?.Invoke($"Push failed: {ex.Message}"); return false; }
     }
 
+    public void CancelPendingAutoSync() => _debounceCts?.Cancel();
+
     public void NotifyEdited(ExperimentDto experiment)
     {
         _debounceCts?.Cancel();

@@ -87,6 +87,7 @@ public partial class ParticipantViewModel : ObservableObject
         LogSync = new LogSyncService(_db);
         RunLifecycle = new RunLifecycleService(_db);
         ExperimentEditor = new ExperimentEditorViewModel(ExperimentSync);
+        ExperimentSync.Log += AppendLog;
         LogSync.EnvelopeReceived += env => _ = RunLifecycle.OnEnvelopeAsync(env);
         _device.DataReceived += OnDataReceived;
         _device.StatusChanged += s =>

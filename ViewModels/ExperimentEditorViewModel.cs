@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -177,6 +178,8 @@ public partial class ExperimentEditorViewModel : ObservableObject
     [ObservableProperty] private string _experimentId = Guid.NewGuid().ToString();
     [ObservableProperty] private string _name = "Untitled";
     private long _version = 1L;
+    private bool _suppressNotify = false;
+
     public ObservableCollection<ExperimentEventEditModel> Events { get; } = new();
     public ObservableCollection<TriggerEditModel> Triggers { get; } = new();
 
@@ -195,12 +198,42 @@ public partial class ExperimentEditorViewModel : ObservableObject
 
     public void LoadFromDto(ExperimentDto dto)
     {
-        ExperimentId = dto.Id; Name = dto.Name; _version = dto.Version;
-        Events.Clear();
-        foreach (var e in dto.Events ?? new()) Events.Add(ExperimentEventEditModel.FromDto(e));
-        Triggers.Clear();
-        foreach (var t in dto.Triggers ?? new()) Triggers.Add(TriggerEditModel.FromDto(t));
-        RefreshIndices();
+        _suppressNotify = true;
+        try
+        {
+            // Unsubscribe from old models before clearing to prevent leaks.
+            foreach (var m in Events) m.PropertyChanged -= OnItemPropertyChanged;
+            foreach (var t in Triggers) t.PropertyChanged -= OnItemPropertyChanged;
+
+            ExperimentId = dto.Id; Name = dto.Name; _version = dto.Version;
+
+            Events.Clear();
+            foreach (var e in dto.Events ?? new())
+            {
+                var m = ExperimentEventEditModel.FromDto(e);
+                m.PropertyChanged += OnItemPropertyChanged;
+                Events.Add(m);
+            }
+
+            Triggers.Clear();
+            foreach (var t in dto.Triggers ?? new())
+            {
+                var m = TriggerEditModel.FromDto(t);
+                m.PropertyChanged += OnItemPropertyChanged;
+                Triggers.Add(m);
+            }
+
+            RefreshIndices();
+        }
+        finally
+        {
+            _suppressNotify = false;
+        }
+    }
+
+    private void OnItemPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (!_suppressNotify) NotifyChanged();
     }
 
     private void RefreshIndices()
@@ -217,7 +250,9 @@ public partial class ExperimentEditorViewModel : ObservableObject
     [RelayCommand]
     private void AddEvent()
     {
-        Events.Add(new ExperimentEventEditModel());
+        var m = new ExperimentEventEditModel();
+        m.PropertyChanged += OnItemPropertyChanged;
+        Events.Add(m);
         RefreshIndices();
         NotifyChanged();
     }
@@ -226,6 +261,7 @@ public partial class ExperimentEditorViewModel : ObservableObject
     private void RemoveEvent(ExperimentEventEditModel? e)
     {
         if (e == null) return;
+        e.PropertyChanged -= OnItemPropertyChanged;
         Events.Remove(e);
         RefreshIndices();
         NotifyChanged();
@@ -254,13 +290,28 @@ public partial class ExperimentEditorViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void AddTrigger() => Triggers.Add(new TriggerEditModel());
+    private void AddTrigger()
+    {
+        var t = new TriggerEditModel();
+        t.PropertyChanged += OnItemPropertyChanged;
+        Triggers.Add(t);
+    }
 
     [RelayCommand]
-    private void RemoveTrigger(TriggerEditModel? t) { if (t != null) Triggers.Remove(t); }
+    private void RemoveTrigger(TriggerEditModel? t)
+    {
+        if (t == null) return;
+        t.PropertyChanged -= OnItemPropertyChanged;
+        Triggers.Remove(t);
+    }
 
     [RelayCommand]
-    private async Task SaveAsync() => await _sync.PushAsync(ToDto());
+    private async Task SaveAsync()
+    {
+        // Cancel any pending auto-push so it can't overwrite the explicit push with a stale snapshot.
+        _sync.CancelPendingAutoSync();
+        await _sync.PushAsync(ToDto());
+    }
 
     [RelayCommand]
     private async Task PullAsync() => await _sync.PullAsync();

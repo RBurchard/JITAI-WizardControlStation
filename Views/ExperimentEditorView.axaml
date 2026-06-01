@@ -20,7 +20,7 @@
                             <Grid ColumnDefinitions="*,120,*,80,Auto" RowDefinitions="Auto,Auto">
                                 <TextBox Grid.Row="0" Grid.Column="0" Text="{Binding Name}" Watermark="Name" Margin="0,0,4,0" />
                                 <ComboBox Grid.Row="0" Grid.Column="1" SelectedItem="{Binding KindLabel}"
-                                          ItemsSource="{Binding $parent[ItemsControl].((vm:ExperimentEditorViewModel)DataContext).TriggerKindOptions}"
+                                          ItemsSource="{x:Static vm:TriggerEditModel.Kinds}"
                                           Margin="0,0,4,0" />
                                 <TextBox Grid.Row="0" Grid.Column="2" Text="{Binding Id}" Watermark="Id" Margin="0,0,4,0" />
                                 <CheckBox Grid.Row="0" Grid.Column="3" IsChecked="{Binding Enabled}" Content="On" />
@@ -97,7 +97,7 @@
                                                Margin="0,0,4,0" />
                                     <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Type}" Watermark="Name" Margin="0,0,4,0" />
                                     <ComboBox Grid.Row="0" Grid.Column="2" SelectedItem="{Binding KindLabel}"
-                                              ItemsSource="{Binding $parent[ItemsControl].((vm:ExperimentEditorViewModel)DataContext).KindOptions}"
+                                              ItemsSource="{x:Static vm:ExperimentEventEditModel.Kinds}"
                                               Margin="0,0,4,0" />
                                     <TextBlock Grid.Row="0" Grid.Column="3" Text="s" VerticalAlignment="Center" Margin="0,0,2,0" FontSize="11" Foreground="#888" />
                                     <NumericUpDown Grid.Row="0" Grid.Column="4"
@@ -146,10 +146,10 @@
                                             <StackPanel Orientation="Horizontal" Spacing="6" Margin="0,2,0,0">
                                                 <TextBlock Text="Display as:" VerticalAlignment="Center" FontSize="11" Foreground="#AABBDD" />
                                                 <ComboBox SelectedItem="{Binding InterventionTypeLabel}" MinWidth="90" FontSize="11"
-                                                          ItemsSource="{Binding $parent[ItemsControl].((vm:ExperimentEditorViewModel)DataContext).InterventionTypeOptions}" />
+                                                          ItemsSource="{x:Static vm:ExperimentEventEditModel.InterventionTypeOptions}" />
                                                 <TextBlock Text="Notify:" VerticalAlignment="Center" FontSize="11" Foreground="#AABBDD" Margin="8,0,0,0" />
                                                 <ComboBox SelectedItem="{Binding NotificationLabel}" MinWidth="160" FontSize="11"
-                                                          ItemsSource="{Binding $parent[ItemsControl].((vm:ExperimentEditorViewModel)DataContext).NotificationOptions}" />
+                                                          ItemsSource="{x:Static vm:ExperimentEventEditModel.NotificationOptions}" />
                                                 <TextBlock Text="for" VerticalAlignment="Center" FontSize="11" Foreground="#888" />
                                                 <NumericUpDown Value="{Binding InterventionDurationSecs}" Minimum="1" Maximum="3600"
                                                                Increment="1" FormatString="0" MinWidth="100" MaxWidth="120" FontSize="11" />
@@ -165,11 +165,11 @@
                                             <StackPanel Orientation="Horizontal" Spacing="6">
                                                 <TextBlock Text="Microgame:" VerticalAlignment="Center" FontSize="11" Foreground="#AABBDD" />
                                                 <ComboBox SelectedItem="{Binding GameTypeLabel}" MinWidth="140" FontSize="11"
-                                                          ItemsSource="{Binding $parent[ItemsControl].((vm:ExperimentEditorViewModel)DataContext).GameTypeOptions}" />
+                                                          ItemsSource="{x:Static vm:ExperimentEventEditModel.GameTypeOptions}" />
                                                 <TextBlock Text="— or —" VerticalAlignment="Center" FontSize="11" Foreground="#445" Margin="8,0" />
                                                 <TextBlock Text="Phone task:" VerticalAlignment="Center" FontSize="11" Foreground="#AABBDD" />
                                                 <ComboBox SelectedItem="{Binding PhoneTaskLabel}" MinWidth="100" FontSize="11"
-                                                          ItemsSource="{Binding $parent[ItemsControl].((vm:ExperimentEditorViewModel)DataContext).PhoneTaskOptions}" />
+                                                          ItemsSource="{x:Static vm:ExperimentEventEditModel.PhoneTaskOptions}" />
                                                 <TextBlock Text="(selecting one clears the other)" VerticalAlignment="Center"
                                                            FontSize="10" Foreground="#556" />
                                             </StackPanel>
