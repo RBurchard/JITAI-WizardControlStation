@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Threading;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -21,6 +22,8 @@ public partial class ParticipantViewModel : ObservableObject
     public ExperimentEditorViewModel ExperimentEditor { get; }
     private string? _participantId;
     private string? _sessionId;
+    private bool _suppressParticipantPush;
+    private CancellationTokenSource? _participantPushCts;
 
     public string Label { get; }
     public string? CurrentRunId => RunLifecycle.CurrentRunId;
@@ -79,6 +82,36 @@ public partial class ParticipantViewModel : ObservableObject
 
     partial void OnSelectedGameTypeChanged(string value) => IsTrivia = value == "TRIVIA";
 
+    // When the researcher edits the participant name/ID, push it to the phone (debounced)
+    // so both sides stay in sync. Programmatic assignments set _suppressParticipantPush.
+    partial void OnParticipantKeyChanged(string value)
+    {
+        if (_suppressParticipantPush) return;
+        SchedulePushParticipant(value);
+    }
+
+    private void SchedulePushParticipant(string value)
+    {
+        _participantPushCts?.Cancel();
+        _participantPushCts = new CancellationTokenSource();
+        var token = _participantPushCts.Token;
+        _ = Task.Run(async () =>
+        {
+            try
+            {
+                await Task.Delay(600, token);
+                if (token.IsCancellationRequested) return;
+                _participantId ??= Guid.NewGuid().ToString();
+                await _device.PostParticipantAsync(_participantId, _sessionId ?? "", value, IpAddress);
+                if (_sessionId != null)
+                    await _db.UpsertParticipantAsync(_participantId, _sessionId, Label, IpAddress, value);
+                AppendLog($"Participant set to '{value}'");
+            }
+            catch (TaskCanceledException) { }
+            catch (Exception ex) { AppendLog($"Participant push failed: {ex.Message}"); }
+        });
+    }
+
     public ParticipantViewModel(string label, DatabaseService db)
     {
         Label = label;
@@ -106,7 +139,9 @@ public partial class ParticipantViewModel : ObservableObject
         if (ok)
         {
             _participantId ??= Guid.NewGuid().ToString();
+            _suppressParticipantPush = true;
             if (string.IsNullOrEmpty(ParticipantKey)) ParticipantKey = _participantId;
+            _suppressParticipantPush = false;
             var baseUrl = IpAddress.StartsWith("http", StringComparison.OrdinalIgnoreCase)
                 ? IpAddress
                 : $"http://{(IpAddress.Contains(':') ? IpAddress : IpAddress + ":8080")}";
@@ -115,11 +150,23 @@ public partial class ParticipantViewModel : ObservableObject
             RunLifecycle.Bind(baseUrl, _participantId, _sessionId);
             await ExperimentSync.PullAsync();
             AppendLog($"Connected to {IpAddress}");
-            if (_sessionId != null)
+
+            // Reconcile the participant identity with the phone (bidirectional sync): if the
+            // phone already has a participant set and we don't, adopt it.
+            var phoneLabel = await _device.GetParticipantLabelAsync();
+            if (!string.IsNullOrWhiteSpace(phoneLabel) &&
+                (string.IsNullOrWhiteSpace(ParticipantKey) || ParticipantKey == _participantId))
             {
-                await _db.UpsertParticipantAsync(_participantId, _sessionId, Label, IpAddress, ParticipantKey);
-                await _device.PostParticipantAsync(_participantId, _sessionId, ParticipantKey, IpAddress);
+                _suppressParticipantPush = true;
+                ParticipantKey = phoneLabel!;
+                _suppressParticipantPush = false;
+                AppendLog($"Adopted participant '{phoneLabel}' from phone");
             }
+
+            // Push our participant to the phone so it agrees with the Control Station.
+            if (_sessionId != null)
+                await _db.UpsertParticipantAsync(_participantId, _sessionId, Label, IpAddress, ParticipantKey);
+            await _device.PostParticipantAsync(_participantId, _sessionId ?? "", ParticipantKey, IpAddress);
         }
     }
 
@@ -225,12 +272,16 @@ public partial class ParticipantViewModel : ObservableObject
     {
         _sessionId = sessionId;
         _participantId = Guid.NewGuid().ToString();
+        _suppressParticipantPush = true;
         ParticipantKey = string.IsNullOrWhiteSpace(participantName) ? _participantId : participantName;
+        _suppressParticipantPush = false;
         await _db.UpsertParticipantAsync(_participantId, sessionId, Label, IpAddress, ParticipantKey);
         // Keep the run-lifecycle context in sync so experiment runs started after the
         // session begins are linked to the correct session/participant (e.g. when the
         // device was connected before the session was started).
         RunLifecycle.SetContext(_participantId, _sessionId);
+        // Inform the phone of the participant for this session (no-op if not connected).
+        await _device.PostParticipantAsync(_participantId, sessionId, ParticipantKey, IpAddress);
     }
 
     public void AddDiscoveredDevice(DiscoveredDevice device)

@@ -71,6 +71,14 @@
                                         Content="Disconnect"
                                         Command="{Binding DisconnectCommand}" />
                             </Grid>
+                            <!-- Participant name / ID — editable here or on the phone; kept in sync. -->
+                            <Grid ColumnDefinitions="Auto,*">
+                                <TextBlock Grid.Column="0" Text="Participant"
+                                           VerticalAlignment="Center" Margin="0,0,8,0"
+                                           FontSize="12" Foreground="#8899BB" />
+                                <TextBox Grid.Column="1" Text="{Binding ParticipantKey}"
+                                         Watermark="Participant name / ID (synced with phone)" />
+                            </Grid>
                         </StackPanel>
                     </Border>
 

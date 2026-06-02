@@ -211,6 +211,28 @@ public class DeviceConnection : IDisposable
         catch { return null; }
     }
 
+    /// <summary>
+    /// Reads the participant label currently set on the phone (set either from the phone
+    /// UI or a prior push), so the Control Station can stay in sync. Returns null if the
+    /// phone has no participant set or is unreachable.
+    /// </summary>
+    public async Task<string?> GetParticipantLabelAsync()
+    {
+        if (_baseUrl == null) return null;
+        try
+        {
+            var json = await _http.GetStringAsync($"{_baseUrl}/participant");
+            using var doc = JsonDocument.Parse(json);
+            if (doc.RootElement.TryGetProperty("label", out var label))
+            {
+                var value = label.GetString();
+                return string.IsNullOrWhiteSpace(value) ? null : value;
+            }
+            return null;
+        }
+        catch { return null; }
+    }
+
     public void Disconnect()
     {
         _wsCts?.Cancel();
