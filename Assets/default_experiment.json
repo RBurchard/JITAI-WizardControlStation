@@ -1,0 +1,125 @@
+{
+  "id": "default-10min-experiment",
+  "name": "Default 10-min Experiment",
+  "version": 3,
+  "updatedAt": 1780853949647,
+  "notes": "Default ~10 minute protocol.\r\n(Times are not final. Adjust them for AUTO mode as needed! I suggest using manual control if unfamiliar with the app.)\n\nRundown:\n1. Baseline / Rest (90s) - participant settles, sensors stabilise.\n2. Instructions (30s) - explain that tasks will appear on the watch/phone.\n3. Provocation 1 (75s) - exposure block.\n4. Trivia distraction (60s) - trivia microgame.\n5. Provocation 2 (75s) - exposure block.\n6. Simon Says distraction (60s) - pattern microgame.\n7. Provocation 3 (75s) - exposure block.\n8. Stand-still distraction (45s) - hold still.\n9. Cool-down / Rest (90s).",
+  "events": [
+    {
+      "id": "evt-baseline",
+      "duration": 90,
+      "type": "Baseline / Rest",
+      "kind": {
+        "kind": "Timed"
+      }
+    },
+    {
+      "id": "evt-instructions",
+      "duration": 30,
+      "type": "Instructions",
+      "intervention": {
+        "id": "iv-instructions",
+        "type": "Text",
+        "notification": "VIBRATION1",
+        "message": "Welcome! ODI will be here shortly. Just you reading this message gives it enough time to come to life!",
+        "durationSeconds": 10
+      },
+      "kind": {
+        "kind": "Timed"
+      }
+    },
+    {
+      "id": "evt-provocation-1",
+      "duration": 75,
+      "type": "Provocation 1",
+      "kind": {
+        "kind": "Timed"
+      }
+    },
+    {
+      "id": "evt-trivia",
+      "duration": 60,
+      "type": "Distraction: Trivia",
+      "intervention": {
+        "id": "iv-trivia",
+        "type": "Text",
+        "notification": "VIBRATION_SOUND",
+        "message": "Hey! It seems like you are waving your hands for a long time. Lets do something!",
+        "durationSeconds": 30,
+        "gameType": "TRIVIA"
+      },
+      "gameType": "TRIVIA",
+      "kind": {
+        "kind": "Timed"
+      }
+    },
+    {
+      "id": "evt-provocation-2",
+      "duration": 75,
+      "type": "Provocation 2",
+      "kind": {
+        "kind": "Timed"
+      }
+    },
+    {
+      "id": "evt-simon",
+      "duration": 60,
+      "type": "Distraction: Simon Says",
+      "intervention": {
+        "id": "iv-simon",
+        "type": "Timer",
+        "notification": "VIBRATION_SOUND",
+        "message": "Hold it! It seems like you are still going. How about something more Brainy?",
+        "durationSeconds": 30,
+        "gameType": "SIMON_SAYS"
+      },
+      "gameType": "SIMON_SAYS",
+      "kind": {
+        "kind": "Timed"
+      }
+    },
+    {
+      "id": "evt-provocation-3",
+      "duration": 75,
+      "type": "Provocation 3",
+      "kind": {
+        "kind": "Timed"
+      }
+    },
+    {
+      "id": "evt-standstill",
+      "duration": 45,
+      "type": "Distraction: Stand Still",
+      "intervention": {
+        "id": "iv-standstill",
+        "type": "Timer",
+        "notification": "VIBRATION1",
+        "message": "Are your hands still dirty? Lets do one last thing before Ill let you be then. ",
+        "durationSeconds": 20,
+        "gameType": "STAND_STILL"
+      },
+      "gameType": "STAND_STILL",
+      "kind": {
+        "kind": "Timed"
+      }
+    },
+    {
+      "id": "evt-cooldown",
+      "duration": 90,
+      "type": "Cool-down / Rest",
+      "kind": {
+        "kind": "Timed"
+      }
+    }
+  ],
+  "triggers": [
+    {
+      "id": "trg-researcher-cue",
+      "name": "Researcher cue",
+      "kind": {
+        "kind": "Manual"
+      },
+      "enabled": true
+    }
+  ]
+}

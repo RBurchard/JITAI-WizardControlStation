@@ -2,6 +2,7 @@ CREATE TABLE IF NOT EXISTS sessions (
     id TEXT PRIMARY KEY,
     started_at INTEGER NOT NULL,
     ended_at INTEGER,
+    name TEXT,
     notes TEXT
 );
 

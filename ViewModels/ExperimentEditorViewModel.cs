@@ -2,8 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using Avalonia.Controls;
+using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using OcdWizard.ControlStation.Models;
@@ -22,6 +27,11 @@ public partial class ExperimentEventEditModel : ObservableObject
     [ObservableProperty] private string _waitForActionId = "";
     [ObservableProperty] private string _waitForTriggerId = "";
     [ObservableProperty] private string _indexLabel = "";
+
+    // Runtime-only display state, set by the runner while an experiment is running. Not part of
+    // the experiment definition: excluded from ToDto() and skipped by change-driven auto-sync.
+    [ObservableProperty] private bool _isCurrent;
+    [ObservableProperty] private string _remainingDisplay = "";
 
     // Intervention / distraction config
     [ObservableProperty] private bool _hasIntervention = false;
@@ -174,9 +184,17 @@ public partial class TriggerEditModel : ObservableObject
 
 public partial class ExperimentEditorViewModel : ObservableObject
 {
+    private static readonly JsonSerializerOptions JsonOpts = new()
+    {
+        PropertyNameCaseInsensitive = true,
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+        WriteIndented = true
+    };
+
     private readonly ExperimentSyncService _sync;
     [ObservableProperty] private string _experimentId = Guid.NewGuid().ToString();
     [ObservableProperty] private string _name = "Untitled";
+    [ObservableProperty] private string _notes = "";
     private long _version = 1L;
     private bool _suppressNotify = false;
 
@@ -194,6 +212,9 @@ public partial class ExperimentEditorViewModel : ObservableObject
     {
         _sync = sync;
         _sync.RemoteUpdated += dto => Avalonia.Threading.Dispatcher.UIThread.Post(() => LoadFromDto(dto));
+        // Seed a fresh editor with the bundled default. A later phone Pull overwrites this,
+        // and the phone's fresh experiment is the same bundled default, so they match.
+        LoadFromDto(DefaultExperiment.Load());
     }
 
     public void LoadFromDto(ExperimentDto dto)
@@ -205,7 +226,7 @@ public partial class ExperimentEditorViewModel : ObservableObject
             foreach (var m in Events) m.PropertyChanged -= OnItemPropertyChanged;
             foreach (var t in Triggers) t.PropertyChanged -= OnItemPropertyChanged;
 
-            ExperimentId = dto.Id; Name = dto.Name; _version = dto.Version;
+            ExperimentId = dto.Id; Name = dto.Name; Notes = dto.Notes; _version = dto.Version;
 
             Events.Clear();
             foreach (var e in dto.Events ?? new())
@@ -233,6 +254,9 @@ public partial class ExperimentEditorViewModel : ObservableObject
 
     private void OnItemPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
+        // Runtime highlight/countdown changes are display-only — never push them to the phone.
+        if (e.PropertyName is nameof(ExperimentEventEditModel.IsCurrent)
+                           or nameof(ExperimentEventEditModel.RemainingDisplay)) return;
         if (!_suppressNotify) NotifyChanged();
     }
 
@@ -243,7 +267,7 @@ public partial class ExperimentEditorViewModel : ObservableObject
     }
 
     public ExperimentDto ToDto() => new(
-        ExperimentId, Name, _version, DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
+        ExperimentId, Name, _version, DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(), Notes,
         Events.Select(e => e.ToDto()).ToList(),
         Triggers.Select(t => t.ToDto()).ToList());
 
@@ -315,6 +339,47 @@ public partial class ExperimentEditorViewModel : ObservableObject
 
     [RelayCommand]
     private async Task PullAsync() => await _sync.PullAsync();
+
+    [RelayCommand]
+    private async Task ExportExperimentAsync(Window? owner)
+    {
+        if (owner == null) return;
+        var file = await owner.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
+        {
+            Title = "Export Experiment",
+            SuggestedFileName = $"{SanitizeFileName(Name)}.json",
+            FileTypeChoices = [new FilePickerFileType("Experiment JSON") { Patterns = ["*.json"] }]
+        });
+        if (file?.Path.LocalPath is string path)
+            await File.WriteAllTextAsync(path, JsonSerializer.Serialize(ToDto(), JsonOpts));
+    }
+
+    [RelayCommand]
+    private async Task ImportExperimentAsync(Window? owner)
+    {
+        if (owner == null) return;
+        var files = await owner.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+        {
+            Title = "Import Experiment",
+            AllowMultiple = false,
+            FileTypeFilter = [new FilePickerFileType("Experiment JSON") { Patterns = ["*.json"] }]
+        });
+        if (files.Count == 0 || files[0].Path.LocalPath is not string path) return;
+        var dto = JsonSerializer.Deserialize<ExperimentDto>(await File.ReadAllTextAsync(path), JsonOpts);
+        if (dto == null) return;
+        LoadFromDto(dto);
+        // Push the imported experiment to the phone immediately so both sides match.
+        _sync.CancelPendingAutoSync();
+        await _sync.PushAsync(ToDto());
+    }
+
+    private static string SanitizeFileName(string name)
+    {
+        var invalid = Path.GetInvalidFileNameChars();
+        var sanitized = new string(name.Select(c => invalid.Contains(c) ? '_' : c).ToArray())
+            .Replace(' ', '_').TrimStart('_');
+        return string.IsNullOrEmpty(sanitized) ? "experiment" : sanitized;
+    }
 
     public void NotifyChanged() => _sync.NotifyEdited(ToDto());
 }

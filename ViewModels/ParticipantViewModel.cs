@@ -64,6 +64,17 @@ public partial class ParticipantViewModel : ObservableObject
     [ObservableProperty] private string _triviaAnswerD = "";
     [ObservableProperty] private string _triviaCorrectAnswer = "A";
 
+    // ── Live experiment progress (driven by EngineStateSnapshot over the events WS) ──
+    [ObservableProperty] private string _currentEventName = "";
+    [ObservableProperty] private string _countdownDisplay = "";
+    [ObservableProperty] private bool _hasActiveEvent;
+
+    private readonly DispatcherTimer _countdownTimer;
+    private int _engineEventIndex = -1;
+    private float _localElapsed;
+    private float? _randomWaitRemaining;
+    private bool _engineRunning;
+
     public ObservableCollection<string> EventLog { get; } = [];
     public ObservableCollection<DiscoveredDevice> DiscoveredDevices { get; } = [];
 
@@ -122,6 +133,9 @@ public partial class ParticipantViewModel : ObservableObject
         ExperimentEditor = new ExperimentEditorViewModel(ExperimentSync);
         ExperimentSync.Log += AppendLog;
         LogSync.EnvelopeReceived += env => _ = RunLifecycle.OnEnvelopeAsync(env);
+        RunLifecycle.StateChanged += OnEngineStateChanged;
+        _countdownTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
+        _countdownTimer.Tick += (_, _) => OnCountdownTick();
         _device.DataReceived += OnDataReceived;
         _device.StatusChanged += s =>
         {
@@ -339,6 +353,64 @@ public partial class ParticipantViewModel : ObservableObject
         }
     }
 
+    // Surfaces the engine's live state (which event is active + how long it's been running) so
+    // the operator sees where the experiment is and a per-task countdown — for auto and manual runs.
+    private void OnEngineStateChanged(EngineStateSnapshotDto snap)
+    {
+        Dispatcher.UIThread.Post(() =>
+        {
+            _engineRunning = snap.Status == "RUNNING";
+            _localElapsed = snap.ElapsedSecInEvent;
+            _randomWaitRemaining = snap.RandomWaitRemainingSec;
+            var active = snap.Status is "RUNNING" or "PAUSED";
+            SetCurrentEventIndex(active ? snap.CurrentEventIndex : -1);
+            UpdateCountdown();
+            // Run the local 1 Hz ticker between snapshots for a smooth countdown; snapshots
+            // (also ~1 Hz) keep it accurate. Don't restart it each snapshot or it never ticks.
+            if (_engineRunning) { if (!_countdownTimer.IsEnabled) _countdownTimer.Start(); }
+            else _countdownTimer.Stop();
+        });
+    }
+
+    private void OnCountdownTick()
+    {
+        if (!_engineRunning) { _countdownTimer.Stop(); return; }
+        _localElapsed += 1f;
+        if (_randomWaitRemaining is float r) _randomWaitRemaining = Math.Max(0f, r - 1f);
+        UpdateCountdown();
+    }
+
+    private void SetCurrentEventIndex(int index)
+    {
+        var events = ExperimentEditor.Events;
+        for (int i = 0; i < events.Count; i++)
+        {
+            var isCur = i == index;
+            if (events[i].IsCurrent != isCur) events[i].IsCurrent = isCur;
+            if (!isCur && events[i].RemainingDisplay.Length > 0) events[i].RemainingDisplay = "";
+        }
+        _engineEventIndex = index;
+        CurrentEventName = index >= 0 && index < events.Count ? events[index].Type : "";
+        HasActiveEvent = index >= 0;
+        if (index < 0) CountdownDisplay = "";
+    }
+
+    private void UpdateCountdown()
+    {
+        var events = ExperimentEditor.Events;
+        if (_engineEventIndex < 0 || _engineEventIndex >= events.Count) { CountdownDisplay = ""; return; }
+        var m = events[_engineEventIndex];
+        string display = m.KindLabel switch
+        {
+            "Timed" => $"{Math.Max(0, (int)Math.Ceiling(m.Duration - _localElapsed))}s",
+            "RandomWait" => $"~{Math.Max(0, (int)Math.Ceiling(_randomWaitRemaining ?? 0f))}s",
+            "WaitForAction" or "WaitForTrigger" or "WaitForPrevious" => "⏳",
+            _ => $"{(int)_localElapsed}s"
+        };
+        CountdownDisplay = display;
+        m.RemainingDisplay = display;
+    }
+
     private void AppendLog(string message)
     {
         var entry = $"[{DateTime.Now:HH:mm:ss}] {message}";
@@ -347,6 +419,8 @@ public partial class ParticipantViewModel : ObservableObject
 
     public void Dispose()
     {
+        _countdownTimer.Stop();
+        RunLifecycle.StateChanged -= OnEngineStateChanged;
         _device.Dispose();
         ExperimentSync.Dispose();
         LogSync.Dispose();

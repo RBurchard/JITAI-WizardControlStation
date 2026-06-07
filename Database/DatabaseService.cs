@@ -12,7 +12,7 @@ namespace OcdWizard.ControlStation.Database;
 
 public class DatabaseService
 {
-    private const int CurrentSchemaVersion = 2;
+    private const int CurrentSchemaVersion = 3;
     private readonly string _connectionString;
 
     // Serializes the high-frequency watch_data writes so concurrent batches never
@@ -68,6 +68,13 @@ public class DatabaseService
             await AddColumnIfMissing(conn, "participants", "participant_key", "TEXT");
             await conn.ExecuteAsync("UPDATE participants SET participant_key = id WHERE participant_key IS NULL");
         }
+        if (version < 3)
+        {
+            // `notes` previously doubled as the session name; give the name its own column
+            // and free `notes` for real research notes. Preserve existing names.
+            await AddColumnIfMissing(conn, "sessions", "name", "TEXT");
+            await conn.ExecuteAsync("UPDATE sessions SET name = notes WHERE name IS NULL");
+        }
         await conn.ExecuteAsync($"PRAGMA user_version = {CurrentSchemaVersion}");
     }
 
@@ -79,12 +86,20 @@ public class DatabaseService
         await conn.ExecuteAsync($"ALTER TABLE {table} ADD COLUMN {column} {type}");
     }
 
-    public async Task InsertSessionAsync(string id, long startedAt, string? notes = null)
+    public async Task InsertSessionAsync(string id, long startedAt, string? name = null, string? notes = null)
     {
         using var conn = new SqliteConnection(_connectionString);
         await conn.ExecuteAsync(
-            "INSERT OR IGNORE INTO sessions (id, started_at, notes) VALUES (@id, @startedAt, @notes)",
-            new { id, startedAt, notes });
+            "INSERT OR IGNORE INTO sessions (id, started_at, name, notes) VALUES (@id, @startedAt, @name, @notes)",
+            new { id, startedAt, name, notes });
+    }
+
+    public async Task UpdateSessionNotesAsync(string id, string? notes)
+    {
+        using var conn = new SqliteConnection(_connectionString);
+        await conn.ExecuteAsync(
+            "UPDATE sessions SET notes = @notes WHERE id = @id",
+            new { id, notes });
     }
 
     public async Task EndSessionAsync(string id, long endedAt)
@@ -340,7 +355,7 @@ public class DatabaseService
     {
         using var conn = new SqliteConnection(_connectionString);
         var rows = await conn.QueryAsync<dynamic>(
-            "SELECT s.id, s.started_at, s.ended_at, s.notes, " +
+            "SELECT s.id, s.started_at, s.ended_at, s.name, s.notes, " +
             "GROUP_CONCAT(DISTINCT p.participant_key) AS participants, " +
             "GROUP_CONCAT(DISTINCT ex.name) AS experiments, " +
             "COUNT(DISTINCT wd.id) AS watch_data_count " +
@@ -357,7 +372,7 @@ public class DatabaseService
                 Id: (string)r.id,
                 StartedAt: (long)r.started_at,
                 EndedAt: r.ended_at as long?,
-                Name: (string?)r.notes ?? "(unnamed)",
+                Name: (string?)r.name ?? (string?)r.notes ?? "(unnamed)",
                 Participants: (string?)r.participants ?? "",
                 Experiments: (string?)r.experiments ?? "",
                 WatchDataCount: (long)r.watch_data_count));
@@ -384,7 +399,8 @@ public class DatabaseService
                 : "active";
             sb.AppendLine("=== SESSION ===");
             sb.AppendLine($"id,{session.id}");
-            sb.AppendLine($"name,{session.notes ?? "(unnamed)"}");
+            sb.AppendLine($"name,{EscapeCsv((string?)session.name ?? (string?)session.notes ?? "(unnamed)")}");
+            sb.AppendLine($"notes,{EscapeCsv((string?)session.notes ?? "")}");
             sb.AppendLine($"started_at,{start:yyyy-MM-dd HH:mm:ss}");
             sb.AppendLine($"ended_at,{end}");
             sb.AppendLine($"participants,{session.pkeys ?? ""}");
@@ -471,7 +487,7 @@ public class DatabaseService
     }
 
     private const string EmbeddedSchema = """
-        CREATE TABLE IF NOT EXISTS sessions (id TEXT PRIMARY KEY, started_at INTEGER NOT NULL, ended_at INTEGER, notes TEXT);
+        CREATE TABLE IF NOT EXISTS sessions (id TEXT PRIMARY KEY, started_at INTEGER NOT NULL, ended_at INTEGER, name TEXT, notes TEXT);
         CREATE TABLE IF NOT EXISTS participants (id TEXT PRIMARY KEY, session_id TEXT NOT NULL, label TEXT NOT NULL, device_ip TEXT, participant_key TEXT);
         CREATE TABLE IF NOT EXISTS watch_data (id INTEGER PRIMARY KEY AUTOINCREMENT, participant_id TEXT NOT NULL, timestamp INTEGER NOT NULL, heart_rate REAL, accel_x REAL, accel_y REAL, accel_z REAL, step_count INTEGER, gyro_x REAL, gyro_y REAL, gyro_z REAL, rot_w REAL, rot_x REAL, rot_y REAL, rot_z REAL, baro_hpa REAL, light_lux REAL);
         CREATE TABLE IF NOT EXISTS events (id INTEGER PRIMARY KEY AUTOINCREMENT, participant_id TEXT NOT NULL, timestamp INTEGER NOT NULL, event_type TEXT NOT NULL, value TEXT, reaction_time_ms INTEGER);

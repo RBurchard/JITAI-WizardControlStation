@@ -5,6 +5,23 @@
              x:DataType="vm:ParticipantViewModel">
     <StackPanel Margin="6" Spacing="4">
         <TextBlock Text="{Binding CurrentRunId, StringFormat='Run: {0}'}" FontSize="11" Foreground="#888" />
+
+        <!-- Live progress: which task is running + a per-task countdown (auto and manual runs). -->
+        <Border IsVisible="{Binding HasActiveEvent}"
+                Background="#13301B" BorderBrush="#1F5E2C" BorderThickness="1"
+                CornerRadius="6" Padding="10,6">
+            <Grid ColumnDefinitions="*,Auto">
+                <StackPanel Grid.Column="0" VerticalAlignment="Center" Spacing="1">
+                    <TextBlock Text="NOW RUNNING" FontSize="9" Foreground="#79B98A" />
+                    <TextBlock Text="{Binding CurrentEventName}" FontSize="14" FontWeight="Bold"
+                               Foreground="#DFF5E4" TextTrimming="CharacterEllipsis" />
+                </StackPanel>
+                <TextBlock Grid.Column="1" Text="{Binding CountdownDisplay}"
+                           FontSize="30" FontWeight="Bold" Foreground="#9CFFB0"
+                           VerticalAlignment="Center" Margin="10,0,0,0" />
+            </Grid>
+        </Border>
+
         <WrapPanel Orientation="Horizontal">
             <Button Content="▶ Start"  Command="{Binding StartExperimentCommand}" Margin="0,0,4,4" MinWidth="70" />
             <Button Content="⏩ Auto"   Command="{Binding StartAutoCommand}"       Margin="0,0,4,4" MinWidth="70" />

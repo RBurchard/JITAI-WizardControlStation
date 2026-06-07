@@ -28,6 +28,7 @@ public record ExperimentDto(
     [property: JsonPropertyName("name")] string Name,
     [property: JsonPropertyName("version")] long Version = 1L,
     [property: JsonPropertyName("updatedAt")] long UpdatedAt = 0L,
+    [property: JsonPropertyName("notes")] string Notes = "",
     [property: JsonPropertyName("events")] List<ExperimentEventDto>? Events = null,
     [property: JsonPropertyName("triggers")] List<TriggerDto>? Triggers = null
 );

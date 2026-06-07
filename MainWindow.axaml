@@ -89,6 +89,25 @@
             </Grid>
         </Border>
 
+        <!-- ── Session notes ──────────────────────────────────────────── -->
+        <Border DockPanel.Dock="Top" Background="#0E1124" Padding="16,8"
+                BorderBrush="#1E2238" BorderThickness="0,0,0,1">
+            <Grid ColumnDefinitions="Auto,*,Auto">
+                <TextBlock Grid.Column="0" Text="📝  Session notes:" Foreground="#7788AA"
+                           VerticalAlignment="Top" FontSize="12" Margin="0,6,10,0" />
+                <TextBox Grid.Column="1" Text="{Binding SessionNotes}"
+                         Watermark="Notes about the running session (e.g. 'Participant felt uncomfortable around 4 min')"
+                         AcceptsReturn="True" TextWrapping="Wrap"
+                         MinHeight="32" MaxHeight="90"
+                         IsEnabled="{Binding SessionActive}"
+                         ScrollViewer.VerticalScrollBarVisibility="Auto" />
+                <Button Grid.Column="2" Classes="Subtle" Content="💾  Save Notes"
+                        Command="{Binding SaveSessionNotesCommand}"
+                        IsEnabled="{Binding SessionActive}"
+                        VerticalAlignment="Top" Margin="8,0,0,0" />
+            </Grid>
+        </Border>
+
         <!-- ── Main content ───────────────────────────────────────────── -->
         <Grid Margin="6">
             <!-- Single-participant layout (full width) -->

@@ -21,6 +21,7 @@ public partial class MainViewModel : ObservableObject
     private string? _activeSessionId;
 
     [ObservableProperty] private string _sessionName = "New Session";
+    [ObservableProperty] private string _sessionNotes = "";
     [ObservableProperty] private bool _sessionActive;
     [ObservableProperty] private string _statusMessage = "Ready";
     [ObservableProperty] private bool _adbMissing;
@@ -67,12 +68,21 @@ public partial class MainViewModel : ObservableObject
     private async Task StartSessionAsync()
     {
         _activeSessionId = Guid.NewGuid().ToString();
+        SessionNotes = "";
         var now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
         await _db.InsertSessionAsync(_activeSessionId, now, SessionName);
         await Participant1.SetSessionAsync(_activeSessionId, SessionName);
         await Participant2.SetSessionAsync(_activeSessionId, SessionName);
         SessionActive = true;
         StatusMessage = $"Session started: {_activeSessionId[..8]}";
+    }
+
+    [RelayCommand]
+    private async Task SaveSessionNotesAsync()
+    {
+        if (_activeSessionId == null) { StatusMessage = "No active session for notes"; return; }
+        await _db.UpdateSessionNotesAsync(_activeSessionId, SessionNotes);
+        StatusMessage = "Session notes saved";
     }
 
     [RelayCommand]
