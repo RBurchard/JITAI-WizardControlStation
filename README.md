@@ -1,5 +1,13 @@
 # JITAI Wizard -- Control Station
 
+<p align="center">
+  <img src="Assets/odi_icon.png" alt="Odi -- the JITAI Wizard mascot" width="180" />
+</p>
+
+<p align="center">
+  <b>Latest release:</b> <a href="https://github.com/BloodWolfPlayer/JITAI-WizardControlStation/releases/latest">v1.0.0-beta</a> &middot; Windows x64 (.NET runtime bundled)
+</p>
+
 _The researcher-facing desktop application for running intervention studies with the JITAI Wizard wearable system._
 _Project for the Bachelor of Science in the University of Siegen_
 
@@ -12,19 +20,20 @@ _Project for the Bachelor of Science in the University of Siegen_
 ## Table of Contents
 
 1. [Overview](#overview)
-2. [System Architecture](#system-architecture)
-3. [Requirements](#requirements)
-4. [Building the Project](#building-the-project)
-5. [Application Layout](#application-layout)
-6. [Session Management](#session-management)
-7. [Device Discovery and Connection](#device-discovery-and-connection)
-8. [Participant Panel](#participant-panel)
-9. [Intervention Controls](#intervention-controls)
-10. [Trivia Editor](#trivia-editor)
-11. [Data Storage](#data-storage)
-12. [CSV Export](#csv-export)
-13. [Communication Protocol Reference](#communication-protocol-reference)
-14. [Known Limitations and Notes](#known-limitations-and-notes)
+2. [Download & Install (Beta)](#download--install-beta)
+3. [System Architecture](#system-architecture)
+4. [Requirements](#requirements)
+5. [Building the Project](#building-the-project)
+6. [Application Layout](#application-layout)
+7. [Session Management](#session-management)
+8. [Device Discovery and Connection](#device-discovery-and-connection)
+9. [Participant Panel](#participant-panel)
+10. [Intervention Controls](#intervention-controls)
+11. [Trivia Editor](#trivia-editor)
+12. [Data Storage](#data-storage)
+13. [CSV Export](#csv-export)
+14. [Communication Protocol Reference](#communication-protocol-reference)
+15. [Known Limitations and Notes](#known-limitations-and-notes)
 
 ---
 
@@ -34,7 +43,24 @@ ControlStation is the researcher-side desktop application for the JITAI Wizard p
 
 The application connects to Android phones running the JITAI Wizard companion app. Each phone acts as a bridge to a Wear OS watch worn by a participant. ControlStation does not communicate with the watches directly -- all watch control flows through the phone.
 
-For documentation on the Android phone and watch apps, see the JITAI-WizardAndroid repository (same GitHub account, BWPlayer).
+For documentation on the Android phone and watch apps, see the [JITAI-WizardAndroid repository](https://github.com/BloodWolfPlayer/JITAI-WizardAndroid).
+
+---
+
+## Download & Install (Beta)
+
+> Just want to run it? Grab the latest build from the [**Releases page**](https://github.com/BloodWolfPlayer/JITAI-WizardControlStation/releases/latest) -- the .NET 10 runtime is bundled, so nothing else needs installing.
+
+1. Download **`JITAI-WizardControlStation-v1.0.0-beta-win-x64.zip`** from the Releases page.
+2. Extract the ZIP anywhere (for example `C:\JITAI-Wizard`). Keep all files together -- the `.exe` needs the DLLs and `Assets`/`Database` folders beside it.
+3. Run **`OcdWizard.ControlStation.exe`**.
+4. On first launch, Windows SmartScreen may warn about an unrecognized app (the beta is unsigned) -- click **More info → Run anyway**.
+
+The database is created automatically at `%APPDATA%\OcdWizard\data.db` on first run.
+
+**Requires Windows 10/11 x64.** The companion **Android + Wear OS apps** are required and released separately: [JITAI-WizardAndroid releases](https://github.com/BloodWolfPlayer/JITAI-WizardAndroid/releases/latest).
+
+Prefer to build from source? See [Building the Project](#building-the-project).
 
 ---
 
@@ -89,7 +115,7 @@ The project targets `net10.0` and uses Windows-specific packaging features. Buil
 1. Clone the repository:
 
 ```
-git clone https://github.com/BWPlayer/JITAI-WizardControlStation.git
+git clone https://github.com/BloodWolfPlayer/JITAI-WizardControlStation.git
 ```
 
 2. Open `OcdWizard.ControlStation.sln` in Visual Studio 2022.
