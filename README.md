@@ -68,9 +68,9 @@ Prefer to build from source? See [Building the Project](#building-the-project).
 
 ```
 +------------------+           UDP 5280 (discovery)           +-------------------+
-|  ControlStation  | <---------------------------------------> |   Android Phone   |
+|  ControlStation  | <--------------------------------------> |   Android Phone   |
 |  Windows / .NET  |           HTTP 8080 (control)            |   mobile module   |
-|  Avalonia UI     | <---------------------------------------> |   Ktor server     |
+|  Avalonia UI     | <--------------------------------------> |   Ktor server     |
 +------------------+           WS 8080/stream (data)          +-------------------+
                                                                         |
                                                                Wearable Data Layer
