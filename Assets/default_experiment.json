@@ -1,24 +1,16 @@
 {
   "id": "default-10min-experiment",
-  "name": "Default 10-min Experiment",
-  "version": 3,
-  "updatedAt": 1780853949647,
-  "notes": "Default ~10 minute protocol.\r\n(Times are not final. Adjust them for AUTO mode as needed! I suggest using manual control if unfamiliar with the app.)\n\nRundown:\n1. Baseline / Rest (90s) - participant settles, sensors stabilise.\n2. Instructions (30s) - explain that tasks will appear on the watch/phone.\n3. Provocation 1 (75s) - exposure block.\n4. Trivia distraction (60s) - trivia microgame.\n5. Provocation 2 (75s) - exposure block.\n6. Simon Says distraction (60s) - pattern microgame.\n7. Provocation 3 (75s) - exposure block.\n8. Stand-still distraction (45s) - hold still.\n9. Cool-down / Rest (90s).",
+  "name": "Hand-washing JITAI Study (Default)",
+  "version": 4,
+  "updatedAt": 1780987767377,
+  "notes": "Hand-washing JITAI study - one repetition\n\n(Times are not final. Adjust them for AUTO mode as needed! I suggest using manual control if unfamiliar with the app.)\n\nODI is presented to the participant as a real AI on the watch; the experimenter secretly drives it (Wizard of Oz). Participants are NOT told the aim of the study or the nature of the intervention.\n\nFlow :\n1. Welcome / Instructions - ODI introduces itself on the watch.\n2-3. Distraction Tasks (Lockpick, Simon Says) - familiarise the participant with the watch feedback.\n4-5. Tutorial Complete, Observer can come back to Participant (Odi messaged them) to now dirty their hands.\n6. Wait (increase urge) - ~60 s with dirty hands to build the urge to wash.\n7. Wash Hands - participant starts washing. \u003E\u003E\u003E START the hand-wash (HW) timer now. \u003C\u003C\u003C\n8. Intervention (stop washing) - ~15 s into washing, ODI fires the JITAI that tries to stop the washing. Vary the intervention config per condition.\n9. Reaction - record whether the participant FOLLOWED or IGNORED the intervention (use the watch-note button). If they ignore it and keep washing, jump back to step 6 and repeat the intervention as needed.\n10. Finish Washing - participant stops. \u003E\u003E\u003E STOP the HW timer and note the total duration. \u003C\u003C\u003C\n11. Questionnaire - administer the post-experiment questionnaire.\n",
   "events": [
     {
-      "id": "evt-baseline",
-      "duration": 90,
-      "type": "Baseline / Rest",
-      "kind": {
-        "kind": "Timed"
-      }
-    },
-    {
-      "id": "evt-instructions",
+      "id": "evt-welcome",
       "duration": 30,
-      "type": "Instructions",
+      "type": "Welcome / Instructions",
       "intervention": {
-        "id": "iv-instructions",
+        "id": "iv-welcome",
         "type": "Text",
         "notification": "VIBRATION1",
         "message": "Welcome! ODI will be here shortly. Just you reading this message gives it enough time to come to life!",
@@ -29,47 +21,87 @@
       }
     },
     {
-      "id": "evt-provocation-1",
-      "duration": 75,
-      "type": "Provocation 1",
-      "kind": {
-        "kind": "Timed"
-      }
-    },
-    {
-      "id": "evt-trivia",
-      "duration": 60,
-      "type": "Distraction: Trivia",
+      "id": "evt-distraction-1",
+      "duration": 5,
+      "type": "Distraction Task 1: Lock Pick (Tutorial)",
       "intervention": {
-        "id": "iv-trivia",
+        "id": "iv-distraction-1",
         "type": "Text",
         "notification": "VIBRATION_SOUND",
-        "message": "Hey! It seems like you are waving your hands for a long time. Lets do something!",
+        "message": "New User Detected. Tutorial mode enabled. Please complete the following tasks to get familiar with my System as well for me to have some time to record your Baseline Body Language :)",
         "durationSeconds": 30,
-        "gameType": "TRIVIA"
+        "gameType": "LOCK_PICKING"
       },
-      "gameType": "TRIVIA",
+      "gameType": "LOCK_PICKING",
       "kind": {
-        "kind": "Timed"
+        "kind": "WaitForPrevious"
       }
     },
     {
-      "id": "evt-provocation-2",
-      "duration": 75,
-      "type": "Provocation 2",
-      "kind": {
-        "kind": "Timed"
-      }
-    },
-    {
-      "id": "evt-simon",
-      "duration": 60,
-      "type": "Distraction: Simon Says",
+      "id": "evt-distraction-2",
+      "duration": 5,
+      "type": "Distraction Task 2: Simon Says (Tutorial)",
       "intervention": {
-        "id": "iv-simon",
+        "id": "iv-distraction-2",
         "type": "Timer",
         "notification": "VIBRATION_SOUND",
-        "message": "Hold it! It seems like you are still going. How about something more Brainy?",
+        "message": "Almost done on my End! How about you do one round of Simon Says? I should be done by then.",
+        "durationSeconds": 30,
+        "gameType": "SIMON_SAYS"
+      },
+      "gameType": "SIMON_SAYS",
+      "kind": {
+        "kind": "WaitForPrevious"
+      }
+    },
+    {
+      "id": "evt-TutDone",
+      "duration": 30,
+      "type": "Familiarization complete. ",
+      "intervention": {
+        "id": "iv-dirty-hands",
+        "type": "Text",
+        "notification": "VIBRATION1",
+        "message": "Wonderful. I got your Base Data now. Give me one second as I save this Data.",
+        "durationSeconds": 15
+      },
+      "kind": {
+        "kind": "Timed"
+      }
+    },
+    {
+      "id": "evt-dirty-Hands",
+      "duration": 60,
+      "type": "Dirty Hands ",
+      "kind": {
+        "kind": "Timed"
+      }
+    },
+    {
+      "id": "evt-WaitingForUrge",
+      "duration": 15,
+      "type": "Wait (increase urge)",
+      "kind": {
+        "kind": "Timed"
+      }
+    },
+    {
+      "id": "evt-wash-hands",
+      "duration": 30,
+      "type": "Wash Hands - START HW timer",
+      "kind": {
+        "kind": "Timed"
+      }
+    },
+    {
+      "id": "evt-intervention",
+      "duration": 30,
+      "type": "Intervention (stop washing)",
+      "intervention": {
+        "id": "552dad3a",
+        "type": "Text",
+        "notification": "VIBRATION1",
+        "message": "Hey! Hold on! You seem to have been moving your hands quite a lot over each other. You ok? Lets do something real quick!",
         "durationSeconds": 30,
         "gameType": "SIMON_SAYS"
       },
@@ -79,34 +111,25 @@
       }
     },
     {
-      "id": "evt-provocation-3",
-      "duration": 75,
-      "type": "Provocation 3",
+      "id": "evt-reaction",
+      "duration": 10,
+      "type": "Reaction - record follow / ignore",
       "kind": {
         "kind": "Timed"
       }
     },
     {
-      "id": "evt-standstill",
-      "duration": 45,
-      "type": "Distraction: Stand Still",
-      "intervention": {
-        "id": "iv-standstill",
-        "type": "Timer",
-        "notification": "VIBRATION1",
-        "message": "Are your hands still dirty? Lets do one last thing before Ill let you be then. ",
-        "durationSeconds": 20,
-        "gameType": "STAND_STILL"
-      },
-      "gameType": "STAND_STILL",
+      "id": "evt-finish-washing",
+      "duration": 120,
+      "type": "Finish Washing - STOP HW timer",
       "kind": {
         "kind": "Timed"
       }
     },
     {
-      "id": "evt-cooldown",
-      "duration": 90,
-      "type": "Cool-down / Rest",
+      "id": "evt-questionnaire",
+      "duration": 5,
+      "type": "Questionnaire",
       "kind": {
         "kind": "Timed"
       }
