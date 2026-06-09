@@ -53,6 +53,9 @@ public partial class MainViewModel : ObservableObject
             Participant1.RemoveDiscoveredDevice(d);
             Participant2.RemoveDiscoveredDevice(d);
         });
+        // Let a manual Scan fold in the live USB devices instead of overwriting them.
+        Participant1.UsbDeviceProvider = () => _usbSource.Devices.ToList();
+        Participant2.UsbDeviceProvider = () => _usbSource.Devices.ToList();
         if (_adb.TryLocate())
             _usbSource.Start();
         _ = InitAsync();

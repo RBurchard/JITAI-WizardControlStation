@@ -8,6 +8,7 @@
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
     <AssemblyName>OcdWizard.ControlStation</AssemblyName>
     <RootNamespace>OcdWizard.ControlStation</RootNamespace>
+    <ApplicationIcon>Assets\odi_icon.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -29,5 +30,6 @@
     <!-- Bundled so a fresh editor seeds the same ~10-min default as the Android app. -->
     <None Update="Assets\default_experiment.json" CopyToOutputDirectory="PreserveNewest" />
     <None Update="Database\Schema.sql" CopyToOutputDirectory="PreserveNewest" />
+    <AvaloniaResource Include="Assets\odi_icon.png" />
   </ItemGroup>
 </Project>

@@ -39,14 +39,14 @@
                 <StackPanel Spacing="4" Margin="10,8">
 
                     <!-- CONNECTION CARD -->
-                    <Border Background="#1C1F30" CornerRadius="8" Padding="12,10">
+                    <Border Name="TutConnection" Background="#1C1F30" CornerRadius="8" Padding="12,10">
                         <StackPanel Spacing="8">
                             <TextBlock Text="📡  CONNECTION" Classes="SectionHeader" />
                             <Grid ColumnDefinitions="*,Auto,Auto">
                                 <TextBox Grid.Column="0" Text="{Binding IpAddress}"
                                          Watermark="Device IP  (e.g. 192.168.1.42)"
                                          Margin="0,0,6,0" />
-                                <Button Grid.Column="1" Classes="Subtle"
+                                <Button Name="TutScan" Grid.Column="1" Classes="Subtle"
                                         Content="🔍  Scan"
                                         Command="{Binding ScanCommand}"
                                         IsEnabled="{Binding !IsScanning}"
@@ -83,14 +83,14 @@
                     </Border>
 
                     <!-- MOTION VISUALISER -->
-                    <ctrl:CollapsiblePanel Title="🖐  Motion Tracker">
+                    <ctrl:CollapsiblePanel Name="TutMotion" Title="🖐  Motion Tracker">
                         <ctrl:CollapsiblePanel.Body>
                             <views:MotionView DataContext="{Binding}" />
                         </ctrl:CollapsiblePanel.Body>
                     </ctrl:CollapsiblePanel>
 
                     <!-- LIVE SENSORS -->
-                    <ctrl:CollapsiblePanel Title="💓  Live Sensors">
+                    <ctrl:CollapsiblePanel Name="TutSensors" Title="💓  Live Sensors">
                         <ctrl:CollapsiblePanel.Body>
                             <StackPanel Spacing="5" Margin="10,6">
                                 <!-- Heart rate -->
@@ -144,7 +144,7 @@
                     </ctrl:CollapsiblePanel>
 
                     <!-- EXPERIMENT RUNNER -->
-                    <ctrl:CollapsiblePanel Title="▶  Experiment Runner">
+                    <ctrl:CollapsiblePanel Name="TutRunner" Title="▶  Experiment Runner">
                         <ctrl:CollapsiblePanel.Body>
                             <views:ExperimentRunnerView DataContext="{Binding}" />
                         </ctrl:CollapsiblePanel.Body>
@@ -158,7 +158,7 @@
                     </ctrl:CollapsiblePanel>
 
                     <!-- SEND INTERVENTION -->
-                    <ctrl:CollapsiblePanel Title="📣  Send Intervention">
+                    <ctrl:CollapsiblePanel Name="TutIntervention" Title="📣  Send Intervention">
                         <ctrl:CollapsiblePanel.Body>
                             <StackPanel Spacing="10" Margin="10,8">
 

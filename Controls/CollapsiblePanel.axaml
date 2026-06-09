@@ -1,7 +1,6 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             x:Class="OcdWizard.ControlStation.Controls.CollapsiblePanel"
-             Name="Root">
+             x:Class="OcdWizard.ControlStation.Controls.CollapsiblePanel">
     <Border BorderBrush="#2A2D45" BorderThickness="1" CornerRadius="8" Padding="0">
         <DockPanel LastChildFill="True">
             <Grid DockPanel.Dock="Top" Background="#1A1D2E" ColumnDefinitions="Auto,*,Auto,Auto" Height="34">

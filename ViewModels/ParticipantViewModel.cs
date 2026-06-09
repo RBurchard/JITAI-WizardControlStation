@@ -79,6 +79,12 @@ public partial class ParticipantViewModel : ObservableObject
     public ObservableCollection<DiscoveredDevice> DiscoveredDevices { get; } = [];
 
     /// <summary>
+    /// Supplies the USB devices currently managed by the always-on ADB watcher so a manual
+    /// Wi-Fi <see cref="ScanAsync"/> can fold them in instead of wiping them. Set by MainViewModel.
+    /// </summary>
+    public Func<IReadOnlyList<DiscoveredDevice>>? UsbDeviceProvider { get; set; }
+
+    /// <summary>
     /// Raised once per received batch with the full ordered snapshot series so the
     /// motion view can reconstruct at the watch's true sample rate (~50 Hz) rather
     /// than sampling only the latest value. Fired from a background thread.
@@ -266,19 +272,35 @@ public partial class ParticipantViewModel : ObservableObject
     {
         IsScanning = true;
         AppendLog("Scanning for JITAI Wizard devices…");
-        Dispatcher.UIThread.Post(() => DiscoveredDevices.Clear());
 
-        var devices = await DeviceDiscovery.ScanAsync(timeoutMs: 3000);
+        // USB devices are tracked live by the ADB watcher, so a manual scan must NOT wipe them
+        // (previously DiscoveredDevices.Clear() removed any USB-connected phone entirely). Only
+        // the Wi-Fi-discovered entries are refreshed here.
+        Dispatcher.UIThread.Post(() =>
+        {
+            for (int i = DiscoveredDevices.Count - 1; i >= 0; i--)
+                if (DiscoveredDevices[i].Transport == DeviceTransport.Wifi)
+                    DiscoveredDevices.RemoveAt(i);
+        });
+
+        var wifi = await DeviceDiscovery.ScanAsync(timeoutMs: 3000);
+        var usb = UsbDeviceProvider?.Invoke() ?? (IReadOnlyList<DiscoveredDevice>)Array.Empty<DiscoveredDevice>();
 
         Dispatcher.UIThread.Post(() =>
         {
-            foreach (var d in devices)
-                DiscoveredDevices.Add(d);
+            foreach (var d in wifi)
+                if (!DiscoveredDevices.Contains(d))
+                    DiscoveredDevices.Add(d);
+            // Fold USB connections back in so Scan reflects everything reachable, even if the
+            // watcher's add event hasn't repopulated the list yet.
+            foreach (var u in usb)
+                if (!DiscoveredDevices.Contains(u))
+                    DiscoveredDevices.Add(u);
         });
 
-        AppendLog(devices.Count > 0
-            ? $"Found {devices.Count} device(s)"
-            : "No devices found — ensure phone app is running on the same network");
+        AppendLog(wifi.Count + usb.Count > 0
+            ? $"Found {wifi.Count} Wi-Fi + {usb.Count} USB device(s)"
+            : "No devices found — ensure the phone app is running on the same network or USB debugging is enabled");
         IsScanning = false;
     }
 

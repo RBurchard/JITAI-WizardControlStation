@@ -2,12 +2,16 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:OcdWizard.ControlStation.ViewModels"
         xmlns:views="using:OcdWizard.ControlStation.Views"
+        xmlns:ctrl="using:OcdWizard.ControlStation.Controls"
         x:Class="OcdWizard.ControlStation.MainWindow"
         x:DataType="vm:MainViewModel"
         Title="JITAI Wizard — Control Station"
+        Icon="avares://OcdWizard.ControlStation/Assets/odi_icon.png"
         Width="1200" Height="780"
         MinWidth="780" MinHeight="560">
 
+    <!-- Panel layers the guided-tour overlay on top of the whole UI. -->
+    <Panel>
     <DockPanel>
 
         <!-- ── Top bar ────────────────────────────────────────────────── -->
@@ -30,12 +34,12 @@
                             VerticalAlignment="Center" Margin="20,0">
                     <TextBlock Text="Session:" Foreground="#7788AA"
                                VerticalAlignment="Center" FontSize="12" />
-                    <TextBox Text="{Binding SessionName}" Width="200"
+                    <TextBox Name="TutSessionName" Text="{Binding SessionName}" Width="200"
                              Watermark="e.g. Participant_01" VerticalAlignment="Center" />
                 </StackPanel>
 
                 <!-- Single/Dual watch toggle -->
-                <ToggleButton Grid.Column="2"
+                <ToggleButton Grid.Column="2" Name="TutWatchToggle"
                               IsChecked="{Binding DualParticipantMode}"
                               Margin="0,0,6,0"
                               Padding="12,7"
@@ -56,28 +60,32 @@
                 </ToggleButton>
 
                 <!-- Start session -->
-                <Button Grid.Column="3" Classes="Primary"
+                <Button Grid.Column="3" Name="TutStartSession" Classes="Primary"
                         Content="▶  Start Session"
                         Command="{Binding StartSessionCommand}"
                         IsEnabled="{Binding SessionActive, Converter={x:Static BoolConverters.Not}}"
                         Margin="0,0,6,0" />
 
                 <!-- Stop session -->
-                <Button Grid.Column="4" Classes="Danger"
+                <Button Grid.Column="4" Name="TutStopSession" Classes="Danger"
                         Content="■  Stop Session"
                         Command="{Binding StopSessionCommand}"
                         IsEnabled="{Binding SessionActive}"
                         Margin="0,0,6,0" />
 
-                <!-- Export / Trivia -->
+                <!-- Export / Trivia / Tutorial -->
                 <StackPanel Grid.Column="5" Orientation="Horizontal" Spacing="6"
                             VerticalAlignment="Center">
-                    <Button Classes="Subtle"
+                    <Button Name="TutExport" Classes="Subtle"
                             Content="⬇  Export CSV"
                             Click="OnExportClick" />
-                    <Button Classes="Subtle"
+                    <Button Name="TutTrivia" Classes="Subtle"
                             Content="📋  Trivia"
                             Click="OnManageTriviaClick" />
+                    <Button Name="TutTutorialBtn" Classes="Subtle"
+                            Content="❔  Tutorial"
+                            ToolTip.Tip="Replay the guided tour of the Control Station"
+                            Click="OnTutorialClick" />
                 </StackPanel>
 
                 <!-- Status -->
@@ -143,4 +151,8 @@
         </Grid>
 
     </DockPanel>
+
+        <!-- Guided tour overlay (hidden until first launch or the Tutorial button). -->
+        <ctrl:TutorialOverlay Name="Tutorial" />
+    </Panel>
 </Window>

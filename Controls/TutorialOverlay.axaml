@@ -1,0 +1,41 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="OcdWizard.ControlStation.Controls.TutorialOverlay"
+             IsVisible="False" Focusable="True">
+    <!-- A near-transparent backdrop that swallows clicks to the UI underneath while the tour runs.
+         The four Dim* rectangles darken everything except the spotlighted target rectangle. -->
+    <Canvas Name="LayoutCanvas" Background="#01000000">
+        <Rectangle Name="DimTop"    Fill="#B4070912" />
+        <Rectangle Name="DimBottom" Fill="#B4070912" />
+        <Rectangle Name="DimLeft"   Fill="#B4070912" />
+        <Rectangle Name="DimRight"  Fill="#B4070912" />
+
+        <!-- The glowing marker drawn around the area being described. -->
+        <Border Name="Highlight" IsHitTestVisible="False"
+                BorderBrush="#FFD166" BorderThickness="2.5" CornerRadius="8"
+                Background="#16FFD166">
+            <Border.Effect>
+                <DropShadowEffect Color="#FFD166" BlurRadius="22" OffsetX="0" OffsetY="0" Opacity="0.9" />
+            </Border.Effect>
+        </Border>
+
+        <!-- The explanation bubble, repositioned next to each target. -->
+        <Border Name="Bubble" Width="350" Background="#1B1F33"
+                BorderBrush="#3A4060" BorderThickness="1" CornerRadius="12" Padding="18,16">
+            <Border.Effect>
+                <DropShadowEffect Color="#000000" BlurRadius="26" OffsetX="0" OffsetY="6" Opacity="0.55" />
+            </Border.Effect>
+            <StackPanel Spacing="9">
+                <TextBlock Name="StepCounter" FontSize="11" FontWeight="SemiBold" Foreground="#FFD166" />
+                <TextBlock Name="TitleBlock" FontSize="17" FontWeight="Bold" Foreground="White" TextWrapping="Wrap" />
+                <TextBlock Name="BodyBlock" FontSize="13" Foreground="#C5CCE6" TextWrapping="Wrap" LineHeight="19" />
+                <Grid ColumnDefinitions="Auto,*,Auto,Auto" Margin="0,4,0,0">
+                    <Button Name="SkipBtn" Grid.Column="0" Classes="Subtle" Content="Skip tour" Click="OnSkip" />
+                    <Button Name="BackBtn" Grid.Column="2" Classes="Subtle" Content="◀ Back"
+                            Margin="0,0,6,0" Click="OnBack" />
+                    <Button Name="NextBtn" Grid.Column="3" Classes="Accent" Content="Next ▶" Click="OnNext" />
+                </Grid>
+            </StackPanel>
+        </Border>
+    </Canvas>
+</UserControl>
