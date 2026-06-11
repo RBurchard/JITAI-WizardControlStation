@@ -358,10 +358,17 @@ public partial class ExperimentEditorViewModel : ObservableObject
     private async Task ImportExperimentAsync(Window? owner)
     {
         if (owner == null) return;
+        // Open in the Assets folder beside the executable, where the bundled
+        // experiment templates ship, so they are one click away.
+        var assetsPath = Path.Combine(AppContext.BaseDirectory, "Assets");
+        var startFolder = Directory.Exists(assetsPath)
+            ? await owner.StorageProvider.TryGetFolderFromPathAsync(assetsPath)
+            : null;
         var files = await owner.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
         {
             Title = "Import Experiment",
             AllowMultiple = false,
+            SuggestedStartLocation = startFolder,
             FileTypeFilter = [new FilePickerFileType("Experiment JSON") { Patterns = ["*.json"] }]
         });
         if (files.Count == 0 || files[0].Path.LocalPath is not string path) return;

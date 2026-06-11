@@ -29,6 +29,8 @@
   <ItemGroup>
     <!-- Bundled so a fresh editor seeds the same ~10-min default as the Android app. -->
     <None Update="Assets\default_experiment.json" CopyToOutputDirectory="PreserveNewest" />
+    <!-- Extra experiment variants, shipped beside the exe so researchers can Import them. -->
+    <None Update="Assets\experiment_*.json" CopyToOutputDirectory="PreserveNewest" />
     <None Update="Database\Schema.sql" CopyToOutputDirectory="PreserveNewest" />
     <AvaloniaResource Include="Assets\odi_icon.png" />
   </ItemGroup>

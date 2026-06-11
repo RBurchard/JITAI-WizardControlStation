@@ -1,0 +1,99 @@
+{
+  "id": "exp-alt-microgame",
+  "name": "Hand-washing - Alternate Microgame (Lock Picking)",
+  "version": 1,
+  "updatedAt": 1781100100000,
+  "notes": "Hand-washing JITAI study - ALTERNATE MICROGAME variant (Lock Picking).\n\nWizard of Oz: ODI is presented to the participant as a real AI on the watch; the experimenter secretly drives it. Participants are NOT told the aim of the study or that ODI's task is an intervention.\n\nThis variant needs no tutorial - it can be run on its own. The stopping-intervention uses a DIFFERENT microgame than the default study (which uses Simon Says): here ODI fires the Lock Picking game shortly after washing begins.\n\nFlow:\n1. Welcome - ODI introduces itself on the watch.\n2. Dirty Hands - participant soils their hands.\n3. Wait (increase urge) - build the urge to wash.\n4. Wash Hands - participant starts washing. >>> START the HW timer now. <<<\n5. Intervention (Lock Picking) - ODI fires the JITAI that tries to stop the washing.\n6. Reaction - record whether the participant FOLLOWED or IGNORED (use the watch-note button).\n7. Finish Washing - participant stops. >>> STOP the HW timer and note the total duration. <<<\n8. Questionnaire.\n\n(Times are not final. Use MANUAL control if unfamiliar with the app.)\n",
+  "events": [
+    {
+      "id": "evt-welcome",
+      "duration": 30,
+      "type": "Welcome / Instructions",
+      "intervention": {
+        "id": "iv-welcome",
+        "type": "Text",
+        "notification": "VIBRATION1",
+        "message": "Hi! I'm ODI. I'll check in with a small task now and then while I take some readings. Ready when you are!",
+        "durationSeconds": 10
+      },
+      "kind": {
+        "kind": "Timed"
+      }
+    },
+    {
+      "id": "evt-dirty-hands",
+      "duration": 60,
+      "type": "Dirty Hands",
+      "kind": {
+        "kind": "Timed"
+      }
+    },
+    {
+      "id": "evt-wait-urge",
+      "duration": 15,
+      "type": "Wait (increase urge)",
+      "kind": {
+        "kind": "Timed"
+      }
+    },
+    {
+      "id": "evt-wash-hands",
+      "duration": 30,
+      "type": "Wash Hands - START HW timer",
+      "kind": {
+        "kind": "Timed"
+      }
+    },
+    {
+      "id": "evt-intervention",
+      "duration": 50,
+      "type": "Intervention (stop washing) - Lock Picking",
+      "intervention": {
+        "id": "iv-intervention",
+        "type": "Text",
+        "notification": "VIBRATION_SOUND",
+        "message": "Hey! Hold on a second - quick task with me before you carry on. Can you help me crack the lock?",
+        "durationSeconds": 45,
+        "gameType": "LOCK_PICKING"
+      },
+      "gameType": "LOCK_PICKING",
+      "kind": {
+        "kind": "Timed"
+      }
+    },
+    {
+      "id": "evt-reaction",
+      "duration": 10,
+      "type": "Reaction - record follow / ignore",
+      "kind": {
+        "kind": "Timed"
+      }
+    },
+    {
+      "id": "evt-finish-washing",
+      "duration": 120,
+      "type": "Finish Washing - STOP HW timer",
+      "kind": {
+        "kind": "Timed"
+      }
+    },
+    {
+      "id": "evt-questionnaire",
+      "duration": 5,
+      "type": "Questionnaire",
+      "kind": {
+        "kind": "Timed"
+      }
+    }
+  ],
+  "triggers": [
+    {
+      "id": "trg-researcher-cue",
+      "name": "Researcher cue",
+      "kind": {
+        "kind": "Manual"
+      },
+      "enabled": true
+    }
+  ]
+}

@@ -1,0 +1,99 @@
+{
+  "id": "exp-standstill-only",
+  "name": "Hand-washing - Stand Still Only",
+  "version": 1,
+  "updatedAt": 1781100200000,
+  "notes": "Hand-washing JITAI study - STAND STILL ONLY variant.\n\nWizard of Oz: ODI is presented to the participant as a real AI on the watch; the experimenter secretly drives it. Participants are NOT told the aim of the study or that ODI's task is an intervention.\n\nThis variant needs no tutorial - it can be run on its own. The stopping-intervention is the Stand Still microgame, fired shortly after washing begins.\n\nFlow:\n1. Welcome - ODI introduces itself on the watch.\n2. Dirty Hands - participant soils their hands.\n3. Wait (increase urge) - build the urge to wash.\n4. Wash Hands - participant starts washing. >>> START the HW timer now. <<<\n5. Intervention (Stand Still) - ODI fires the JITAI that tries to stop the washing.\n6. Reaction - record whether the participant FOLLOWED or IGNORED (use the watch-note button).\n7. Finish Washing - participant stops. >>> STOP the HW timer and note the total duration. <<<\n8. Questionnaire.\n\n(Times are not final. Use MANUAL control if unfamiliar with the app.)\n",
+  "events": [
+    {
+      "id": "evt-welcome",
+      "duration": 30,
+      "type": "Welcome / Instructions",
+      "intervention": {
+        "id": "iv-welcome",
+        "type": "Text",
+        "notification": "VIBRATION1",
+        "message": "Hi! I'm ODI. Every so often I'll ask you to hold still for a moment while I take a reading. That's all - carry on!",
+        "durationSeconds": 10
+      },
+      "kind": {
+        "kind": "Timed"
+      }
+    },
+    {
+      "id": "evt-dirty-hands",
+      "duration": 60,
+      "type": "Dirty Hands",
+      "kind": {
+        "kind": "Timed"
+      }
+    },
+    {
+      "id": "evt-wait-urge",
+      "duration": 15,
+      "type": "Wait (increase urge)",
+      "kind": {
+        "kind": "Timed"
+      }
+    },
+    {
+      "id": "evt-wash-hands",
+      "duration": 30,
+      "type": "Wash Hands - START HW timer",
+      "kind": {
+        "kind": "Timed"
+      }
+    },
+    {
+      "id": "evt-intervention",
+      "duration": 40,
+      "type": "Intervention (stop washing) - Stand Still",
+      "intervention": {
+        "id": "iv-intervention",
+        "type": "Text",
+        "notification": "VIBRATION_SOUND",
+        "message": "Hey! Hold on - let's hold completely still together. Steady your wrist until I say so.",
+        "durationSeconds": 35,
+        "gameType": "STAND_STILL"
+      },
+      "gameType": "STAND_STILL",
+      "kind": {
+        "kind": "Timed"
+      }
+    },
+    {
+      "id": "evt-reaction",
+      "duration": 10,
+      "type": "Reaction - record follow / ignore",
+      "kind": {
+        "kind": "Timed"
+      }
+    },
+    {
+      "id": "evt-finish-washing",
+      "duration": 120,
+      "type": "Finish Washing - STOP HW timer",
+      "kind": {
+        "kind": "Timed"
+      }
+    },
+    {
+      "id": "evt-questionnaire",
+      "duration": 5,
+      "type": "Questionnaire",
+      "kind": {
+        "kind": "Timed"
+      }
+    }
+  ],
+  "triggers": [
+    {
+      "id": "trg-researcher-cue",
+      "name": "Researcher cue",
+      "kind": {
+        "kind": "Manual"
+      },
+      "enabled": true
+    }
+  ]
+}
