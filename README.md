@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  <b>Latest release:</b> <a href="https://github.com/BloodWolfPlayer/JITAI-WizardControlStation/releases/latest">v1.0.0-beta</a> &middot; Windows x64 (.NET runtime bundled)
+  <b>Latest release:</b> <a href="https://github.com/BloodWolfPlayer/JITAI-WizardControlStation/releases">v1.1.0-beta</a> &middot; Windows x64 (.NET runtime bundled)
 </p>
 
 _The researcher-facing desktop application for running intervention studies with the JITAI Wizard wearable system._
@@ -49,16 +49,16 @@ For documentation on the Android phone and watch apps, see the [JITAI-WizardAndr
 
 ## Download & Install (Beta)
 
-> Just want to run it? Grab the latest build from the [**Releases page**](https://github.com/BloodWolfPlayer/JITAI-WizardControlStation/releases/latest) -- the .NET 10 runtime is bundled, so nothing else needs installing.
+> Just want to run it? Grab the latest build from the [**Releases page**](https://github.com/BloodWolfPlayer/JITAI-WizardControlStation/releases) -- the .NET 10 runtime is bundled, so nothing else needs installing.
 
-1. Download **`JITAI-WizardControlStation-v1.0.0-beta-win-x64.zip`** from the Releases page.
+1. Download **`JITAI-WizardControlStation-v1.1.0-beta-win-x64.zip`** from the Releases page.
 2. Extract the ZIP anywhere (for example `C:\JITAI-Wizard`). Keep all files together -- the `.exe` needs the DLLs and `Assets`/`Database` folders beside it.
 3. Run **`OcdWizard.ControlStation.exe`**.
 4. On first launch, Windows SmartScreen may warn about an unrecognized app (the beta is unsigned) -- click **More info → Run anyway**.
 
 The database is created automatically at `%APPDATA%\OcdWizard\data.db` on first run.
 
-**Requires Windows 10/11 x64.** The companion **Android + Wear OS apps** are required and released separately: [JITAI-WizardAndroid releases](https://github.com/BloodWolfPlayer/JITAI-WizardAndroid/releases/latest).
+**Requires Windows 10/11 x64.** The companion **Android + Wear OS apps** are required and released separately: [JITAI-WizardAndroid releases](https://github.com/BloodWolfPlayer/JITAI-WizardAndroid/releases).
 
 Prefer to build from source? See [Building the Project](#building-the-project).
 
