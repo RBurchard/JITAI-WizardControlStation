@@ -23,6 +23,7 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty] private string _sessionName = "New Session";
     [ObservableProperty] private string _sessionNotes = "";
     [ObservableProperty] private bool _sessionActive;
+    [ObservableProperty] private bool _isStartingSession;
     [ObservableProperty] private string _statusMessage = "Ready";
     [ObservableProperty] private bool _adbMissing;
     [ObservableProperty] private bool _dualParticipantMode = false;
@@ -70,14 +71,22 @@ public partial class MainViewModel : ObservableObject
     [RelayCommand]
     private async Task StartSessionAsync()
     {
-        _activeSessionId = Guid.NewGuid().ToString();
-        SessionNotes = "";
-        var now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-        await _db.InsertSessionAsync(_activeSessionId, now, SessionName);
-        await Participant1.SetSessionAsync(_activeSessionId, SessionName);
-        await Participant2.SetSessionAsync(_activeSessionId, SessionName);
-        SessionActive = true;
-        StatusMessage = $"Session started: {_activeSessionId[..8]}";
+        IsStartingSession = true;
+        try
+        {
+            _activeSessionId = Guid.NewGuid().ToString();
+            SessionNotes = "";
+            var now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+            await _db.InsertSessionAsync(_activeSessionId, now, SessionName);
+            await Participant1.SetSessionAsync(_activeSessionId, SessionName);
+            await Participant2.SetSessionAsync(_activeSessionId, SessionName);
+            SessionActive = true;
+            StatusMessage = $"Session started: {_activeSessionId[..8]}";
+        }
+        finally
+        {
+            IsStartingSession = false;
+        }
     }
 
     [RelayCommand]

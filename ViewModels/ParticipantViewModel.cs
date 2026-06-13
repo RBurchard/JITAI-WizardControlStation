@@ -140,6 +140,10 @@ public partial class ParticipantViewModel : ObservableObject
         ExperimentSync.Log += AppendLog;
         LogSync.EnvelopeReceived += env => _ = RunLifecycle.OnEnvelopeAsync(env);
         RunLifecycle.StateChanged += OnEngineStateChanged;
+        // Reset the tracker overlay whenever the loaded experiment changes so stale
+        // run state (highlighted event, countdown, "NOW RUNNING" banner) never bleeds
+        // into a different experiment or a freshly-connected device session.
+        ExperimentEditor.ExperimentLoaded += () => Dispatcher.UIThread.Post(ResetOverlayState);
         _countdownTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
         _countdownTimer.Tick += (_, _) => OnCountdownTick();
         _device.DataReceived += OnDataReceived;
@@ -158,6 +162,8 @@ public partial class ParticipantViewModel : ObservableObject
         var ok = await _device.ConnectAsync(IpAddress);
         if (ok)
         {
+            // A fresh connection means whatever the engine was showing before is now stale.
+            ResetOverlayState();
             _participantId ??= Guid.NewGuid().ToString();
             _suppressParticipantPush = true;
             if (string.IsNullOrEmpty(ParticipantKey)) ParticipantKey = _participantId;
@@ -199,10 +205,18 @@ public partial class ParticipantViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private async Task StartExperimentAsync() => await RunLifecycle.DispatchAsync("start");
+    private async Task StartExperimentAsync()
+    {
+        ResetOverlayState();
+        await RunLifecycle.DispatchAsync("start");
+    }
 
     [RelayCommand]
-    private async Task StartAutoAsync() => await RunLifecycle.DispatchAsync("auto");
+    private async Task StartAutoAsync()
+    {
+        ResetOverlayState();
+        await RunLifecycle.DispatchAsync("auto");
+    }
 
     [RelayCommand]
     private async Task PauseExperimentAsync() => await RunLifecycle.DispatchAsync("pause");
@@ -373,6 +387,20 @@ public partial class ParticipantViewModel : ObservableObject
             try { MotionSamplesReceived?.Invoke(batch.Snapshots); }
             catch { }
         }
+    }
+
+    // Clears all live tracker state so the overlay starts from scratch. Safe to call from any
+    // thread — always posts to the UI thread internally.
+    private void ResetOverlayState()
+    {
+        Dispatcher.UIThread.Post(() =>
+        {
+            _engineRunning = false;
+            _localElapsed = 0f;
+            _randomWaitRemaining = null;
+            _countdownTimer.Stop();
+            SetCurrentEventIndex(-1);
+        });
     }
 
     // Surfaces the engine's live state (which event is active + how long it's been running) so

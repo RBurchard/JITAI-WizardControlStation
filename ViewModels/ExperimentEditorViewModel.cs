@@ -198,6 +198,13 @@ public partial class ExperimentEditorViewModel : ObservableObject
     private long _version = 1L;
     private bool _suppressNotify = false;
 
+    /// <summary>
+    /// Raised after any call to <see cref="LoadFromDto"/> so consumers can reset
+    /// experiment-run state (e.g. the tracker overlay) on a clean switch.
+    /// Not fired for the initial seed in the constructor.
+    /// </summary>
+    public event Action? ExperimentLoaded;
+
     public ObservableCollection<ExperimentEventEditModel> Events { get; } = new();
     public ObservableCollection<TriggerEditModel> Triggers { get; } = new();
 
@@ -208,6 +215,8 @@ public partial class ExperimentEditorViewModel : ObservableObject
     public IReadOnlyList<string> GameTypeOptions => ExperimentEventEditModel.GameTypeOptions;
     public IReadOnlyList<string> PhoneTaskOptions => ExperimentEventEditModel.PhoneTaskOptions;
 
+    private bool _initializingFromConstructor = true;
+
     public ExperimentEditorViewModel(ExperimentSyncService sync)
     {
         _sync = sync;
@@ -215,6 +224,7 @@ public partial class ExperimentEditorViewModel : ObservableObject
         // Seed a fresh editor with the bundled default. A later phone Pull overwrites this,
         // and the phone's fresh experiment is the same bundled default, so they match.
         LoadFromDto(DefaultExperiment.Load());
+        _initializingFromConstructor = false;
     }
 
     public void LoadFromDto(ExperimentDto dto)
@@ -250,6 +260,11 @@ public partial class ExperimentEditorViewModel : ObservableObject
         {
             _suppressNotify = false;
         }
+
+        // Notify consumers that the experiment changed so they can reset live-run state.
+        // Skipped for the initial constructor seed — nothing is running yet.
+        if (!_initializingFromConstructor)
+            ExperimentLoaded?.Invoke();
     }
 
     private void OnItemPropertyChanged(object? sender, PropertyChangedEventArgs e)

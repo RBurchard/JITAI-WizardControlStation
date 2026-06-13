@@ -154,5 +154,22 @@
 
         <!-- Guided tour overlay (hidden until first launch or the Tutorial button). -->
         <ctrl:TutorialOverlay Name="Tutorial" />
+
+        <!-- "Starting session…" blocking overlay shown while devices are being readied. -->
+        <Border IsVisible="{Binding IsStartingSession}"
+                Background="#80000000">
+            <Border Background="#1E2040" CornerRadius="12" Padding="40,28"
+                    HorizontalAlignment="Center" VerticalAlignment="Center"
+                    BoxShadow="0 8 32 0 #60000000">
+                <StackPanel Spacing="10" HorizontalAlignment="Center">
+                    <TextBlock Text="Starting Session…"
+                               FontSize="18" FontWeight="Bold"
+                               Foreground="White" HorizontalAlignment="Center" />
+                    <TextBlock Text="Please wait while the devices get ready."
+                               FontSize="13" Foreground="#99AABB"
+                               HorizontalAlignment="Center" />
+                </StackPanel>
+            </Border>
+        </Border>
     </Panel>
 </Window>
