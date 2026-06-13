@@ -9,7 +9,7 @@
     <AssemblyName>OcdWizard.ControlStation</AssemblyName>
     <RootNamespace>OcdWizard.ControlStation</RootNamespace>
     <ApplicationIcon>Assets\odi_icon.ico</ApplicationIcon>
-    <Version>1.1.0</Version>
+    <Version>1.2.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
