@@ -10,7 +10,7 @@ namespace OcdWizard.ControlStation.Views;
 public partial class MotionView : UserControl
 {
     private MotionVisualizer? _visualizer;
-    private ParticipantViewModel? _vm;
+    private IMotionSource? _vm;
     private bool _suppressRemapEvents;
 
     // ComboBox/CheckBox refs populated in InitializeComponent
@@ -36,28 +36,34 @@ public partial class MotionView : UserControl
         // Set defaults to match MotionReconstructor defaults (X, -Z, -Y)
         SyncControlsFromVisualizer();
 
-        AttachedToVisualTree += (_, _) =>
-        {
-            _vm = DataContext as ParticipantViewModel;
-            if (_vm != null) _vm.MotionSamplesReceived += OnMotionSamples;
-        };
-        DetachedFromVisualTree += (_, _) =>
-        {
-            if (_vm != null) _vm.MotionSamplesReceived -= OnMotionSamples;
-            _vm = null;
-        };
-        DataContextChanged += (_, _) =>
-        {
-            if (_vm != null) _vm.MotionSamplesReceived -= OnMotionSamples;
-            _vm = DataContext as ParticipantViewModel;
-            if (_vm != null) _vm.MotionSamplesReceived += OnMotionSamples;
-        };
+        AttachedToVisualTree += (_, _) => Subscribe(DataContext as IMotionSource);
+        DetachedFromVisualTree += (_, _) => Subscribe(null);
+        DataContextChanged += (_, _) => Subscribe(DataContext as IMotionSource);
     }
 
     private void InitializeComponent() => AvaloniaXamlLoader.Load(this);
 
+    private void Subscribe(IMotionSource? source)
+    {
+        if (ReferenceEquals(_vm, source)) return;
+        if (_vm != null)
+        {
+            _vm.MotionSamplesReceived -= OnMotionSamples;
+            _vm.MotionResetRequested -= OnMotionReset;
+        }
+        _vm = source;
+        if (_vm != null)
+        {
+            _vm.MotionSamplesReceived += OnMotionSamples;
+            _vm.MotionResetRequested += OnMotionReset;
+        }
+    }
+
     private void OnMotionSamples(IReadOnlyList<WatchDataSnapshot> samples)
         => _visualizer?.EnqueueSamples(samples);
+
+    // Replay seeking backwards clears the reconstructor so orientation + trail re-warm cleanly.
+    private void OnMotionReset() => _visualizer?.Reset();
 
     private void OnResetVelocityClick(object? sender, RoutedEventArgs e) => _visualizer?.ResetVelocity();
     private void OnResetClick(object? sender, RoutedEventArgs e) => _visualizer?.Reset();

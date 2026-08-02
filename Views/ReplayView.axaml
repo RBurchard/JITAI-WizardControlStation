@@ -1,0 +1,208 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:OcdWizard.ControlStation.ViewModels"
+             xmlns:models="using:OcdWizard.ControlStation.Models"
+             xmlns:views="using:OcdWizard.ControlStation.Views"
+             x:Class="OcdWizard.ControlStation.Views.ReplayView"
+             x:DataType="vm:ReplayViewModel">
+    <DockPanel>
+
+        <!-- ── Top bar ─────────────────────────────────────────────────────── -->
+        <Border DockPanel.Dock="Top" Background="#12152A" Padding="14,8">
+            <Grid ColumnDefinitions="Auto,Auto,*,Auto">
+                <Button Grid.Column="0" Classes="Accent" Content="📂  Import CSV"
+                        Command="{Binding ImportCsvCommand}"
+                        CommandParameter="{Binding $parent[Window]}" Margin="0,0,8,0" />
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="14" VerticalAlignment="Center"
+                            IsVisible="{Binding HasData}">
+                    <StackPanel Spacing="0">
+                        <TextBlock Text="{Binding ImportedFileName}" Foreground="White" FontSize="12" FontWeight="SemiBold" />
+                        <TextBlock Text="{Binding SessionName, StringFormat='Session: {0}'}" Foreground="#7788AA" FontSize="10" />
+                    </StackPanel>
+                    <TextBlock Text="{Binding ExperimentName, StringFormat='🧪 {0}'}" Foreground="#79B98A" FontSize="11"
+                               VerticalAlignment="Center" IsVisible="{Binding HasExperiment}" />
+                </StackPanel>
+
+                <StackPanel Grid.Column="3" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                    <Button Classes="Subtle" Content="📎  Attach Experiment JSON"
+                            Command="{Binding AttachExperimentJsonCommand}"
+                            CommandParameter="{Binding $parent[Window]}"
+                            IsEnabled="{Binding HasData}" />
+                    <Button Classes="Primary" Content="💾  Save"
+                            Command="{Binding SaveCommand}"
+                            CommandParameter="{Binding $parent[Window]}"
+                            IsEnabled="{Binding HasData}" />
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- ── Notes ───────────────────────────────────────────────────────── -->
+        <Border DockPanel.Dock="Top" Background="#0E1124" Padding="14,8"
+                BorderBrush="#1E2238" BorderThickness="0,0,0,1"
+                IsVisible="{Binding HasData}">
+            <Grid ColumnDefinitions="Auto,*">
+                <TextBlock Grid.Column="0" Text="📝  Notes:" Foreground="#7788AA"
+                           VerticalAlignment="Top" FontSize="12" Margin="0,6,10,0" />
+                <TextBox Grid.Column="1" Text="{Binding Notes}"
+                         Watermark="Session notes (editable — saved with markers)"
+                         AcceptsReturn="True" TextWrapping="Wrap"
+                         MinHeight="32" MaxHeight="90"
+                         ScrollViewer.VerticalScrollBarVisibility="Auto" />
+            </Grid>
+        </Border>
+
+        <!-- ── Timeline strip (bottom) ─────────────────────────────────────── -->
+        <Border DockPanel.Dock="Bottom" Background="#0C0F1E" Padding="12,8"
+                BorderBrush="#1E2238" BorderThickness="0,1,0,0"
+                IsVisible="{Binding HasData}">
+            <StackPanel Spacing="8">
+
+                <!-- Transport -->
+                <Grid ColumnDefinitions="Auto,Auto,*,Auto">
+                    <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                        <Button Classes="Primary" Command="{Binding PlayPauseCommand}" MinWidth="46">
+                            <Panel>
+                                <TextBlock Text="▶" IsVisible="{Binding !IsPlaying}" />
+                                <TextBlock Text="⏸" IsVisible="{Binding IsPlaying}" />
+                            </Panel>
+                        </Button>
+                        <Button Classes="Subtle" Content="0.5×" Command="{Binding SetSpeedCommand}" CommandParameter="0.5" />
+                        <Button Classes="Subtle" Content="1×"   Command="{Binding SetSpeedCommand}" CommandParameter="1" />
+                        <Button Classes="Subtle" Content="2×"   Command="{Binding SetSpeedCommand}" CommandParameter="2" />
+                        <Button Classes="Subtle" Content="4×"   Command="{Binding SetSpeedCommand}" CommandParameter="4" />
+                        <TextBlock Text="{Binding PlaybackSpeedDisplay}" VerticalAlignment="Center"
+                                   Foreground="#79B98A" FontSize="12" Margin="2,0,0,0" />
+                    </StackPanel>
+
+                    <!-- Fine stepping -->
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="4" VerticalAlignment="Center" Margin="14,0">
+                        <Button Classes="Subtle" Content="-1s"   Command="{Binding StepCommand}" CommandParameter="-1000" />
+                        <Button Classes="Subtle" Content="-100"  Command="{Binding StepCommand}" CommandParameter="-100" />
+                        <Button Classes="Subtle" Content="◀|"    Command="{Binding StepSampleCommand}" CommandParameter="-1"
+                                ToolTip.Tip="Previous sample" />
+                        <Button Classes="Subtle" Content="|▶"    Command="{Binding StepSampleCommand}" CommandParameter="1"
+                                ToolTip.Tip="Next sample" />
+                        <Button Classes="Subtle" Content="+100"  Command="{Binding StepCommand}" CommandParameter="100" />
+                        <Button Classes="Subtle" Content="+1s"   Command="{Binding StepCommand}" CommandParameter="1000" />
+                    </StackPanel>
+
+                    <!-- Time read-out + jump-to entry -->
+                    <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="6"
+                                HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <TextBlock Text="{Binding CurrentTimeDisplay}" FontFamily="Consolas,Courier New,monospace"
+                                   FontSize="15" Foreground="#9CFFB0" VerticalAlignment="Center" />
+                        <TextBlock Text="/" Foreground="#556" VerticalAlignment="Center" />
+                        <TextBlock Text="{Binding DurationDisplay}" FontFamily="Consolas,Courier New,monospace"
+                                   FontSize="13" Foreground="#7788AA" VerticalAlignment="Center" />
+                        <TextBox x:Name="TimeEntry" Width="110" Watermark="mm:ss.mmm" Margin="10,0,0,0"
+                                 KeyDown="OnTimeEntryKeyDown" VerticalAlignment="Center" />
+                        <Button Classes="Subtle" Content="Go" Click="OnGoToTimeClick" />
+                    </StackPanel>
+
+                    <!-- Add marker -->
+                    <Button Grid.Column="3" Classes="Accent" Content="➕  Add Marker"
+                            Command="{Binding AddMarkerCommand}"
+                            CommandParameter="{Binding $parent[Window]}" VerticalAlignment="Center" />
+                </Grid>
+
+                <!-- Timeline -->
+                <views:TimelineControl x:Name="Timeline" Height="74"
+                                       MinTs="{Binding MinTs}" MaxTs="{Binding MaxTs}"
+                                       CurrentMs="{Binding CurrentAbsMs}" />
+                <TextBlock Text="Click to seek · scroll to zoom · right-drag to pan"
+                           Foreground="#4A5478" FontSize="10" HorizontalAlignment="Center" />
+
+                <!-- User marker list -->
+                <ListBox ItemsSource="{Binding UserMarkers}" MaxHeight="92" Background="Transparent"
+                         IsVisible="{Binding UserMarkers.Count}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate x:DataType="models:UserMarker">
+                            <Grid ColumnDefinitions="120,*,Auto,Auto,Auto" Margin="0,1">
+                                <TextBlock Grid.Column="0"
+                                           Text="{Binding Ts, Converter={StaticResource EpochMsToClockConverter}}"
+                                           FontFamily="Consolas,Courier New,monospace" FontSize="11"
+                                           Foreground="#F4D35E" VerticalAlignment="Center" />
+                                <TextBlock Grid.Column="1" Text="{Binding Label}" FontSize="12"
+                                           Foreground="#E0E0F0" VerticalAlignment="Center" Margin="6,0"
+                                           TextTrimming="CharacterEllipsis" />
+                                <Button Grid.Column="2" Classes="Subtle" Content="Go" FontSize="11" Padding="8,3"
+                                        Command="{Binding $parent[ItemsControl].((vm:ReplayViewModel)DataContext).SeekToMarkerCommand}"
+                                        CommandParameter="{Binding}" Margin="0,0,4,0" />
+                                <Button Grid.Column="3" Classes="Subtle" Content="✎" FontSize="11" Padding="8,3"
+                                        Command="{Binding $parent[ItemsControl].((vm:ReplayViewModel)DataContext).EditMarkerCommand}"
+                                        CommandParameter="{Binding}" Margin="0,0,4,0" />
+                                <Button Grid.Column="4" Classes="Danger" Content="✕" FontSize="11" Padding="8,3"
+                                        Command="{Binding $parent[ItemsControl].((vm:ReplayViewModel)DataContext).RemoveMarkerCommand}"
+                                        CommandParameter="{Binding}" />
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </StackPanel>
+        </Border>
+
+        <!-- ── Center: participants + overlay ──────────────────────────────── -->
+        <Grid>
+            <!-- Empty state -->
+            <StackPanel IsVisible="{Binding !HasData}" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="10">
+                <TextBlock Text="🎞" FontSize="48" HorizontalAlignment="Center" />
+                <TextBlock Text="Replay Mode" FontSize="20" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" />
+                <TextBlock Text="Import a session CSV (Control Station or phone export) to relive the recording."
+                           Foreground="#7788AA" HorizontalAlignment="Center" TextWrapping="Wrap" MaxWidth="420"
+                           TextAlignment="Center" />
+                <Button Classes="Accent" Content="📂  Import CSV" HorizontalAlignment="Center"
+                        Command="{Binding ImportCsvCommand}" CommandParameter="{Binding $parent[Window]}" />
+            </StackPanel>
+
+            <DockPanel IsVisible="{Binding HasData}">
+                <!-- Best-effort experiment overlay -->
+                <Border DockPanel.Dock="Top" Margin="6,6,6,0"
+                        Background="#13301B" BorderBrush="#1F5E2C" BorderThickness="1"
+                        CornerRadius="6" Padding="12,8" IsVisible="{Binding OverlayActive}">
+                    <StackPanel Spacing="6">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <StackPanel Grid.Column="0" Spacing="1">
+                                <TextBlock Text="NOW (best-effort)" FontSize="9" Foreground="#79B98A" />
+                                <TextBlock Text="{Binding OverlayTitle}" FontSize="15" FontWeight="Bold" Foreground="#DFF5E4" />
+                                <TextBlock Text="{Binding OverlayDetail}" FontSize="11" Foreground="#9FcaA8"
+                                           IsVisible="{Binding OverlayDetail, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                            </StackPanel>
+                            <TextBlock Grid.Column="1" Text="{Binding AttachedExperimentName}" FontSize="11"
+                                       Foreground="#79B98A" VerticalAlignment="Center"
+                                       IsVisible="{Binding HasAttachedExperiment}" />
+                        </Grid>
+
+                        <!-- Attached experiment event reference (highlights current, approximate) -->
+                        <ItemsControl ItemsSource="{Binding ExperimentEvents}" IsVisible="{Binding HasAttachedExperiment}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate><WrapPanel Orientation="Horizontal" /></ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="vm:ReplayEventRow">
+                                    <Border CornerRadius="4" Padding="7,3" Margin="0,0,4,4"
+                                            Background="{Binding IsCurrent, Converter={StaticResource BoolToBrushConverter}}">
+                                        <TextBlock FontSize="11" Foreground="White">
+                                            <Run Text="{Binding IndexLabel}" /><Run Text=". " /><Run Text="{Binding Type}" />
+                                        </TextBlock>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
+
+                <ItemsControl ItemsSource="{Binding Participants}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate><UniformGrid Rows="1" /></ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="vm:ReplayParticipantViewModel">
+                            <views:ReplayParticipantPanel DataContext="{Binding}" />
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </DockPanel>
+        </Grid>
+
+    </DockPanel>
+</UserControl>

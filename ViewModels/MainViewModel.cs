@@ -27,10 +27,13 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty] private string _statusMessage = "Ready";
     [ObservableProperty] private bool _adbMissing;
     [ObservableProperty] private bool _dualParticipantMode = false;
+    // Top-level mode: false = live "Experiment Mode", true = "Replay Mode" (CSV playback).
+    [ObservableProperty] private bool _isReplayMode;
     public string AdbDownloadUrl => _adb.DownloadUrl;
 
     public ParticipantViewModel Participant1 { get; }
     public ParticipantViewModel Participant2 { get; }
+    public ReplayViewModel Replay { get; } = new();
     public UsbDeviceSource UsbSource => _usbSource;
 
     private static string DbPath =>

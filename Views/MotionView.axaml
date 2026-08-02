@@ -4,7 +4,7 @@
              xmlns:views="using:OcdWizard.ControlStation.Views"
              xmlns:ctrl="using:OcdWizard.ControlStation.Controls"
              x:Class="OcdWizard.ControlStation.Views.MotionView"
-             x:DataType="vm:ParticipantViewModel">
+             x:DataType="vm:IMotionSource">
     <DockPanel>
 
         <!-- Top bar: reset buttons + live heartbeat -->

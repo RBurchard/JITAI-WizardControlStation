@@ -18,7 +18,7 @@
         <Border DockPanel.Dock="Top" Background="#12152A" Padding="16,10">
             <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto,Auto,Auto">
 
-                <!-- Title -->
+                <!-- Title + mode toggle -->
                 <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="10"
                             VerticalAlignment="Center">
                     <TextBlock Text="🧪" FontSize="22" VerticalAlignment="Center" />
@@ -27,11 +27,24 @@
                                    Foreground="White" />
                         <TextBlock Text="Control Station" FontSize="10" Foreground="#6677AA" />
                     </StackPanel>
+                    <ToggleButton IsChecked="{Binding IsReplayMode}"
+                                  Margin="14,0,0,0" Padding="12,7" CornerRadius="6"
+                                  Background="#252535" Foreground="#CCC"
+                                  BorderThickness="1" BorderBrush="#3A3A55"
+                                  ToolTip.Tip="Switch between live Experiment Mode and CSV Replay Mode">
+                        <Panel>
+                            <TextBlock Text="🧪  Experiment Mode" IsVisible="{Binding !IsReplayMode}"
+                                       VerticalAlignment="Center" />
+                            <TextBlock Text="🎞  Replay Mode" IsVisible="{Binding IsReplayMode}"
+                                       VerticalAlignment="Center" />
+                        </Panel>
+                    </ToggleButton>
                 </StackPanel>
 
                 <!-- Session name -->
                 <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8"
-                            VerticalAlignment="Center" Margin="20,0">
+                            VerticalAlignment="Center" Margin="20,0"
+                            IsVisible="{Binding !IsReplayMode}">
                     <TextBlock Text="Session:" Foreground="#7788AA"
                                VerticalAlignment="Center" FontSize="12" />
                     <TextBox Name="TutSessionName" Text="{Binding SessionName}" Width="200"
@@ -41,6 +54,7 @@
                 <!-- Single/Dual watch toggle -->
                 <ToggleButton Grid.Column="2" Name="TutWatchToggle"
                               IsChecked="{Binding DualParticipantMode}"
+                              IsVisible="{Binding !IsReplayMode}"
                               Margin="0,0,6,0"
                               Padding="12,7"
                               CornerRadius="6"
@@ -63,6 +77,7 @@
                 <Button Grid.Column="3" Name="TutStartSession" Classes="Primary"
                         Content="▶  Start Session"
                         Command="{Binding StartSessionCommand}"
+                        IsVisible="{Binding !IsReplayMode}"
                         IsEnabled="{Binding SessionActive, Converter={x:Static BoolConverters.Not}}"
                         Margin="0,0,6,0" />
 
@@ -70,6 +85,7 @@
                 <Button Grid.Column="4" Name="TutStopSession" Classes="Danger"
                         Content="■  Stop Session"
                         Command="{Binding StopSessionCommand}"
+                        IsVisible="{Binding !IsReplayMode}"
                         IsEnabled="{Binding SessionActive}"
                         Margin="0,0,6,0" />
 
@@ -78,9 +94,11 @@
                             VerticalAlignment="Center">
                     <Button Name="TutExport" Classes="Subtle"
                             Content="⬇  Export CSV"
+                            IsVisible="{Binding !IsReplayMode}"
                             Click="OnExportClick" />
                     <Button Name="TutTrivia" Classes="Subtle"
                             Content="📋  Trivia"
+                            IsVisible="{Binding !IsReplayMode}"
                             Click="OnManageTriviaClick" />
                     <Button Name="TutTutorialBtn" Classes="Subtle"
                             Content="❔  Tutorial"
@@ -99,7 +117,8 @@
 
         <!-- ── Session notes ──────────────────────────────────────────── -->
         <Border DockPanel.Dock="Top" Background="#0E1124" Padding="16,8"
-                BorderBrush="#1E2238" BorderThickness="0,0,0,1">
+                BorderBrush="#1E2238" BorderThickness="0,0,0,1"
+                IsVisible="{Binding !IsReplayMode}">
             <Grid ColumnDefinitions="Auto,*,Auto">
                 <TextBlock Grid.Column="0" Text="📝  Session notes:" Foreground="#7788AA"
                            VerticalAlignment="Top" FontSize="12" Margin="0,6,10,0" />
@@ -118,6 +137,8 @@
 
         <!-- ── Main content ───────────────────────────────────────────── -->
         <Grid Margin="6">
+          <!-- Experiment Mode (live) -->
+          <Grid IsVisible="{Binding !IsReplayMode}">
             <!-- Single-participant layout (full width) -->
             <ContentControl IsVisible="{Binding !DualParticipantMode}"
                             Content="{Binding Participant1}">
@@ -148,6 +169,12 @@
                     </ContentControl.ContentTemplate>
                 </ContentControl>
             </Grid>
+          </Grid>
+
+          <!-- Replay Mode (CSV playback) -->
+          <Panel IsVisible="{Binding IsReplayMode}">
+            <views:ReplayView DataContext="{Binding Replay}" />
+          </Panel>
         </Grid>
 
     </DockPanel>

@@ -124,5 +124,6 @@
                                          FalseBrush="#444" />
         <converters:IndexToBoolConverter x:Key="IndexToBoolConverter" />
         <converters:AbsValueConverter x:Key="AbsValueConverter" />
+        <converters:EpochMsToClockConverter x:Key="EpochMsToClockConverter" />
     </Application.Resources>
 </Application>

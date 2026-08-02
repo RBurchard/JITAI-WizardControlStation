@@ -12,7 +12,7 @@ using Avalonia.Threading;
 
 namespace OcdWizard.ControlStation.ViewModels;
 
-public partial class ParticipantViewModel : ObservableObject
+public partial class ParticipantViewModel : ObservableObject, IMotionSource
 {
     private readonly DatabaseService _db;
     private readonly DeviceConnection _device = new();
@@ -90,6 +90,12 @@ public partial class ParticipantViewModel : ObservableObject
     /// than sampling only the latest value. Fired from a background thread.
     /// </summary>
     public event Action<IReadOnlyList<WatchDataSnapshot>>? MotionSamplesReceived;
+
+    // Part of IMotionSource; only the replay source ever seeks backward, so the live panel
+    // never raises this. Present so MotionView can bind to the shared interface.
+#pragma warning disable CS0067
+    public event Action? MotionResetRequested;
+#pragma warning restore CS0067
 
     partial void OnSelectedDeviceChanged(DiscoveredDevice? value)
     {
