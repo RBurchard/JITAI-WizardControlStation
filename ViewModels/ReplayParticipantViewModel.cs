@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using CommunityToolkit.Mvvm.ComponentModel;
+using OcdWizard.ControlStation.Localization;
 using OcdWizard.ControlStation.Models;
 
 namespace OcdWizard.ControlStation.ViewModels;
@@ -26,6 +27,7 @@ public partial class ReplayParticipantViewModel : ObservableObject, IMotionSourc
     public string Key { get; }
 
     [ObservableProperty] private float _currentBpm;
+    [ObservableProperty] private string _currentBpmDisplay = Loc.Format("Common_BpmValueFormat", 0f);
     [ObservableProperty] private float _accelX;
     [ObservableProperty] private float _accelY;
     [ObservableProperty] private float _accelZ;
@@ -37,6 +39,9 @@ public partial class ReplayParticipantViewModel : ObservableObject, IMotionSourc
     [ObservableProperty] private long _currentSampleTs;
     [ObservableProperty] private int _sampleCount;
 
+    /// <summary>Pre-formatted "{0} samples" label (<see cref="SampleCount"/> is fixed at construction).</summary>
+    public string SampleCountDisplay { get; }
+
     public event Action<IReadOnlyList<WatchDataSnapshot>>? MotionSamplesReceived;
     public event Action? MotionResetRequested;
 
@@ -46,7 +51,10 @@ public partial class ReplayParticipantViewModel : ObservableObject, IMotionSourc
         Key = p.Key;
         _samples = p.Samples;
         SampleCount = _samples.Count;
+        SampleCountDisplay = Loc.Format("Replay_SampleCountFormat", SampleCount);
     }
+
+    partial void OnCurrentBpmChanged(float value) => CurrentBpmDisplay = Loc.Format("Common_BpmValueFormat", value);
 
     /// <summary>Clear motion state back to "nothing fed" (called on (re)load / seek to start).</summary>
     public void ResetMotion()

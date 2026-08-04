@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 using System.Text.Json;
+using OcdWizard.ControlStation.Localization;
 using OcdWizard.ControlStation.Models;
 
 namespace OcdWizard.ControlStation.Services;
@@ -246,7 +247,7 @@ public static class ReplayCsvParser
         var ts = ParseLong(Get(h, f, "ts"));
         if (ts == 0) return;
         var value = ExtractJsonString(Get(h, f, "payload_json"), "value");
-        markers.Add(new ReplayMarker(ts, ReplayMarkerKind.Note, "Note",
+        markers.Add(new ReplayMarker(ts, ReplayMarkerKind.Note, Loc.Get("Replay_MarkerLabel_Note"),
             string.IsNullOrWhiteSpace(value) ? null : value));
     }
 
@@ -256,16 +257,18 @@ public static class ReplayCsvParser
         if (sentAt == 0) return;
         var game = Get(h, f, "game_type");
         var notif = Get(h, f, "notification_type");
-        var label = !string.IsNullOrEmpty(game) ? game : (!string.IsNullOrEmpty(notif) ? notif : "Intervention");
-        markers.Add(new ReplayMarker(sentAt, ReplayMarkerKind.InterventionSent, $"Intervention: {label}"));
+        var label = !string.IsNullOrEmpty(game) ? game : (!string.IsNullOrEmpty(notif) ? notif : Loc.Get("Replay_MarkerLabel_Intervention"));
+        markers.Add(new ReplayMarker(sentAt, ReplayMarkerKind.InterventionSent, Loc.Format("Replay_MarkerLabel_InterventionSent", label)));
 
         var response = Get(h, f, "response");
         if (!string.IsNullOrEmpty(response))
         {
             var rt = ParseLong(Get(h, f, "reaction_time_ms"));
             var at = rt > 0 ? sentAt + rt : sentAt;
-            var detail = rt > 0 ? $"{response} (rt {rt / 1000.0:0.0}s)" : response;
-            markers.Add(new ReplayMarker(at, ReplayMarkerKind.Response, $"Response: {response}", detail));
+            var detail = rt > 0
+                ? Loc.Format("Replay_MarkerDetail_ResponseWithReactionTime", response, (rt / 1000.0).ToString("0.0", Loc.Instance.Culture))
+                : response;
+            markers.Add(new ReplayMarker(at, ReplayMarkerKind.Response, Loc.Format("Replay_MarkerLabel_Response", response), detail));
         }
     }
 
@@ -276,10 +279,10 @@ public static class ReplayCsvParser
         var endRaw = Get(h, f, "ended_at");
         long? end = ParseLong(endRaw) is > 0 and var e ? e : null;
         var nm = Get(h, f, "experiment_name");
-        if (string.IsNullOrWhiteSpace(nm)) nm = "Experiment";
+        if (string.IsNullOrWhiteSpace(nm)) nm = Loc.Get("Replay_RunFallbackName");
         runs.Add(new ReplayRun(nm, start, end));
-        markers.Add(new ReplayMarker(start, ReplayMarkerKind.RunStart, $"Run start: {nm}"));
-        if (end is long ee) markers.Add(new ReplayMarker(ee, ReplayMarkerKind.RunEnd, $"Run end: {nm}"));
+        markers.Add(new ReplayMarker(start, ReplayMarkerKind.RunStart, Loc.Format("Replay_MarkerLabel_RunStart", nm)));
+        if (end is long ee) markers.Add(new ReplayMarker(ee, ReplayMarkerKind.RunEnd, Loc.Format("Replay_MarkerLabel_RunEnd", nm)));
     }
 
     private static void AddDistractionMarker(List<ReplayMarker> markers, Dictionary<string, int> h, List<string> f)
@@ -287,7 +290,7 @@ public static class ReplayCsvParser
         var start = ParseLong(Get(h, f, "started_at"));
         if (start == 0) return;
         var response = Get(h, f, "response");
-        markers.Add(new ReplayMarker(start, ReplayMarkerKind.Distraction, "Distraction",
+        markers.Add(new ReplayMarker(start, ReplayMarkerKind.Distraction, Loc.Get("Replay_MarkerLabel_Distraction"),
             string.IsNullOrEmpty(response) ? null : response));
     }
 

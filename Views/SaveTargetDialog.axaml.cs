@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
+using OcdWizard.ControlStation.Localization;
 
 namespace OcdWizard.ControlStation.Views;
 
@@ -24,7 +25,7 @@ public partial class SaveTargetDialog : Window
     {
         var dialog = new SaveTargetDialog();
         if (!string.IsNullOrEmpty(fileName) && dialog.FindControl<TextBlock>("Message") is { } msg)
-            msg.Text = $"Write the edited notes and markers to “{fileName}”, or save a new copy?";
+            msg.Text = Loc.Format("SaveTarget_MessageWithFileFormat", fileName);
         await dialog.ShowDialog(owner);
         return await dialog._tcs.Task;
     }

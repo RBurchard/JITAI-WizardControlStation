@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using OcdWizard.ControlStation.Database;
+using OcdWizard.ControlStation.Localization;
 using OcdWizard.ControlStation.Models;
 
 namespace OcdWizard.ControlStation.ViewModels;
@@ -33,7 +34,7 @@ public partial class SessionPickerViewModel : ObservableObject
             var start = DateTimeOffset.FromUnixTimeMilliseconds(s.StartedAt).ToLocalTime();
             var duration = s.EndedAt.HasValue
                 ? FormatDuration(s.EndedAt.Value - s.StartedAt)
-                : "ongoing";
+                : Loc.Get("SessionPicker_DurationOngoing");
             var row = new SessionSummaryRow(
                 s,
                 $"{start:yyyy-MM-dd HH:mm}",

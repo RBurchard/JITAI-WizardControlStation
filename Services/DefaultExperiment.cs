@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using OcdWizard.ControlStation.Localization;
 using OcdWizard.ControlStation.Models;
 
 namespace OcdWizard.ControlStation.Services;
@@ -38,7 +39,7 @@ public static class DefaultExperiment
             // experiment (the prior behaviour) so the editor still opens.
         }
         return new ExperimentDto(
-            Guid.NewGuid().ToString(), "Untitled", 1L,
+            Guid.NewGuid().ToString(), Loc.Get("Editor_UntitledExperiment"), 1L,
             DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(), "",
             new List<ExperimentEventDto>(), new List<TriggerDto>());
     }

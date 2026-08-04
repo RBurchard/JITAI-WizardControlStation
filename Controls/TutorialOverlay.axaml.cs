@@ -8,6 +8,7 @@ using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
+using OcdWizard.ControlStation.Localization;
 
 namespace OcdWizard.ControlStation.Controls;
 
@@ -108,11 +109,11 @@ public partial class TutorialOverlay : UserControl
     private void ShowStep()
     {
         var step = _steps[_index];
-        if (_stepCounter != null) _stepCounter.Text = $"STEP {_index + 1} OF {_steps.Count}";
+        if (_stepCounter != null) _stepCounter.Text = Loc.Format("Tutorial_StepCounter", _index + 1, _steps.Count);
         if (_title != null) _title.Text = step.Title;
         if (_body != null) _body.Text = step.Body;
         if (_backBtn != null) _backBtn.IsEnabled = _index > 0;
-        if (_nextBtn != null) _nextBtn.Content = _index >= _steps.Count - 1 ? "Done ✓" : "Next ▶";
+        if (_nextBtn != null) _nextBtn.Content = _index >= _steps.Count - 1 ? Loc.Get("Tutorial_DoneButton") : Loc.Get("Common_Next");
 
         // The target may live inside a scrolled panel; pull it into view, then lay out after the
         // scroll/layout pass settles so its on-screen rectangle is final.

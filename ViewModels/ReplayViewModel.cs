@@ -11,6 +11,7 @@ using Avalonia.Platform.Storage;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using OcdWizard.ControlStation.Localization;
 using OcdWizard.ControlStation.Models;
 using OcdWizard.ControlStation.Services;
 using OcdWizard.ControlStation.Views;
@@ -57,7 +58,7 @@ public partial class ReplayViewModel : ObservableObject
 
     [ObservableProperty] private bool _isPlaying;
     [ObservableProperty] private double _playbackSpeed = 1.0;
-    [ObservableProperty] private string _playbackSpeedDisplay = "1×";
+    [ObservableProperty] private string _playbackSpeedDisplay = Loc.Format("Replay_PlaybackSpeedFormat", 1.0);
     [ObservableProperty] private long _currentTimeMs;
     [ObservableProperty] private long _durationMs;
     [ObservableProperty] private string _currentTimeDisplay = "00:00.000";
@@ -98,9 +99,9 @@ public partial class ReplayViewModel : ObservableObject
         if (owner == null) return;
         var files = await owner.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
         {
-            Title = "Import session CSV",
+            Title = Loc.Get("Replay_ImportCsvDialogTitle"),
             AllowMultiple = false,
-            FileTypeFilter = [new FilePickerFileType("Session CSV") { Patterns = ["*.csv"] }]
+            FileTypeFilter = [new FilePickerFileType(Loc.Get("Common_FileType_SessionCsv")) { Patterns = ["*.csv"] }]
         });
         if (files.Count == 0 || files[0].Path.LocalPath is not string path) return;
 
@@ -113,7 +114,7 @@ public partial class ReplayViewModel : ObservableObject
         catch (Exception ex)
         {
             OverlayActive = true;
-            OverlayTitle = "Import failed";
+            OverlayTitle = Loc.Get("Replay_OverlayImportFailed");
             OverlayDetail = ex.Message;
         }
     }
@@ -127,7 +128,8 @@ public partial class ReplayViewModel : ObservableObject
         _maxTs = data.MaxTs;
 
         ImportedFileName = Path.GetFileName(path);
-        SessionName = string.IsNullOrWhiteSpace(data.Session.Name) ? "(unnamed)" : data.Session.Name;
+        SessionName = Loc.Format("Replay_SessionNameFormat",
+            string.IsNullOrWhiteSpace(data.Session.Name) ? Loc.Get("Replay_SessionUnnamed") : data.Session.Name);
         HasExperiment = data.HasExperiment;
         ExperimentName = data.Runs.FirstOrDefault()?.Name ?? "";
         _suppressNotesDirty = true;
@@ -194,7 +196,7 @@ public partial class ReplayViewModel : ObservableObject
         if (double.TryParse(speed, System.Globalization.CultureInfo.InvariantCulture, out var s) && s > 0)
         {
             PlaybackSpeed = s;
-            PlaybackSpeedDisplay = s == Math.Floor(s) ? $"{s:0}×" : $"{s:0.0}×";
+            PlaybackSpeedDisplay = Loc.Format("Replay_PlaybackSpeedFormat", s);
         }
     }
 
@@ -328,10 +330,10 @@ public partial class ReplayViewModel : ObservableObject
             : null;
         var files = await owner.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
         {
-            Title = "Attach experiment JSON",
+            Title = Loc.Get("Replay_AttachExperimentDialogTitle"),
             AllowMultiple = false,
             SuggestedStartLocation = startFolder,
-            FileTypeFilter = [new FilePickerFileType("Experiment JSON") { Patterns = ["*.json"] }]
+            FileTypeFilter = [new FilePickerFileType(Loc.Get("Common_FileType_ExperimentJson")) { Patterns = ["*.json"] }]
         });
         if (files.Count == 0 || files[0].Path.LocalPath is not string path) return;
         try
@@ -344,7 +346,7 @@ public partial class ReplayViewModel : ObservableObject
                 ExperimentEvents.Add(new ReplayEventRow
                 {
                     IndexLabel = $"{i + 1}",
-                    Type = string.IsNullOrWhiteSpace(events[i].Type) ? $"Event {i + 1}" : events[i].Type,
+                    Type = string.IsNullOrWhiteSpace(events[i].Type) ? Loc.Format("Replay_EventFallbackName", i + 1) : events[i].Type,
                     Duration = events[i].Duration
                 });
             HasAttachedExperiment = ExperimentEvents.Count > 0;
@@ -354,7 +356,7 @@ public partial class ReplayViewModel : ObservableObject
         catch (Exception ex)
         {
             OverlayActive = true;
-            OverlayTitle = "Experiment load failed";
+            OverlayTitle = Loc.Get("Replay_OverlayExperimentLoadFailed");
             OverlayDetail = ex.Message;
         }
     }
@@ -380,9 +382,9 @@ public partial class ReplayViewModel : ObservableObject
             var suggested = Path.GetFileNameWithoutExtension(ImportedFileName);
             var file = await owner.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
             {
-                Title = "Save annotated CSV",
+                Title = Loc.Get("Replay_SaveAnnotatedCsvDialogTitle"),
                 SuggestedFileName = $"{suggested}_annotated.csv",
-                FileTypeChoices = [new FilePickerFileType("Session CSV") { Patterns = ["*.csv"] }]
+                FileTypeChoices = [new FilePickerFileType(Loc.Get("Common_FileType_SessionCsv")) { Patterns = ["*.csv"] }]
             });
             if (file?.Path.LocalPath is not string p) return;
             targetPath = p;
@@ -411,8 +413,8 @@ public partial class ReplayViewModel : ObservableObject
         if (run != null)
         {
             OverlayActive = true;
-            OverlayTitle = HasAttachedExperiment ? CurrentEventName(absMs - run.StartedAtMs) : $"Run: {run.Name}";
-            OverlayDetail = lastMarker?.Detail ?? lastMarker?.Label ?? "Experiment running";
+            OverlayTitle = HasAttachedExperiment ? CurrentEventName(absMs - run.StartedAtMs) : Loc.Format("Replay_OverlayRunTitle", run.Name);
+            OverlayDetail = lastMarker?.Detail ?? lastMarker?.Label ?? Loc.Get("Replay_OverlayExperimentRunning");
         }
         else if (lastMarker != null && absMs - lastMarker.Ts < 15000)
         {

@@ -1,10 +1,19 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:OcdWizard.ControlStation.ViewModels"
+             xmlns:loc="using:OcdWizard.ControlStation.Localization"
              x:Class="OcdWizard.ControlStation.Views.ExperimentRunnerView"
              x:DataType="vm:ParticipantViewModel">
     <StackPanel Margin="6" Spacing="4">
-        <TextBlock Text="{Binding CurrentRunId, StringFormat='Run: {0}'}" FontSize="11" Foreground="#888" />
+        <TextBlock FontSize="11" Foreground="#888">
+            <TextBlock.Text>
+                <MultiBinding Converter="{x:Static vm:LocalizedFormatConverter.Instance}"
+                              ConverterParameter="Runner_RunIdLabel">
+                    <Binding Path="CurrentRunId" />
+                    <Binding Source="{x:Static loc:Loc.Instance}" Path="LanguageTag" />
+                </MultiBinding>
+            </TextBlock.Text>
+        </TextBlock>
 
         <!-- Live progress: which task is running + a per-task countdown (auto and manual runs). -->
         <Border IsVisible="{Binding HasActiveEvent}"
@@ -12,7 +21,7 @@
                 CornerRadius="6" Padding="10,6">
             <Grid ColumnDefinitions="*,Auto">
                 <StackPanel Grid.Column="0" VerticalAlignment="Center" Spacing="1">
-                    <TextBlock Text="NOW RUNNING" FontSize="9" Foreground="#79B98A" />
+                    <TextBlock Text="{loc:T Runner_NowRunningLabel}" FontSize="9" Foreground="#79B98A" />
                     <TextBlock Text="{Binding CurrentEventName}" FontSize="14" FontWeight="Bold"
                                Foreground="#DFF5E4" TextTrimming="CharacterEllipsis" />
                 </StackPanel>
@@ -23,12 +32,12 @@
         </Border>
 
         <WrapPanel Orientation="Horizontal">
-            <Button Content="▶ Start"  Command="{Binding StartExperimentCommand}" Margin="0,0,4,4" MinWidth="70" />
-            <Button Content="⏩ Auto"   Command="{Binding StartAutoCommand}"       Margin="0,0,4,4" MinWidth="70" />
-            <Button Content="⏸ Pause"  Command="{Binding PauseExperimentCommand}" Margin="0,0,4,4" MinWidth="70" />
-            <Button Content="◀ Prev"   Command="{Binding PrevEventCommand}"        Margin="0,0,4,4" MinWidth="70" />
-            <Button Content="▶ Next"   Command="{Binding NextEventCommand}"        Margin="0,0,4,4" MinWidth="70" />
-            <Button Content="■ Stop"   Command="{Binding StopExperimentCommand}"   Margin="0,0,4,4" MinWidth="70" />
+            <Button Content="{loc:T Runner_StartButton}" Command="{Binding StartExperimentCommand}" Margin="0,0,4,4" MinWidth="70" />
+            <Button Content="{loc:T Runner_AutoButton}" Command="{Binding StartAutoCommand}"       Margin="0,0,4,4" MinWidth="70" />
+            <Button Content="{loc:T Runner_PauseButton}" Command="{Binding PauseExperimentCommand}" Margin="0,0,4,4" MinWidth="70" />
+            <Button Content="{loc:T Runner_PrevButton}" Command="{Binding PrevEventCommand}"        Margin="0,0,4,4" MinWidth="70" />
+            <Button Content="{loc:T Runner_NextButton}" Command="{Binding NextEventCommand}"        Margin="0,0,4,4" MinWidth="70" />
+            <Button Content="{loc:T Runner_StopButton}" Command="{Binding StopExperimentCommand}"   Margin="0,0,4,4" MinWidth="70" />
         </WrapPanel>
     </StackPanel>
 </UserControl>

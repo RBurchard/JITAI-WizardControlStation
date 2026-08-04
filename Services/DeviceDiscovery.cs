@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using OcdWizard.ControlStation.Localization;
 
 namespace OcdWizard.ControlStation.Services;
 
@@ -14,8 +15,8 @@ public enum DeviceTransport { Wifi, Usb }
 public record DiscoveredDevice(string Name, string Address, int Port, DeviceTransport Transport = DeviceTransport.Wifi, string? AdbSerial = null)
 {
     public override string ToString() => Transport == DeviceTransport.Usb
-        ? $"USB {Name} ({AdbSerial})"
-        : $"{Name} ({Address}:{Port})";
+        ? Loc.Format("Common_UsbDeviceDisplay", Name, AdbSerial)
+        : Loc.Format("Common_WifiDeviceDisplay", Name, Address, Port);
 }
 
 public static class DeviceDiscovery

@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using OcdWizard.ControlStation.Localization;
 using OcdWizard.ControlStation.Models;
 
 namespace OcdWizard.ControlStation.Services;
@@ -29,7 +30,7 @@ public class DeviceConnection : IDisposable
         if (!TryBuildUris(address, out var baseUrl, out var wsUrl, out var error))
         {
             IsConnected = false;
-            StatusChanged?.Invoke($"Failed: {error}");
+            StatusChanged?.Invoke(Loc.Format("Device_StatusFailed", error));
             return false;
         }
 
@@ -43,31 +44,31 @@ public class DeviceConnection : IDisposable
             if (!resp.IsSuccessStatusCode)
             {
                 IsConnected = false;
-                StatusChanged?.Invoke($"Failed: {(int)resp.StatusCode} {resp.ReasonPhrase}{FormatBody(body)}");
+                StatusChanged?.Invoke(Loc.Format("Device_StatusFailedHttp", (int)resp.StatusCode, resp.ReasonPhrase, FormatBody(body)));
                 return false;
             }
 
             IsConnected = true;
-            StatusChanged?.Invoke("Connected");
+            StatusChanged?.Invoke(Loc.Get("Device_StatusConnected"));
             _ = StartWebSocketAsync();
             return true;
         }
         catch (TaskCanceledException)
         {
             IsConnected = false;
-            StatusChanged?.Invoke("Failed: request timed out");
+            StatusChanged?.Invoke(Loc.Get("Device_StatusFailedTimeout"));
             return false;
         }
         catch (HttpRequestException ex)
         {
             IsConnected = false;
-            StatusChanged?.Invoke($"Failed: {ex.Message}");
+            StatusChanged?.Invoke(Loc.Format("Device_StatusFailed", ex.Message));
             return false;
         }
         catch (Exception ex)
         {
             IsConnected = false;
-            StatusChanged?.Invoke($"Failed: {ex.Message}");
+            StatusChanged?.Invoke(Loc.Format("Device_StatusFailed", ex.Message));
             return false;
         }
     }
@@ -76,11 +77,11 @@ public class DeviceConnection : IDisposable
     {
         baseUrl = "";
         wsUrl = "";
-        error = "Invalid address";
+        error = Loc.Get("Device_ErrorInvalidAddress");
 
         if (string.IsNullOrWhiteSpace(address))
         {
-            error = "Address is empty";
+            error = Loc.Get("Device_ErrorAddressEmpty");
             return false;
         }
 
@@ -95,7 +96,7 @@ public class DeviceConnection : IDisposable
 
         if (!Uri.TryCreate(trimmed, UriKind.Absolute, out var baseUri))
         {
-            error = "Address is not a valid URI";
+            error = Loc.Get("Device_ErrorAddressNotValidUri");
             return false;
         }
 
@@ -237,7 +238,7 @@ public class DeviceConnection : IDisposable
     {
         _wsCts?.Cancel();
         IsConnected = false;
-        StatusChanged?.Invoke("Disconnected");
+        StatusChanged?.Invoke(Loc.Get("Common_Disconnected"));
     }
 
     public void Dispose()

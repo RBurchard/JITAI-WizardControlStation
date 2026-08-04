@@ -1,16 +1,34 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
+using Avalonia.Data.Converters;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using OcdWizard.ControlStation.Database;
+using OcdWizard.ControlStation.Localization;
 using OcdWizard.ControlStation.Models;
 using OcdWizard.ControlStation.Services;
 using Avalonia.Threading;
 
 namespace OcdWizard.ControlStation.ViewModels;
+
+/// <summary>
+/// Formats a single value through a resx template (e.g. "{0:F0} bpm", "ID: {0}") via
+/// <see cref="Loc.Format"/>. Bound as a two-input MultiBinding — values[0] is the value to format,
+/// values[1] is <see cref="Loc.LanguageTag"/> purely to force re-evaluation, and therefore a live
+/// re-localized label, on a language switch (a plain single-value converter would only refresh
+/// when the formatted value itself changes). ConverterParameter is the resx key of the template.
+/// </summary>
+public sealed class LocalizedFormatConverter : IMultiValueConverter
+{
+    public static readonly LocalizedFormatConverter Instance = new();
+
+    public object? Convert(IList<object?> values, Type targetType, object? parameter, CultureInfo culture) =>
+        Loc.Format((string)parameter!, values.Count > 0 ? values[0] : null);
+}
 
 public partial class ParticipantViewModel : ObservableObject, IMotionSource
 {
@@ -34,7 +52,7 @@ public partial class ParticipantViewModel : ObservableObject, IMotionSource
     public IReadOnlyList<string> NotificationTypes { get; } =
         ["VIBRATION1", "VIBRATION2", "SOUND", "VIBRATION_SOUND"];
 
-    [ObservableProperty] private string _connectionStatus = "Not connected";
+    [ObservableProperty] private string _connectionStatus = Loc.Get("Participant_StatusNotConnected");
     [ObservableProperty] private bool _isConnected;
     [ObservableProperty] private float _currentBpm;
     [ObservableProperty] private float _accelX;
@@ -128,10 +146,10 @@ public partial class ParticipantViewModel : ObservableObject, IMotionSource
                 await _device.PostParticipantAsync(_participantId, _sessionId ?? "", value, IpAddress);
                 if (_sessionId != null)
                     await _db.UpsertParticipantAsync(_participantId, _sessionId, Label, IpAddress, value);
-                AppendLog($"Participant set to '{value}'");
+                AppendLog(Loc.Format("Participant_LogParticipantSetTo", value));
             }
             catch (TaskCanceledException) { }
-            catch (Exception ex) { AppendLog($"Participant push failed: {ex.Message}"); }
+            catch (Exception ex) { AppendLog(Loc.Format("Participant_LogParticipantPushFailed", ex.Message)); }
         });
     }
 
@@ -164,7 +182,7 @@ public partial class ParticipantViewModel : ObservableObject, IMotionSource
     private async Task ConnectAsync()
     {
         if (string.IsNullOrWhiteSpace(IpAddress)) return;
-        ConnectionStatus = "Connecting...";
+        ConnectionStatus = Loc.Get("Participant_StatusConnecting");
         var ok = await _device.ConnectAsync(IpAddress);
         if (ok)
         {
@@ -181,7 +199,7 @@ public partial class ParticipantViewModel : ObservableObject, IMotionSource
             LogSync.Start(baseUrl);
             RunLifecycle.Bind(baseUrl, _participantId, _sessionId);
             await ExperimentSync.PullAsync();
-            AppendLog($"Connected to {IpAddress}");
+            AppendLog(Loc.Format("Participant_LogConnectedTo", IpAddress));
 
             // Reconcile the participant identity with the phone (bidirectional sync): if the
             // phone already has a participant set and we don't, adopt it.
@@ -192,7 +210,7 @@ public partial class ParticipantViewModel : ObservableObject, IMotionSource
                 _suppressParticipantPush = true;
                 ParticipantKey = phoneLabel!;
                 _suppressParticipantPush = false;
-                AppendLog($"Adopted participant '{phoneLabel}' from phone");
+                AppendLog(Loc.Format("Participant_LogAdoptedParticipantFromPhone", phoneLabel));
             }
 
             // Push our participant to the phone so it agrees with the Control Station.
@@ -207,7 +225,7 @@ public partial class ParticipantViewModel : ObservableObject, IMotionSource
     {
         _device.Disconnect();
         LogSync.Stop();
-        AppendLog("Disconnected");
+        AppendLog(Loc.Get("Common_Disconnected"));
     }
 
     [RelayCommand]
@@ -262,7 +280,7 @@ public partial class ParticipantViewModel : ObservableObject, IMotionSource
 
         var req = new InterventionRequest(SelectedNotificationType, GameType: gameType, TriviaQuestion: trivia);
         var ok = await _device.TriggerInterventionAsync(req);
-        AppendLog(ok ? $"Triggered {SelectedNotificationType} {gameType ?? ""}" : "Trigger failed");
+        AppendLog(ok ? Loc.Format("Participant_LogTriggered", SelectedNotificationType, gameType ?? "") : Loc.Get("Participant_LogTriggerFailed"));
 
         // Record the intervention whenever the researcher fires one, regardless of whether
         // the wear delivery succeeded — the action itself is research data we want to keep.
@@ -275,7 +293,7 @@ public partial class ParticipantViewModel : ObservableObject, IMotionSource
         }
         else
         {
-            AppendLog("Intervention not recorded — start a session and connect first.");
+            AppendLog(Loc.Get("Participant_LogInterventionNotRecorded"));
         }
     }
 
@@ -284,14 +302,14 @@ public partial class ParticipantViewModel : ObservableObject, IMotionSource
     {
         var req = new InterventionRequest("CANCEL");
         await _device.TriggerInterventionAsync(req);
-        AppendLog("Sent CANCEL");
+        AppendLog(Loc.Get("Participant_LogSentCancel"));
     }
 
     [RelayCommand]
     private async Task ScanAsync()
     {
         IsScanning = true;
-        AppendLog("Scanning for JITAI Wizard devices…");
+        AppendLog(Loc.Get("Participant_LogScanning"));
 
         // USB devices are tracked live by the ADB watcher, so a manual scan must NOT wipe them
         // (previously DiscoveredDevices.Clear() removed any USB-connected phone entirely). Only
@@ -319,8 +337,8 @@ public partial class ParticipantViewModel : ObservableObject, IMotionSource
         });
 
         AppendLog(wifi.Count + usb.Count > 0
-            ? $"Found {wifi.Count} Wi-Fi + {usb.Count} USB device(s)"
-            : "No devices found — ensure the phone app is running on the same network or USB debugging is enabled");
+            ? Loc.Format("Participant_LogFoundDevices", wifi.Count, usb.Count)
+            : Loc.Get("Participant_LogNoDevicesFound"));
         IsScanning = false;
     }
 
@@ -361,7 +379,7 @@ public partial class ParticipantViewModel : ObservableObject, IMotionSource
             _ = Task.Run(async () =>
             {
                 try { await _db.InsertWatchDataBatchAsync(pid, batch); }
-                catch (Exception ex) { AppendLog($"Watch data insert failed: {ex.Message}"); }
+                catch (Exception ex) { AppendLog(Loc.Format("Participant_LogWatchDataInsertFailed", ex.Message)); }
             });
         }
 

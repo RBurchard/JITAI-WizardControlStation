@@ -7,6 +7,7 @@ using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using OcdWizard.ControlStation.Database;
+using OcdWizard.ControlStation.Localization;
 using OcdWizard.ControlStation.Services;
 using OcdWizard.ControlStation.Views;
 
@@ -20,11 +21,11 @@ public partial class MainViewModel : ObservableObject
     private readonly UsbDeviceSource _usbSource;
     private string? _activeSessionId;
 
-    [ObservableProperty] private string _sessionName = "New Session";
+    [ObservableProperty] private string _sessionName = Loc.Get("Main_DefaultSessionName");
     [ObservableProperty] private string _sessionNotes = "";
     [ObservableProperty] private bool _sessionActive;
     [ObservableProperty] private bool _isStartingSession;
-    [ObservableProperty] private string _statusMessage = "Ready";
+    [ObservableProperty] private string _statusMessage = Loc.Get("Main_StatusReady");
     [ObservableProperty] private bool _adbMissing;
     [ObservableProperty] private bool _dualParticipantMode = false;
     // Top-level mode: false = live "Experiment Mode", true = "Replay Mode" (CSV playback).
@@ -68,7 +69,7 @@ public partial class MainViewModel : ObservableObject
     private async Task InitAsync()
     {
         await _db.InitializeAsync();
-        StatusMessage = "Database ready";
+        StatusMessage = Loc.Get("Main_StatusDatabaseReady");
     }
 
     [RelayCommand]
@@ -84,7 +85,7 @@ public partial class MainViewModel : ObservableObject
             await Participant1.SetSessionAsync(_activeSessionId, SessionName);
             await Participant2.SetSessionAsync(_activeSessionId, SessionName);
             SessionActive = true;
-            StatusMessage = $"Session started: {_activeSessionId[..8]}";
+            StatusMessage = Loc.Format("Main_StatusSessionStarted", _activeSessionId[..8]);
         }
         finally
         {
@@ -95,9 +96,9 @@ public partial class MainViewModel : ObservableObject
     [RelayCommand]
     private async Task SaveSessionNotesAsync()
     {
-        if (_activeSessionId == null) { StatusMessage = "No active session for notes"; return; }
+        if (_activeSessionId == null) { StatusMessage = Loc.Get("Main_StatusNoActiveSessionForNotes"); return; }
         await _db.UpdateSessionNotesAsync(_activeSessionId, SessionNotes);
-        StatusMessage = "Session notes saved";
+        StatusMessage = Loc.Get("Main_StatusSessionNotesSaved");
     }
 
     [RelayCommand]
@@ -107,7 +108,7 @@ public partial class MainViewModel : ObservableObject
         var now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
         await _db.EndSessionAsync(_activeSessionId, now);
         SessionActive = false;
-        StatusMessage = "Session ended";
+        StatusMessage = Loc.Get("Main_StatusSessionEnded");
     }
 
     [RelayCommand]
@@ -118,7 +119,7 @@ public partial class MainViewModel : ObservableObject
         var sessions = await _db.LoadAllSessionsAsync();
         if (sessions.Count == 0)
         {
-            StatusMessage = "No sessions in database";
+            StatusMessage = Loc.Get("Main_StatusNoSessionsInDatabase");
             return;
         }
 
@@ -142,15 +143,15 @@ public partial class MainViewModel : ObservableObject
 
         var file = await owner.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
         {
-            Title = "Export Session CSV",
+            Title = Loc.Get("Main_ExportSessionCsvDialogTitle"),
             SuggestedFileName = $"{SanitizeFileName(sessionName)}_{DateTime.Now:yyyyMMdd_HHmm}.csv",
-            FileTypeChoices = [new FilePickerFileType("CSV") { Patterns = ["*.csv"] }]
+            FileTypeChoices = [new FilePickerFileType(Loc.Get("Common_FileType_Csv")) { Patterns = ["*.csv"] }]
         });
 
         if (file?.Path.LocalPath is string path)
         {
             await _csv.ExportAsync(sessionId, path);
-            StatusMessage = $"Exported to {Path.GetFileName(path)}";
+            StatusMessage = Loc.Format("Main_StatusExportedTo", Path.GetFileName(path));
         }
     }
 

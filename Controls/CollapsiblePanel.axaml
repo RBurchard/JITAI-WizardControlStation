@@ -1,5 +1,6 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:loc="using:OcdWizard.ControlStation.Localization"
              x:Class="OcdWizard.ControlStation.Controls.CollapsiblePanel">
     <Border BorderBrush="#2A2D45" BorderThickness="1" CornerRadius="8" Padding="0">
         <DockPanel LastChildFill="True">
@@ -10,13 +11,13 @@
                               FontSize="14" FontWeight="Bold" />
                 <TextBlock Grid.Column="1" Name="TitleText"
                            VerticalAlignment="Center" Margin="4,0" Foreground="#CCD6FF"
-                           FontSize="12" FontWeight="SemiBold" />
+                           FontSize="12" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
                 <Button Grid.Column="2" Content="⧉" Width="30" Height="30"
                         Background="Transparent" Foreground="#6677AA" BorderThickness="0"
-                        ToolTip.Tip="Pop out into its own window" Click="OnPopoutClick" />
+                        ToolTip.Tip="{loc:T Panel_PopOutTooltip}" Click="OnPopoutClick" />
                 <Button Grid.Column="3" Content="⤵" Width="30" Height="30" Name="DockBtn"
                         Background="Transparent" Foreground="#6677AA" BorderThickness="0"
-                        ToolTip.Tip="Dock back" IsVisible="False" Click="OnDockClick" />
+                        ToolTip.Tip="{loc:T Panel_DockBackTooltip}" IsVisible="False" Click="OnDockClick" />
             </Grid>
             <ContentPresenter Name="BodyHost"
                               IsVisible="{Binding #ToggleBtn.IsChecked}" />

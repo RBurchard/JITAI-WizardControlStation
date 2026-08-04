@@ -6,6 +6,7 @@ using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using OcdWizard.ControlStation.Database;
+using OcdWizard.ControlStation.Localization;
 using OcdWizard.ControlStation.Models;
 
 namespace OcdWizard.ControlStation.Services;
@@ -70,9 +71,9 @@ public sealed class ExperimentSyncService : IDisposable
                 source: "phone");
             _lastSyncedEtag = env.Etag;
             RemoteUpdated?.Invoke(env.Experiment);
-            Log?.Invoke($"Pulled experiment {env.Experiment.Name} etag={env.Etag}");
+            Log?.Invoke(Loc.Format("Sync_LogPulledExperiment", env.Experiment.Name, env.Etag));
         }
-        catch (Exception ex) { Log?.Invoke($"Pull failed: {ex.Message}"); }
+        catch (Exception ex) { Log?.Invoke(Loc.Format("Sync_LogPullFailed", ex.Message)); }
     }
 
     public async Task<bool> PushAsync(ExperimentDto experiment, string? ifMatch = null, CancellationToken ct = default)
@@ -101,11 +102,11 @@ public sealed class ExperimentSyncService : IDisposable
                 // truth for the experiment definition. Reloading from the phone's response
                 // would clear any UI selections that the phone may not round-trip identically.
                 // Only PullAsync fires RemoteUpdated to reload the UI.
-                Log?.Invoke($"Pushed experiment {env.Experiment.Name} etag={env.Etag}");
+                Log?.Invoke(Loc.Format("Sync_LogPushedExperiment", env.Experiment.Name, env.Etag));
             }
             return true;
         }
-        catch (Exception ex) { Log?.Invoke($"Push failed: {ex.Message}"); return false; }
+        catch (Exception ex) { Log?.Invoke(Loc.Format("Sync_LogPushFailed", ex.Message)); return false; }
     }
 
     public void CancelPendingAutoSync() => _debounceCts?.Cancel();

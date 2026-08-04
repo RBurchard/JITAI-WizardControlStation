@@ -1,18 +1,19 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:loc="using:OcdWizard.ControlStation.Localization"
         x:Class="OcdWizard.ControlStation.Views.SaveTargetDialog"
-        Title="Save annotations"
-        Width="460" SizeToContent="Height"
+        Title="{loc:T SaveTarget_DialogTitle}"
+        Width="560" SizeToContent="Height"
         WindowStartupLocation="CenterOwner"
         CanResize="False">
     <StackPanel Margin="18" Spacing="14">
-        <TextBlock Text="Save notes &amp; markers" FontSize="15" FontWeight="SemiBold" Foreground="White" />
+        <TextBlock Text="{loc:T SaveTarget_Heading}" FontSize="15" FontWeight="SemiBold" Foreground="White" />
         <TextBlock x:Name="Message" TextWrapping="Wrap" Foreground="#AAB" FontSize="12"
-                   Text="Where should the edited notes and markers be written?" />
+                   Text="{loc:T SaveTarget_DefaultMessage}" />
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
-            <Button Content="Overwrite loaded file" Classes="Primary" Click="OnOverwriteClick" />
-            <Button Content="Save as new copy…" Classes="Accent" Click="OnSaveAsClick" />
-            <Button Content="Cancel" Classes="Subtle" Click="OnCancelClick" />
+            <Button Content="{loc:T SaveTarget_OverwriteButton}" Classes="Primary" Click="OnOverwriteClick" />
+            <Button Content="{loc:T SaveTarget_SaveAsButton}" Classes="Accent" Click="OnSaveAsClick" />
+            <Button Content="{loc:T Common_Cancel}" Classes="Subtle" Click="OnCancelClick" />
         </StackPanel>
     </StackPanel>
 </Window>

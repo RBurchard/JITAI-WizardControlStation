@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using OcdWizard.ControlStation.Database;
+using OcdWizard.ControlStation.Localization;
 using OcdWizard.ControlStation.Models;
 using OcdWizard.ControlStation.Services;
 
@@ -38,8 +39,8 @@ public partial class TriviaEditorViewModel : ObservableObject
     {
         var q = new TriviaQuestion
         {
-            Question = "New question?",
-            Answers = ["Answer A", "Answer B", "Answer C", "Answer D"],
+            Question = Loc.Get("Trivia_NewQuestionPlaceholder"),
+            Answers = [Loc.Get("Trivia_NewAnswerA"), Loc.Get("Trivia_NewAnswerB"), Loc.Get("Trivia_NewAnswerC"), Loc.Get("Trivia_NewAnswerD")],
             CorrectIndex = 0
         };
         Questions.Add(q);
@@ -57,7 +58,7 @@ public partial class TriviaEditorViewModel : ObservableObject
     private async Task SaveAsync()
     {
         await _db.SaveTriviaQuestionsAsync(Questions);
-        PushStatus = "Saved locally.";
+        PushStatus = Loc.Get("Trivia_StatusSavedLocally");
     }
 
     [RelayCommand]
@@ -67,6 +68,6 @@ public partial class TriviaEditorViewModel : ObservableObject
         int sent = 0;
         foreach (var device in _devices)
             if (await device.PushTriviaAsync([.. Questions])) sent++;
-        PushStatus = $"Pushed to {sent}/{_devices.Count} device(s).";
+        PushStatus = Loc.Format("Trivia_StatusPushedToDevices", sent, _devices.Count);
     }
 }

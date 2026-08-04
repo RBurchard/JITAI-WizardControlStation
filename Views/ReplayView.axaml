@@ -3,6 +3,7 @@
              xmlns:vm="using:OcdWizard.ControlStation.ViewModels"
              xmlns:models="using:OcdWizard.ControlStation.Models"
              xmlns:views="using:OcdWizard.ControlStation.Views"
+             xmlns:loc="using:OcdWizard.ControlStation.Localization"
              x:Class="OcdWizard.ControlStation.Views.ReplayView"
              x:DataType="vm:ReplayViewModel">
     <DockPanel>
@@ -10,25 +11,25 @@
         <!-- ── Top bar ─────────────────────────────────────────────────────── -->
         <Border DockPanel.Dock="Top" Background="#12152A" Padding="14,8">
             <Grid ColumnDefinitions="Auto,Auto,*,Auto">
-                <Button Grid.Column="0" Classes="Accent" Content="📂  Import CSV"
+                <Button Grid.Column="0" Classes="Accent" Content="{loc:T Replay_ImportCsvButton}"
                         Command="{Binding ImportCsvCommand}"
                         CommandParameter="{Binding $parent[Window]}" Margin="0,0,8,0" />
                 <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="14" VerticalAlignment="Center"
                             IsVisible="{Binding HasData}">
                     <StackPanel Spacing="0">
                         <TextBlock Text="{Binding ImportedFileName}" Foreground="White" FontSize="12" FontWeight="SemiBold" />
-                        <TextBlock Text="{Binding SessionName, StringFormat='Session: {0}'}" Foreground="#7788AA" FontSize="10" />
+                        <TextBlock Text="{Binding SessionName}" Foreground="#7788AA" FontSize="10" />
                     </StackPanel>
                     <TextBlock Text="{Binding ExperimentName, StringFormat='🧪 {0}'}" Foreground="#79B98A" FontSize="11"
                                VerticalAlignment="Center" IsVisible="{Binding HasExperiment}" />
                 </StackPanel>
 
                 <StackPanel Grid.Column="3" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
-                    <Button Classes="Subtle" Content="📎  Attach Experiment JSON"
+                    <Button Classes="Subtle" Content="{loc:T Replay_AttachExperimentJsonButton}"
                             Command="{Binding AttachExperimentJsonCommand}"
                             CommandParameter="{Binding $parent[Window]}"
                             IsEnabled="{Binding HasData}" />
-                    <Button Classes="Primary" Content="💾  Save"
+                    <Button Classes="Primary" Content="{loc:T Replay_SaveButton}"
                             Command="{Binding SaveCommand}"
                             CommandParameter="{Binding $parent[Window]}"
                             IsEnabled="{Binding HasData}" />
@@ -41,10 +42,10 @@
                 BorderBrush="#1E2238" BorderThickness="0,0,0,1"
                 IsVisible="{Binding HasData}">
             <Grid ColumnDefinitions="Auto,*">
-                <TextBlock Grid.Column="0" Text="📝  Notes:" Foreground="#7788AA"
+                <TextBlock Grid.Column="0" Text="{loc:T Replay_NotesLabel}" Foreground="#7788AA"
                            VerticalAlignment="Top" FontSize="12" Margin="0,6,10,0" />
                 <TextBox Grid.Column="1" Text="{Binding Notes}"
-                         Watermark="Session notes (editable — saved with markers)"
+                         Watermark="{loc:T Replay_NotesWatermark}"
                          AcceptsReturn="True" TextWrapping="Wrap"
                          MinHeight="32" MaxHeight="90"
                          ScrollViewer.VerticalScrollBarVisibility="Auto" />
@@ -66,24 +67,24 @@
                                 <TextBlock Text="⏸" IsVisible="{Binding IsPlaying}" />
                             </Panel>
                         </Button>
-                        <Button Classes="Subtle" Content="0.5×" Command="{Binding SetSpeedCommand}" CommandParameter="0.5" />
-                        <Button Classes="Subtle" Content="1×"   Command="{Binding SetSpeedCommand}" CommandParameter="1" />
-                        <Button Classes="Subtle" Content="2×"   Command="{Binding SetSpeedCommand}" CommandParameter="2" />
-                        <Button Classes="Subtle" Content="4×"   Command="{Binding SetSpeedCommand}" CommandParameter="4" />
+                        <Button Classes="Subtle" Content="{loc:T Replay_Speed0_5x}" Command="{Binding SetSpeedCommand}" CommandParameter="0.5" />
+                        <Button Classes="Subtle" Content="{loc:T Replay_Speed1x}"   Command="{Binding SetSpeedCommand}" CommandParameter="1" />
+                        <Button Classes="Subtle" Content="{loc:T Replay_Speed2x}"   Command="{Binding SetSpeedCommand}" CommandParameter="2" />
+                        <Button Classes="Subtle" Content="{loc:T Replay_Speed4x}"   Command="{Binding SetSpeedCommand}" CommandParameter="4" />
                         <TextBlock Text="{Binding PlaybackSpeedDisplay}" VerticalAlignment="Center"
                                    Foreground="#79B98A" FontSize="12" Margin="2,0,0,0" />
                     </StackPanel>
 
                     <!-- Fine stepping -->
                     <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="4" VerticalAlignment="Center" Margin="14,0">
-                        <Button Classes="Subtle" Content="-1s"   Command="{Binding StepCommand}" CommandParameter="-1000" />
-                        <Button Classes="Subtle" Content="-100"  Command="{Binding StepCommand}" CommandParameter="-100" />
+                        <Button Classes="Subtle" Content="{loc:T Replay_StepBack1s}"   Command="{Binding StepCommand}" CommandParameter="-1000" />
+                        <Button Classes="Subtle" Content="{loc:T Replay_StepBack100ms}"  Command="{Binding StepCommand}" CommandParameter="-100" />
                         <Button Classes="Subtle" Content="◀|"    Command="{Binding StepSampleCommand}" CommandParameter="-1"
-                                ToolTip.Tip="Previous sample" />
+                                ToolTip.Tip="{loc:T Replay_PrevSampleTooltip}" />
                         <Button Classes="Subtle" Content="|▶"    Command="{Binding StepSampleCommand}" CommandParameter="1"
-                                ToolTip.Tip="Next sample" />
-                        <Button Classes="Subtle" Content="+100"  Command="{Binding StepCommand}" CommandParameter="100" />
-                        <Button Classes="Subtle" Content="+1s"   Command="{Binding StepCommand}" CommandParameter="1000" />
+                                ToolTip.Tip="{loc:T Replay_NextSampleTooltip}" />
+                        <Button Classes="Subtle" Content="{loc:T Replay_StepForward100ms}"  Command="{Binding StepCommand}" CommandParameter="100" />
+                        <Button Classes="Subtle" Content="{loc:T Replay_StepForward1s}"   Command="{Binding StepCommand}" CommandParameter="1000" />
                     </StackPanel>
 
                     <!-- Time read-out + jump-to entry -->
@@ -94,13 +95,13 @@
                         <TextBlock Text="/" Foreground="#556" VerticalAlignment="Center" />
                         <TextBlock Text="{Binding DurationDisplay}" FontFamily="Consolas,Courier New,monospace"
                                    FontSize="13" Foreground="#7788AA" VerticalAlignment="Center" />
-                        <TextBox x:Name="TimeEntry" Width="110" Watermark="mm:ss.mmm" Margin="10,0,0,0"
+                        <TextBox x:Name="TimeEntry" Width="110" Watermark="{loc:T Replay_TimeEntryWatermark}" Margin="10,0,0,0"
                                  KeyDown="OnTimeEntryKeyDown" VerticalAlignment="Center" />
-                        <Button Classes="Subtle" Content="Go" Click="OnGoToTimeClick" />
+                        <Button Classes="Subtle" Content="{loc:T Common_Go}" Click="OnGoToTimeClick" />
                     </StackPanel>
 
                     <!-- Add marker -->
-                    <Button Grid.Column="3" Classes="Accent" Content="➕  Add Marker"
+                    <Button Grid.Column="3" Classes="Accent" Content="{loc:T Replay_AddMarkerButton}"
                             Command="{Binding AddMarkerCommand}"
                             CommandParameter="{Binding $parent[Window]}" VerticalAlignment="Center" />
                 </Grid>
@@ -109,7 +110,7 @@
                 <views:TimelineControl x:Name="Timeline" Height="74"
                                        MinTs="{Binding MinTs}" MaxTs="{Binding MaxTs}"
                                        CurrentMs="{Binding CurrentAbsMs}" />
-                <TextBlock Text="Click to seek · scroll to zoom · right-drag to pan"
+                <TextBlock Text="{loc:T Replay_TimelineHint}"
                            Foreground="#4A5478" FontSize="10" HorizontalAlignment="Center" />
 
                 <!-- User marker list -->
@@ -125,7 +126,7 @@
                                 <TextBlock Grid.Column="1" Text="{Binding Label}" FontSize="12"
                                            Foreground="#E0E0F0" VerticalAlignment="Center" Margin="6,0"
                                            TextTrimming="CharacterEllipsis" />
-                                <Button Grid.Column="2" Classes="Subtle" Content="Go" FontSize="11" Padding="8,3"
+                                <Button Grid.Column="2" Classes="Subtle" Content="{loc:T Common_Go}" FontSize="11" Padding="8,3"
                                         Command="{Binding $parent[ItemsControl].((vm:ReplayViewModel)DataContext).SeekToMarkerCommand}"
                                         CommandParameter="{Binding}" Margin="0,0,4,0" />
                                 <Button Grid.Column="3" Classes="Subtle" Content="✎" FontSize="11" Padding="8,3"
@@ -146,11 +147,11 @@
             <!-- Empty state -->
             <StackPanel IsVisible="{Binding !HasData}" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="10">
                 <TextBlock Text="🎞" FontSize="48" HorizontalAlignment="Center" />
-                <TextBlock Text="Replay Mode" FontSize="20" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" />
-                <TextBlock Text="Import a session CSV (Control Station or phone export) to relive the recording."
+                <TextBlock Text="{loc:T Replay_EmptyTitle}" FontSize="20" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" />
+                <TextBlock Text="{loc:T Replay_EmptyDescription}"
                            Foreground="#7788AA" HorizontalAlignment="Center" TextWrapping="Wrap" MaxWidth="420"
                            TextAlignment="Center" />
-                <Button Classes="Accent" Content="📂  Import CSV" HorizontalAlignment="Center"
+                <Button Classes="Accent" Content="{loc:T Replay_ImportCsvButton}" HorizontalAlignment="Center"
                         Command="{Binding ImportCsvCommand}" CommandParameter="{Binding $parent[Window]}" />
             </StackPanel>
 
@@ -162,7 +163,7 @@
                     <StackPanel Spacing="6">
                         <Grid ColumnDefinitions="*,Auto">
                             <StackPanel Grid.Column="0" Spacing="1">
-                                <TextBlock Text="NOW (best-effort)" FontSize="9" Foreground="#79B98A" />
+                                <TextBlock Text="{loc:T Replay_OverlayNowLabel}" FontSize="9" Foreground="#79B98A" />
                                 <TextBlock Text="{Binding OverlayTitle}" FontSize="15" FontWeight="Bold" Foreground="#DFF5E4" />
                                 <TextBlock Text="{Binding OverlayDetail}" FontSize="11" Foreground="#9FcaA8"
                                            IsVisible="{Binding OverlayDetail, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
