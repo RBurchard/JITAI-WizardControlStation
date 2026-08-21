@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
+using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using OcdWizard.ControlStation.Database;
@@ -20,6 +21,12 @@ public partial class MainViewModel : ObservableObject
     private readonly AdbTransport _adb = new();
     private readonly UsbDeviceSource _usbSource;
     private string? _activeSessionId;
+    private string? _lastUsedSessionName;
+    private bool _sessionAutoStarted;
+    private bool _endingAutoSession;
+
+    /// <summary>Set by MainWindow after construction so auto-end-of-experiment can prompt for a save name.</summary>
+    public Window? OwnerWindow { get; set; }
 
     [ObservableProperty] private string _sessionName = Loc.Get("Main_DefaultSessionName");
     [ObservableProperty] private string _sessionNotes = "";
@@ -61,8 +68,20 @@ public partial class MainViewModel : ObservableObject
         // Let a manual Scan fold in the live USB devices instead of overwriting them.
         Participant1.UsbDeviceProvider = () => _usbSource.Devices.ToList();
         Participant2.UsbDeviceProvider = () => _usbSource.Devices.ToList();
+        // Starting an experiment without an active session orphans its data (it can never be
+        // found again in the Session Picker / export) — auto-start one if needed, and auto-end
+        // it once every run has stopped, so a forgotten "Start Session" never loses data.
+        Participant1.EnsureSessionStarted = EnsureSessionStartedAsync;
+        Participant2.EnsureSessionStarted = EnsureSessionStartedAsync;
+        Participant1.RunLifecycle.RunStopped += _ => OnExperimentRunStopped();
+        Participant2.RunLifecycle.RunStopped += _ => OnExperimentRunStopped();
         if (_adb.TryLocate())
             _usbSource.Start();
+
+        _lastUsedSessionName = SessionNameState.LoadLastUsedName();
+        if (!string.IsNullOrWhiteSpace(_lastUsedSessionName))
+            SessionName = _lastUsedSessionName;
+
         _ = InitAsync();
     }
 
@@ -72,9 +91,23 @@ public partial class MainViewModel : ObservableObject
         StatusMessage = Loc.Get("Main_StatusDatabaseReady");
     }
 
+    /// <summary>
+    /// Invoked by a participant before dispatching "start"/"auto" to the phone. No-ops if a
+    /// session is already running; otherwise starts one and remembers that it was implicit, so
+    /// it can be auto-ended (with a save-name prompt) once the experiment stops, without
+    /// touching sessions the researcher started themselves.
+    /// </summary>
+    private async Task EnsureSessionStartedAsync()
+    {
+        if (SessionActive) return;
+        await StartSessionAsync();
+        _sessionAutoStarted = true;
+    }
+
     [RelayCommand]
     private async Task StartSessionAsync()
     {
+        _sessionAutoStarted = false;
         IsStartingSession = true;
         try
         {
@@ -107,8 +140,49 @@ public partial class MainViewModel : ObservableObject
         if (_activeSessionId == null) return;
         var now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
         await _db.EndSessionAsync(_activeSessionId, now);
+        SessionNameState.SaveLastUsedName(SessionName);
+        _lastUsedSessionName = SessionName;
         SessionActive = false;
         StatusMessage = Loc.Get("Main_StatusSessionEnded");
+    }
+
+    // RunStopped fires on the WebSocket receive thread — hop to the UI thread before touching
+    // observable state or showing a dialog.
+    private void OnExperimentRunStopped() =>
+        Dispatcher.UIThread.Post(() => _ = EndAutoSessionIfIdleAsync());
+
+    /// <summary>
+    /// Once every participant's run has stopped, auto-ends a session that was itself
+    /// auto-started (sessions the researcher started manually are left running, since they may
+    /// be deliberately running several experiment passes under one session). If the name is
+    /// still the default or unchanged from last time, prompts for a real one first.
+    /// </summary>
+    private async Task EndAutoSessionIfIdleAsync()
+    {
+        if (_endingAutoSession) return;
+        if (!_sessionAutoStarted || !SessionActive || _activeSessionId == null) return;
+        if (Participant1.RunLifecycle.CurrentRunId != null) return;
+        if (Participant2.RunLifecycle.CurrentRunId != null) return;
+
+        _endingAutoSession = true;
+        try
+        {
+            var nameUnchanged = SessionName == Loc.Get("Main_DefaultSessionName") || SessionName == _lastUsedSessionName;
+            if (nameUnchanged && OwnerWindow != null)
+            {
+                var chosen = await SessionSaveNameDialog.ShowAsync(OwnerWindow, SessionName);
+                if (!string.IsNullOrWhiteSpace(chosen))
+                    SessionName = chosen.Trim();
+            }
+
+            await _db.UpdateSessionNameAsync(_activeSessionId, SessionName);
+            await StopSessionAsync();
+            StatusMessage = Loc.Get("Main_StatusSessionAutoEnded");
+        }
+        finally
+        {
+            _endingAutoSession = false;
+        }
     }
 
     [RelayCommand]

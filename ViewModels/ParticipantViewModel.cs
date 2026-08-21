@@ -103,6 +103,13 @@ public partial class ParticipantViewModel : ObservableObject, IMotionSource
     public Func<IReadOnlyList<DiscoveredDevice>>? UsbDeviceProvider { get; set; }
 
     /// <summary>
+    /// Lets MainViewModel start the session on demand. Invoked before dispatching "start"/"auto"
+    /// so an experiment begun without an active session never orphans its data (no-ops if a
+    /// session is already running).
+    /// </summary>
+    public Func<Task>? EnsureSessionStarted { get; set; }
+
+    /// <summary>
     /// Raised once per received batch with the full ordered snapshot series so the
     /// motion view can reconstruct at the watch's true sample rate (~50 Hz) rather
     /// than sampling only the latest value. Fired from a background thread.
@@ -231,6 +238,7 @@ public partial class ParticipantViewModel : ObservableObject, IMotionSource
     [RelayCommand]
     private async Task StartExperimentAsync()
     {
+        if (EnsureSessionStarted != null) await EnsureSessionStarted();
         ResetOverlayState();
         await RunLifecycle.DispatchAsync("start");
     }
@@ -238,6 +246,7 @@ public partial class ParticipantViewModel : ObservableObject, IMotionSource
     [RelayCommand]
     private async Task StartAutoAsync()
     {
+        if (EnsureSessionStarted != null) await EnsureSessionStarted();
         ResetOverlayState();
         await RunLifecycle.DispatchAsync("auto");
     }

@@ -567,6 +567,15 @@
   <data name="Marker_RecentLabel" xml:space="preserve">
     <value>Recent</value>
   </data>
+  <data name="Session_SaveButton" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="Session_SaveDialogLabel" xml:space="preserve">
+    <value>The experiment has ended and the session was closed automatically. Give it a name so you can find it again later:</value>
+  </data>
+  <data name="Session_SaveDialogTitle" xml:space="preserve">
+    <value>Name this session</value>
+  </data>
   <data name="Motion_AxisMappingHeader" xml:space="preserve">
     <value>AXIS MAPPING</value>
   </data>
@@ -809,6 +818,9 @@
   </data>
   <data name="Main_StatusReady" xml:space="preserve">
     <value>Ready</value>
+  </data>
+  <data name="Main_StatusSessionAutoEnded" xml:space="preserve">
+    <value>Experiment finished — session ended automatically</value>
   </data>
   <data name="Main_StatusSessionEnded" xml:space="preserve">
     <value>Session ended</value>

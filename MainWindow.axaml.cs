@@ -18,7 +18,8 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
-        DataContext = new MainViewModel();
+        var vm = new MainViewModel { OwnerWindow = this };
+        DataContext = vm;
 
         if (this.FindControl<TutorialOverlay>("Tutorial") is { } overlay)
             overlay.Finished += FirstRunState.MarkTutorialSeen;

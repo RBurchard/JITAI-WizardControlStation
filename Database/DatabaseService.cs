@@ -102,6 +102,14 @@ public class DatabaseService
             new { id, notes });
     }
 
+    public async Task UpdateSessionNameAsync(string id, string? name)
+    {
+        using var conn = new SqliteConnection(_connectionString);
+        await conn.ExecuteAsync(
+            "UPDATE sessions SET name = @name WHERE id = @id",
+            new { id, name });
+    }
+
     public async Task EndSessionAsync(string id, long endedAt)
     {
         using var conn = new SqliteConnection(_connectionString);
