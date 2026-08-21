@@ -24,6 +24,17 @@ public sealed class ReplayParticipant
 /// <summary>An EXPERIMENT RUN window (used to detect "experiment present" + drive the overlay).</summary>
 public sealed record ReplayRun(string Name, long StartedAtMs, long? EndedAtMs);
 
+/// <summary>
+/// One INTERVENTIONS row kept in structured form. The timeline only needs a label, but the Master
+/// Notes table needs the alert type and mini-game as separate fields to fill its own columns.
+/// </summary>
+public sealed record ReplayIntervention(
+    long SentAt,
+    string GameType,
+    string NotificationType,
+    string Response,
+    long ReactionTimeMs);
+
 public enum ReplayMarkerKind { RunStart, RunEnd, InterventionSent, Response, Note, Distraction }
 
 /// <summary>
@@ -58,6 +69,7 @@ public sealed class ReplayData
     public List<ReplayMarker> Markers { get; init; } = new();
     public List<UserMarker> UserMarkers { get; init; } = new();
     public List<ReplayRun> Runs { get; init; } = new();
+    public List<ReplayIntervention> Interventions { get; init; } = new();
 
     public long MinTs { get; set; }
     public long MaxTs { get; set; }

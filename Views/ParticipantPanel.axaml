@@ -75,7 +75,7 @@
                                         Content="{loc:T Participant_DisconnectButton}"
                                         Command="{Binding DisconnectCommand}" />
                             </Grid>
-                            <!-- Participant name / ID — editable here or on the phone; kept in sync. -->
+                            <!-- Participant name / ID editable here or on the phone; kept in sync. -->
                             <Grid ColumnDefinitions="Auto,*">
                                 <TextBlock Grid.Column="0" Text="{loc:T Participant_ParticipantFieldLabel}"
                                            VerticalAlignment="Center" Margin="0,0,8,0"

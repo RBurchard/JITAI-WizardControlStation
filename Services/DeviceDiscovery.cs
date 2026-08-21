@@ -57,8 +57,8 @@ public static class DeviceDiscovery
                     found.Add(new DiscoveredDevice(name, address, port));
             }
             catch (OperationCanceledException) { break; }
-            catch (SocketException) { /* timeout on individual receive — keep looping */ }
-            catch (JsonException) { /* malformed packet — skip */ }
+            catch (SocketException) { /* timeout on individual receive keep looping */ }
+            catch (JsonException) { /* malformed packet skip */ }
         }
 
         return found;

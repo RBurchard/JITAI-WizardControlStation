@@ -159,7 +159,7 @@ public partial class TutorialOverlay : UserControl
         }
         else
         {
-            // No (visible) target — dim the whole window and centre the bubble.
+            // No (visible) target dim the whole window and centre the bubble.
             SetRect(_dimTop, 0, 0, w, h);
             SetRect(_dimBottom, 0, 0, 0, 0);
             SetRect(_dimLeft, 0, 0, 0, 0);

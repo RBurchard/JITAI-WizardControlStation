@@ -35,7 +35,7 @@ public static class DefaultExperiment
         }
         catch
         {
-            // A missing or corrupt asset must never crash startup — fall back to an empty
+            // A missing or corrupt asset must never crash startup fall back to an empty
             // experiment (the prior behaviour) so the editor still opens.
         }
         return new ExperimentDto(

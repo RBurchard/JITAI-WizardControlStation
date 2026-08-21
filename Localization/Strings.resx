@@ -142,7 +142,7 @@
     <value>Experiment notes / rundown (synced with the phone)</value>
   </data>
   <data name="Editor_OrSeparator" xml:space="preserve">
-    <value>— or —</value>
+    <value>or —</value>
   </data>
   <data name="Editor_PhoneTaskLabel" xml:space="preserve">
     <value>Phone task:</value>
@@ -367,7 +367,7 @@
     <value>Control Station</value>
   </data>
   <data name="Common_AppWindowTitle" xml:space="preserve">
-    <value>JITAI Wizard — Control Station</value>
+    <value>JITAI Wizard Control Station</value>
   </data>
   <data name="Common_Back" xml:space="preserve">
     <value>◀ Back</value>
@@ -379,7 +379,7 @@
     <value>bpm</value>
   </data>
   <data name="Heartbeat_Tooltip" xml:space="preserve">
-    <value>Live heart rate (beats per minute) — pulses in time with the participant's heartbeat</value>
+    <value>Live heart rate (beats per minute) pulses in time with the participant's heartbeat</value>
   </data>
   <data name="Notes_Label" xml:space="preserve">
     <value>📝  Session notes:</value>
@@ -412,7 +412,7 @@
     <value>⬇  Export CSV</value>
   </data>
   <data name="TopBar_ModeToggleTooltip" xml:space="preserve">
-    <value>Switch between live Experiment Mode and CSV Replay Mode</value>
+    <value>Switch between live Experiment Mode and Replay Mode (playback + Master Notes)</value>
   </data>
   <data name="TopBar_OneWatch" xml:space="preserve">
     <value>👤  1 Watch</value>
@@ -469,7 +469,7 @@
     <value>That's the tour! 🚀</value>
   </data>
   <data name="Tutorial_Intervention_Body" xml:space="preserve">
-    <value>Manually fire a notification or mini-game (trivia, Simon Says, …) to the watch — every intervention you trigger is logged as research data.</value>
+    <value>Manually fire a notification or mini-game (trivia, Simon Says, …) to the watch every intervention you trigger is logged as research data.</value>
   </data>
   <data name="Tutorial_Intervention_Title" xml:space="preserve">
     <value>Send an intervention</value>
@@ -487,13 +487,13 @@
     <value>Experiment runner</value>
   </data>
   <data name="Tutorial_Scan_Body" xml:space="preserve">
-    <value>Scan now finds both Wi-Fi devices broadcasting on the network and any phone attached over USB debugging — a USB connection is folded in, not overwritten.</value>
+    <value>Scan now finds both Wi-Fi devices broadcasting on the network and any phone attached over USB debugging a USB connection is folded in, not overwritten.</value>
   </data>
   <data name="Tutorial_Scan_Title" xml:space="preserve">
     <value>Scan for devices</value>
   </data>
   <data name="Tutorial_Sensors_Body" xml:space="preserve">
-    <value>The raw real-time read-outs — heart rate and per-axis accelerometer deltas — straight off the watch.</value>
+    <value>The raw real-time read-outs heart rate and per-axis accelerometer deltas straight off the watch.</value>
   </data>
   <data name="Tutorial_Sensors_Title" xml:space="preserve">
     <value>Live sensors</value>
@@ -523,7 +523,7 @@
     <value>One or two watches</value>
   </data>
   <data name="Tutorial_Welcome_Body" xml:space="preserve">
-    <value>This quick tour points out each part of the cockpit you'll use to run a session. Use Next / Back to step through it, or Skip to jump straight in — you can reopen it any time with the Tutorial button.</value>
+    <value>This quick tour points out each part of the cockpit you'll use to run a session. Use Next / Back to step through it, or Skip to jump straight in you can reopen it any time with the Tutorial button.</value>
   </data>
   <data name="Tutorial_Welcome_Title" xml:space="preserve">
     <value>Welcome to the JITAI Wizard Control Station 👋</value>
@@ -628,7 +628,7 @@
     <value>📎  Attach Experiment JSON</value>
   </data>
   <data name="Replay_EmptyDescription" xml:space="preserve">
-    <value>Import a session CSV (Control Station or phone export) to relive the recording.</value>
+    <value>Open a recorded session straight from the databank, or import a session CSV (Control Station or phone export) to relive the recording.</value>
   </data>
   <data name="Replay_EmptyTitle" xml:space="preserve">
     <value>Replay Mode</value>
@@ -649,7 +649,7 @@
     <value>📝  Notes:</value>
   </data>
   <data name="Replay_NotesWatermark" xml:space="preserve">
-    <value>Session notes (editable — saved with markers)</value>
+    <value>Session notes (editable saved with markers)</value>
   </data>
   <data name="Replay_OverlayExperimentLoadFailed" xml:space="preserve">
     <value>Experiment load failed</value>
@@ -739,10 +739,10 @@
     <value>Save as new copy…</value>
   </data>
   <data name="SessionPicker_Description" xml:space="preserve">
-    <value>Choose a session to export. The CSV will contain all sensor data, logs, interventions, and experiment runs for that session.</value>
+    <value>Choose a session. Everything recorded for it sensor data, logs, interventions and experiment runs comes along.</value>
   </data>
   <data name="SessionPicker_DialogTitle" xml:space="preserve">
-    <value>Select Session to Export</value>
+    <value>Select Session</value>
   </data>
   <data name="SessionPicker_DurationHoursMinutes" xml:space="preserve">
     <value>{0}h {1}m</value>
@@ -820,7 +820,7 @@
     <value>Ready</value>
   </data>
   <data name="Main_StatusSessionAutoEnded" xml:space="preserve">
-    <value>Experiment finished — session ended automatically</value>
+    <value>Experiment finished session ended automatically</value>
   </data>
   <data name="Main_StatusSessionEnded" xml:space="preserve">
     <value>Session ended</value>
@@ -841,10 +841,10 @@
     <value>Found {0} Wi-Fi + {1} USB device(s)</value>
   </data>
   <data name="Participant_LogInterventionNotRecorded" xml:space="preserve">
-    <value>Intervention not recorded — start a session and connect first.</value>
+    <value>Intervention not recorded start a session and connect first.</value>
   </data>
   <data name="Participant_LogNoDevicesFound" xml:space="preserve">
-    <value>No devices found — ensure the phone app is running on the same network or USB debugging is enabled</value>
+    <value>No devices found ensure the phone app is running on the same network or USB debugging is enabled</value>
   </data>
   <data name="Participant_LogParticipantPushFailed" xml:space="preserve">
     <value>Participant push failed: {0}</value>
@@ -975,5 +975,191 @@
   </data>
   <data name="Editor_Notification_VibrationSound2_Display" xml:space="preserve">
     <value>Vibration + Sound (Long)</value>
+  </data>
+  <data name="TopBar_MenuButton" xml:space="preserve">
+    <value>☰  Menu</value>
+  </data>
+  <data name="TopBar_MenuTooltip" xml:space="preserve">
+    <value>Export, trivia, tutorial and settings</value>
+  </data>
+  <data name="Common_FileType_Xlsx" xml:space="preserve">
+    <value>Excel workbook</value>
+  </data>
+  <data name="SessionPicker_SelectAll" xml:space="preserve">
+    <value>Select all</value>
+  </data>
+  <data name="SessionPicker_SelectNone" xml:space="preserve">
+    <value>Select none</value>
+  </data>
+  <data name="Replay_OpenButton" xml:space="preserve">
+    <value>📂  Open ▾</value>
+  </data>
+  <data name="Replay_OpenTooltip" xml:space="preserve">
+    <value>Load a recording from the databank or from a CSV file</value>
+  </data>
+  <data name="Replay_OpenFromDatabank" xml:space="preserve">
+    <value>🗄  From databank…</value>
+  </data>
+  <data name="Replay_ImportCsvMenuItem" xml:space="preserve">
+    <value>⬆  Import CSV file…</value>
+  </data>
+  <data name="Replay_OpenSessionButton" xml:space="preserve">
+    <value>Open in Replay</value>
+  </data>
+  <data name="Replay_SourceDatabank" xml:space="preserve">
+    <value>DATABANK</value>
+  </data>
+  <data name="Replay_SourceFile" xml:space="preserve">
+    <value>FILE</value>
+  </data>
+  <data name="Replay_TabPlayer" xml:space="preserve">
+    <value>▶  Player</value>
+  </data>
+  <data name="Replay_TabMasterNotes" xml:space="preserve">
+    <value>🗒  Master Notes</value>
+  </data>
+  <data name="Replay_TabMasterNotesTooltip" xml:space="preserve">
+    <value>One row per recording the research summary table</value>
+  </data>
+  <data name="Replay_SpeedTooltip" xml:space="preserve">
+    <value>Playback speed</value>
+  </data>
+  <data name="Replay_Speed0_25x" xml:space="preserve">
+    <value>0.25×</value>
+  </data>
+  <data name="Replay_Speed8x" xml:space="preserve">
+    <value>8×</value>
+  </data>
+  <data name="MasterNotes_SheetName" xml:space="preserve">
+    <value>Master Notes</value>
+  </data>
+  <data name="MasterNotes_AddButton" xml:space="preserve">
+    <value>＋  Add ▾</value>
+  </data>
+  <data name="MasterNotes_AddTooltip" xml:space="preserve">
+    <value>Add rows from the databank, from CSV files, or blank</value>
+  </data>
+  <data name="MasterNotes_AddFromDatabank" xml:space="preserve">
+    <value>🗄  From databank…</value>
+  </data>
+  <data name="MasterNotes_AddFromCsv" xml:space="preserve">
+    <value>⬆  From CSV files…</value>
+  </data>
+  <data name="MasterNotes_AddBlank" xml:space="preserve">
+    <value>＋  Blank row</value>
+  </data>
+  <data name="MasterNotes_AddSelectedButton" xml:space="preserve">
+    <value>Add to Master Notes</value>
+  </data>
+  <data name="MasterNotes_OpenInPlayer" xml:space="preserve">
+    <value>▶  Open</value>
+  </data>
+  <data name="MasterNotes_OpenInPlayerTooltip" xml:space="preserve">
+    <value>Load this recording in the player</value>
+  </data>
+  <data name="MasterNotes_DuplicateRow" xml:space="preserve">
+    <value>⧉  Duplicate</value>
+  </data>
+  <data name="MasterNotes_RemoveRow" xml:space="preserve">
+    <value>✕  Remove</value>
+  </data>
+  <data name="MasterNotes_ExportButton" xml:space="preserve">
+    <value>⬇  Export ▾</value>
+  </data>
+  <data name="MasterNotes_ExportXlsx" xml:space="preserve">
+    <value>Excel workbook (.xlsx)</value>
+  </data>
+  <data name="MasterNotes_ExportCsv" xml:space="preserve">
+    <value>CSV file (.csv)</value>
+  </data>
+  <data name="MasterNotes_ExportXlsxDialogTitle" xml:space="preserve">
+    <value>Export Master Notes as Excel workbook</value>
+  </data>
+  <data name="MasterNotes_ExportCsvDialogTitle" xml:space="preserve">
+    <value>Export Master Notes as CSV</value>
+  </data>
+  <data name="MasterNotes_ImportCsvDialogTitle" xml:space="preserve">
+    <value>Add recordings from CSV exports</value>
+  </data>
+  <data name="MasterNotes_EmptyTitle" xml:space="preserve">
+    <value>Master Notes</value>
+  </data>
+  <data name="MasterNotes_EmptyDescription" xml:space="preserve">
+    <value>One row per recording: participant, experiment, how long they washed, whether the intervention was noticed, and your verbatim remarks. Pull sessions in from the databank or from CSV files shared by someone else, fill in your observations, and export the whole table to Excel.</value>
+  </data>
+  <data name="MasterNotes_StatusLoaded" xml:space="preserve">
+    <value>{0} row(s) restored.</value>
+  </data>
+  <data name="MasterNotes_StatusAdded" xml:space="preserve">
+    <value>{0} added, {1} refreshed, {2} failed.</value>
+  </data>
+  <data name="MasterNotes_StatusBlankAdded" xml:space="preserve">
+    <value>Blank row added.</value>
+  </data>
+  <data name="MasterNotes_StatusRowRemoved" xml:space="preserve">
+    <value>Row removed.</value>
+  </data>
+  <data name="MasterNotes_StatusExported" xml:space="preserve">
+    <value>Exported to {0}.</value>
+  </data>
+  <data name="MasterNotes_StatusExportFailed" xml:space="preserve">
+    <value>Export failed: {0}</value>
+  </data>
+  <data name="MasterNotes_StatusNoSource" xml:space="preserve">
+    <value>This row is not linked to a recording.</value>
+  </data>
+  <data name="MasterNotes_StatusFileMissing" xml:space="preserve">
+    <value>File no longer exists: {0}</value>
+  </data>
+  <data name="MasterNotes_VariantLogged" xml:space="preserve">
+    <value>logged</value>
+  </data>
+  <data name="MasterNotes_VariantNotLogged" xml:space="preserve">
+    <value>not logged</value>
+  </data>
+  <data name="MasterNotes_ExperimentUnknown" xml:space="preserve">
+    <value>UNKNOWN / not logged</value>
+  </data>
+  <data name="MasterNotes_MiniGameNone" xml:space="preserve">
+    <value>None (messages only)</value>
+  </data>
+  <data name="MasterNotes_ColParticipant" xml:space="preserve">
+    <value>Participant</value>
+  </data>
+  <data name="MasterNotes_ColRecording" xml:space="preserve">
+    <value>Recording (file)</value>
+  </data>
+  <data name="MasterNotes_ColDateTime" xml:space="preserve">
+    <value>Date / time</value>
+  </data>
+  <data name="MasterNotes_ColExperiment" xml:space="preserve">
+    <value>Experiment</value>
+  </data>
+  <data name="MasterNotes_ColVariantSource" xml:space="preserve">
+    <value>Variant source</value>
+  </data>
+  <data name="MasterNotes_ColWashDuration" xml:space="preserve">
+    <value>Wash duration</value>
+  </data>
+  <data name="MasterNotes_ColWashSeconds" xml:space="preserve">
+    <value>Wash dur (s)</value>
+  </data>
+  <data name="MasterNotes_ColInterventionNoticed" xml:space="preserve">
+    <value>Intervention noticed</value>
+  </data>
+  <data name="MasterNotes_ColWashingInterrupted" xml:space="preserve">
+    <value>Washing interrupted</value>
+  </data>
+  <data name="MasterNotes_ColAlertType" xml:space="preserve">
+    <value>Alert type</value>
+  </data>
+  <data name="MasterNotes_ColMiniGame" xml:space="preserve">
+    <value>Mini-game</value>
+  </data>
+  <data name="MasterNotes_ColNotes" xml:space="preserve">
+    <value>Notes (verbatim)</value>
+  </data>
+  <data name="MasterNotes_ColSource" xml:space="preserve">
+    <value>Src</value>
   </data>
 </root>

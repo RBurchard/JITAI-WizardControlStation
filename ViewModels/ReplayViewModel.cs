@@ -11,6 +11,7 @@ using Avalonia.Platform.Storage;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using OcdWizard.ControlStation.Database;
 using OcdWizard.ControlStation.Localization;
 using OcdWizard.ControlStation.Models;
 using OcdWizard.ControlStation.Services;
@@ -41,15 +42,21 @@ public partial class ReplayViewModel : ObservableObject
     };
 
     private readonly DispatcherTimer _timer;
+    private readonly DatabaseService _db;
     private DateTime _lastTickUtc;
 
     private ReplayData? _data;
     private long _minTs, _maxTs;
+    /// <summary>Backing file of the loaded recording, or null when it came straight from the databank.</summary>
     private string? _filePath;
     private bool _suppressNotesDirty;
 
     [ObservableProperty] private bool _hasData;
+    /// <summary>False = the playback view, true = the Master Notes table.</summary>
+    [ObservableProperty] private bool _isMasterNotesView;
     [ObservableProperty] private string _importedFileName = "";
+    /// <summary>Where the loaded recording came from, e.g. "Databank" shown beside its name.</summary>
+    [ObservableProperty] private string _sourceLabel = "";
     [ObservableProperty] private string _sessionName = "";
     [ObservableProperty] private string _experimentName = "";
     [ObservableProperty] private bool _hasExperiment;
@@ -71,6 +78,9 @@ public partial class ReplayViewModel : ObservableObject
     [ObservableProperty] private bool _hasAttachedExperiment;
     [ObservableProperty] private string _attachedExperimentName = "";
 
+    /// <summary>The Master Notes table, shown as the second view of Replay Mode.</summary>
+    public MasterNotesViewModel MasterNotes { get; }
+
     public ObservableCollection<ReplayParticipantViewModel> Participants { get; } = new();
     public ObservableCollection<UserMarker> UserMarkers { get; } = new();
     public ObservableCollection<ReplayEventRow> ExperimentEvents { get; } = new();
@@ -85,10 +95,12 @@ public partial class ReplayViewModel : ObservableObject
     /// <summary>Raised after a successful import or marker change so the view can refresh the timeline.</summary>
     public event Action? TimelineChanged;
 
-    public ReplayViewModel()
+    public ReplayViewModel(DatabaseService db)
     {
+        _db = db;
         _timer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(16) };
         _timer.Tick += OnTick;
+        MasterNotes = new MasterNotesViewModel(db) { OpenInPlayer = OpenNoteRowAsync };
     }
 
     // ── Import ─────────────────────────────────────────────────────────────────
@@ -96,6 +108,7 @@ public partial class ReplayViewModel : ObservableObject
     [RelayCommand]
     private async Task ImportCsvAsync(Window? owner)
     {
+        owner ??= OwnerWindow;
         if (owner == null) return;
         var files = await owner.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
         {
@@ -109,17 +122,78 @@ public partial class ReplayViewModel : ObservableObject
         {
             var text = await File.ReadAllTextAsync(path);
             var data = ReplayCsvParser.ParseText(text);
-            LoadData(data, path);
+            LoadData(data, path, Path.GetFileName(path), Loc.Get("Replay_SourceFile"));
         }
         catch (Exception ex)
         {
-            OverlayActive = true;
-            OverlayTitle = Loc.Get("Replay_OverlayImportFailed");
-            OverlayDetail = ex.Message;
+            ReportLoadFailure(ex);
         }
     }
 
-    private void LoadData(ReplayData data, string path)
+    /// <summary>
+    /// Opens a recorded session straight out of the databank no export-to-CSV-then-import-again
+    /// detour. The session is rendered through the very same CSV projection the exporter writes,
+    /// so a databank recording and its exported file replay identically.
+    /// </summary>
+    [RelayCommand]
+    private async Task OpenFromDatabankAsync(Window? owner)
+    {
+        owner ??= OwnerWindow;
+        if (owner == null) return;
+
+        var picker = new SessionPickerViewModel(_db, null, multiSelect: false,
+            confirmLabel: Loc.Get("Replay_OpenSessionButton"));
+        var session = await SessionPickerDialog.ShowAsync(owner, picker);
+        if (session == null) return;
+        await LoadSessionAsync(session.Id, session.Name);
+    }
+
+    private async Task LoadSessionAsync(string sessionId, string sessionName)
+    {
+        try
+        {
+            var data = ReplayCsvParser.ParseText(await _db.BuildSessionCsvAsync(sessionId));
+            var label = string.IsNullOrWhiteSpace(sessionName) ? Loc.Get("Replay_SessionUnnamed") : sessionName;
+            // No file path: a Save must therefore always ask where to put the annotated copy.
+            LoadData(data, null, label, Loc.Get("Replay_SourceDatabank"));
+        }
+        catch (Exception ex)
+        {
+            ReportLoadFailure(ex);
+        }
+    }
+
+    /// <summary>Loads the recording behind a Master Notes row and switches to the player.</summary>
+    private async Task OpenNoteRowAsync(MasterNoteRow row)
+    {
+        if (row.SourceKey == null) return;
+        if (row.Source == MasterNoteSource.Databank)
+            await LoadSessionAsync(row.SourceKey, row.Recording);
+        else if (File.Exists(row.SourceKey))
+        {
+            try
+            {
+                var data = ReplayCsvParser.ParseText(await File.ReadAllTextAsync(row.SourceKey));
+                LoadData(data, row.SourceKey, Path.GetFileName(row.SourceKey), Loc.Get("Replay_SourceFile"));
+            }
+            catch (Exception ex) { ReportLoadFailure(ex); }
+        }
+        else
+        {
+            MasterNotes.StatusMessage = Loc.Format("MasterNotes_StatusFileMissing", row.SourceKey);
+            return;
+        }
+        if (HasData) IsMasterNotesView = false;
+    }
+
+    private void ReportLoadFailure(Exception ex)
+    {
+        OverlayActive = true;
+        OverlayTitle = Loc.Get("Replay_OverlayImportFailed");
+        OverlayDetail = ex.Message;
+    }
+
+    private void LoadData(ReplayData data, string? path, string displayName, string sourceLabel)
     {
         Pause();
         _data = data;
@@ -127,7 +201,8 @@ public partial class ReplayViewModel : ObservableObject
         _minTs = data.MinTs;
         _maxTs = data.MaxTs;
 
-        ImportedFileName = Path.GetFileName(path);
+        ImportedFileName = displayName;
+        SourceLabel = sourceLabel;
         SessionName = Loc.Format("Replay_SessionNameFormat",
             string.IsNullOrWhiteSpace(data.Session.Name) ? Loc.Get("Replay_SessionUnnamed") : data.Session.Name);
         HasExperiment = data.HasExperiment;
@@ -167,6 +242,14 @@ public partial class ReplayViewModel : ObservableObject
         OnPropertyChanged(nameof(CurrentAbsMs));
         TimelineChanged?.Invoke();
     }
+
+    // ── View switch ────────────────────────────────────────────────────────────
+
+    [RelayCommand]
+    private void ShowPlayer() => IsMasterNotesView = false;
+
+    [RelayCommand]
+    private void ShowMasterNotes() => IsMasterNotesView = true;
 
     // ── Transport ──────────────────────────────────────────────────────────────
 
@@ -314,8 +397,18 @@ public partial class ReplayViewModel : ObservableObject
         UserMarkers.Insert(idx, marker);
     }
 
+    private Window? _ownerWindow;
+
     /// <summary>Set by the view so commands invoked without an explicit owner can find the window.</summary>
-    public Window? OwnerWindow { get; set; }
+    public Window? OwnerWindow
+    {
+        get => _ownerWindow;
+        set
+        {
+            _ownerWindow = value;
+            MasterNotes.OwnerWindow = value;
+        }
+    }
 
     // ── Attach experiment JSON ────────────────────────────────────────────────────
 
@@ -369,8 +462,12 @@ public partial class ReplayViewModel : ObservableObject
         owner ??= OwnerWindow;
         if (owner == null || _data == null) return;
 
-        var choice = await SaveTargetDialog.ShowAsync(owner, ImportedFileName);
-        if (choice == SaveTargetDialog.Result.Cancel) return;
+        var choice = SaveTargetDialog.Result.SaveAs;
+        if (_filePath != null)
+        {
+            choice = await SaveTargetDialog.ShowAsync(owner, ImportedFileName);
+            if (choice == SaveTargetDialog.Result.Cancel) return;
+        }
 
         string targetPath;
         if (choice == SaveTargetDialog.Result.Overwrite && _filePath != null)
@@ -379,7 +476,7 @@ public partial class ReplayViewModel : ObservableObject
         }
         else
         {
-            var suggested = Path.GetFileNameWithoutExtension(ImportedFileName);
+            var suggested = SanitizeFileName(Path.GetFileNameWithoutExtension(ImportedFileName));
             var file = await owner.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
             {
                 Title = Loc.Get("Replay_SaveAnnotatedCsvDialogTitle"),
@@ -398,7 +495,16 @@ public partial class ReplayViewModel : ObservableObject
         _data = reloaded;
         _filePath = targetPath;
         ImportedFileName = Path.GetFileName(targetPath);
+        SourceLabel = Loc.Get("Replay_SourceFile");
         IsDirty = false;
+    }
+
+    /// <summary>Strips characters the file pickers reject, so a session name can seed a filename.</summary>
+    private static string SanitizeFileName(string name)
+    {
+        var invalid = Path.GetInvalidFileNameChars();
+        var cleaned = new string(name.Select(c => invalid.Contains(c) ? '_' : c).ToArray()).Trim();
+        return cleaned.Length == 0 ? "session" : cleaned;
     }
 
     // ── Overlay computation (best-effort) ────────────────────────────────────────

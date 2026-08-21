@@ -8,7 +8,7 @@ namespace OcdWizard.ControlStation.Views;
 
 /// <summary>
 /// Prompts for a session name when the experiment auto-ends the session and the name is still
-/// the default (or unchanged from last time) — so a researcher who forgot to rename it gets one
+/// the default (or unchanged from last time) so a researcher who forgot to rename it gets one
 /// last chance before the session becomes hard to tell apart from others in the picker/export.
 /// </summary>
 public partial class SessionSaveNameDialog : Window

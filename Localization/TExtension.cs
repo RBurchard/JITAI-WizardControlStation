@@ -7,7 +7,7 @@ namespace OcdWizard.ControlStation.Localization;
 /// <summary>
 /// XAML markup extension that resolves a localized string and keeps tracking the active language.
 ///
-/// Usage — add <c>xmlns:loc="using:OcdWizard.ControlStation.Localization"</c> to the root element,
+/// Usage add <c>xmlns:loc="using:OcdWizard.ControlStation.Localization"</c> to the root element,
 /// then:
 /// <code>
 ///   &lt;TextBlock Text="{loc:T Runner_StartButton}" /&gt;

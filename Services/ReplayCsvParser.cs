@@ -41,6 +41,7 @@ public static class ReplayCsvParser
         var markers = new List<ReplayMarker>();
         var userMarkers = new List<UserMarker>();
         var runs = new List<ReplayRun>();
+        var interventions = new List<ReplayIntervention>();
 
         string section = "";
         Dictionary<string, int>? header = null;
@@ -99,7 +100,7 @@ public static class ReplayCsvParser
                     break;
                 case SECTION_INTERVENTIONS:
                     if (header == null) { header = BuildHeader(fields); break; }
-                    AddInterventionMarkers(markers, header, fields);
+                    AddInterventionMarkers(markers, interventions, header, fields);
                     break;
                 case SECTION_RUNS:
                     if (header == null) { header = BuildHeader(fields); break; }
@@ -130,6 +131,7 @@ public static class ReplayCsvParser
             Markers = markers,
             UserMarkers = userMarkers,
             Runs = runs,
+            Interventions = interventions,
             MinTs = minTs,
             MaxTs = maxTs,
             RawLines = lines,
@@ -251,12 +253,15 @@ public static class ReplayCsvParser
             string.IsNullOrWhiteSpace(value) ? null : value));
     }
 
-    private static void AddInterventionMarkers(List<ReplayMarker> markers, Dictionary<string, int> h, List<string> f)
+    private static void AddInterventionMarkers(List<ReplayMarker> markers, List<ReplayIntervention> interventions,
+        Dictionary<string, int> h, List<string> f)
     {
         var sentAt = ParseLong(Get(h, f, "sent_at"));
         if (sentAt == 0) return;
         var game = Get(h, f, "game_type");
         var notif = Get(h, f, "notification_type");
+        interventions.Add(new ReplayIntervention(sentAt, game.Trim(), notif.Trim(),
+            Get(h, f, "response").Trim(), ParseLong(Get(h, f, "reaction_time_ms"))));
         var label = !string.IsNullOrEmpty(game) ? game : (!string.IsNullOrEmpty(notif) ? notif : Loc.Get("Replay_MarkerLabel_Intervention"));
         markers.Add(new ReplayMarker(sentAt, ReplayMarkerKind.InterventionSent, Loc.Format("Replay_MarkerLabel_InterventionSent", label)));
 
@@ -336,8 +341,8 @@ public static class ReplayCsvParser
 
     /// <summary>
     /// Decode the notes value found after the <c>notes,</c> key. A single well-formed quoted field
-    /// (including multi-line) is unwrapped to clean text; anything else — plain text, stray quotes,
-    /// odd legacy formatting — is returned verbatim so extraction never fails.
+    /// (including multi-line) is unwrapped to clean text; anything else plain text, stray quotes,
+    /// odd legacy formatting is returned verbatim so extraction never fails.
     /// </summary>
     private static string DecodeNotes(string valueRaw)
     {

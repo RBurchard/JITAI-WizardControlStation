@@ -53,8 +53,10 @@ public partial class MainWindow : Window
         new("TutRunner", Loc.Get("Tutorial_Runner_Title"), Loc.Get("Tutorial_Runner_Body")),
         new("TutIntervention", Loc.Get("Tutorial_Intervention_Title"), Loc.Get("Tutorial_Intervention_Body")),
         new("TutStartSession", Loc.Get("Tutorial_StartStop_Title"), Loc.Get("Tutorial_StartStop_Body")),
-        new("TutExport", Loc.Get("Tutorial_Export_Title"), Loc.Get("Tutorial_Export_Body")),
-        new("TutTutorialBtn", Loc.Get("Tutorial_Finish_Title"), Loc.Get("Tutorial_Finish_Body")),
+        // Export, Trivia, Tutorial and Settings all live in the toolbar menu now, so both of
+        // these steps point at it.
+        new("TutMenu", Loc.Get("Tutorial_Export_Title"), Loc.Get("Tutorial_Export_Body")),
+        new("TutMenu", Loc.Get("Tutorial_Finish_Title"), Loc.Get("Tutorial_Finish_Body")),
     ];
 
     private async void OnManageTriviaClick(object? sender, RoutedEventArgs e)

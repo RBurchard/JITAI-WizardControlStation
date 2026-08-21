@@ -17,7 +17,7 @@ namespace OcdWizard.ControlStation.ViewModels;
 
 /// <summary>
 /// Formats a single value through a resx template (e.g. "{0:F0} bpm", "ID: {0}") via
-/// <see cref="Loc.Format"/>. Bound as a two-input MultiBinding — values[0] is the value to format,
+/// <see cref="Loc.Format"/>. Bound as a two-input MultiBinding values[0] is the value to format,
 /// values[1] is <see cref="Loc.LanguageTag"/> purely to force re-evaluation, and therefore a live
 /// re-localized label, on a language switch (a plain single-value converter would only refresh
 /// when the formatted value itself changes). ConverterParameter is the resx key of the template.
@@ -292,7 +292,7 @@ public partial class ParticipantViewModel : ObservableObject, IMotionSource
         AppendLog(ok ? Loc.Format("Participant_LogTriggered", SelectedNotificationType, gameType ?? "") : Loc.Get("Participant_LogTriggerFailed"));
 
         // Record the intervention whenever the researcher fires one, regardless of whether
-        // the wear delivery succeeded — the action itself is research data we want to keep.
+        // the wear delivery succeeded the action itself is research data we want to keep.
         if (_participantId != null && _sessionId != null)
         {
             await _db.InsertInterventionAsync(
@@ -381,7 +381,7 @@ public partial class ParticipantViewModel : ObservableObject, IMotionSource
 
     private void OnDataReceived(WatchDataBatch batch)
     {
-        // DB insert runs first — completely isolated so nothing else can block it.
+        // DB insert runs first completely isolated so nothing else can block it.
         if (_participantId != null)
         {
             var pid = _participantId;
@@ -392,7 +392,7 @@ public partial class ParticipantViewModel : ObservableObject, IMotionSource
             });
         }
 
-        // UI updates are best-effort — a crash here can never affect data recording.
+        // UI updates are best-effort a crash here can never affect data recording.
         if (batch.Snapshots?.Count > 0)
         {
             var last = batch.Snapshots[^1];
@@ -423,7 +423,7 @@ public partial class ParticipantViewModel : ObservableObject, IMotionSource
     }
 
     // Clears all live tracker state so the overlay starts from scratch. Safe to call from any
-    // thread — always posts to the UI thread internally.
+    // thread always posts to the UI thread internally.
     private void ResetOverlayState()
     {
         Dispatcher.UIThread.Post(() =>
@@ -437,7 +437,7 @@ public partial class ParticipantViewModel : ObservableObject, IMotionSource
     }
 
     // Surfaces the engine's live state (which event is active + how long it's been running) so
-    // the operator sees where the experiment is and a per-task countdown — for auto and manual runs.
+    // the operator sees where the experiment is and a per-task countdown for auto and manual runs.
     private void OnEngineStateChanged(EngineStateSnapshotDto snap)
     {
         Dispatcher.UIThread.Post(() =>

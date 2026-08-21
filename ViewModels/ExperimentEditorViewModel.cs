@@ -22,12 +22,12 @@ namespace OcdWizard.ControlStation.ViewModels;
 /// <summary>
 /// Renders the localized label for a ComboBox item whose bound/serialized value is a fixed
 /// English wire token (e.g. "RandomWait", "LOCK_PICKING", "Yes/No", "VIBRATION1"). The
-/// ComboBox's ItemsSource/SelectedItem keep holding that wire token completely unchanged — this
+/// ComboBox's ItemsSource/SelectedItem keep holding that wire token completely unchanged this
 /// converter only supplies what gets drawn on screen, via each ComboBox's ItemTemplate. See the
 /// "Editor_*_Display" resources in Strings.resx for the label text itself.
 ///
 /// Bound as a two-input MultiBinding: values[0] is the wire value (an empty-path binding to the
-/// item itself), values[1] is <see cref="Loc.LanguageTag"/> — included purely so the MultiBinding
+/// item itself), values[1] is <see cref="Loc.LanguageTag"/> included purely so the MultiBinding
 /// re-evaluates, and the visible label re-localizes live, whenever the app language changes. This
 /// mirrors what <c>{loc:T}</c> gives every other label; a plain single-value converter would only
 /// refresh a ComboBox's closed-state text when its SelectedItem changes, not on a language switch.
@@ -82,7 +82,7 @@ public sealed class WireValueDisplayConverter : IMultiValueConverter
             ("PhoneTask", "DRAW") => "Editor_PhoneTask_Draw",
             ("PhoneTask", "CAMERA") => "Editor_PhoneTask_Camera",
 
-            // Defensive fallback: never blank, never throws — shows the raw wire value if a new
+            // Defensive fallback: never blank, never throws shows the raw wire value if a new
             // token is ever added to a Kinds/*Options list without a matching resx entry.
             _ => wire ?? string.Empty
         };
@@ -335,14 +335,14 @@ public partial class ExperimentEditorViewModel : ObservableObject
         }
 
         // Notify consumers that the experiment changed so they can reset live-run state.
-        // Skipped for the initial constructor seed — nothing is running yet.
+        // Skipped for the initial constructor seed nothing is running yet.
         if (!_initializingFromConstructor)
             ExperimentLoaded?.Invoke();
     }
 
     private void OnItemPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        // Runtime highlight/countdown changes are display-only — never push them to the phone.
+        // Runtime highlight/countdown changes are display-only never push them to the phone.
         if (e.PropertyName is nameof(ExperimentEventEditModel.IsCurrent)
                            or nameof(ExperimentEventEditModel.RemainingDisplay)) return;
         if (!_suppressNotify) NotifyChanged();

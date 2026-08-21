@@ -17,7 +17,7 @@
 
         <!-- ── Top bar ────────────────────────────────────────────────── -->
         <Border DockPanel.Dock="Top" Background="#12152A" Padding="16,10">
-            <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto,Auto,Auto">
+            <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto,Auto">
 
                 <!-- Title + mode toggle -->
                 <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="10"
@@ -44,11 +44,11 @@
 
                 <!-- Session name -->
                 <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8"
-                            VerticalAlignment="Center" Margin="20,0"
+                            VerticalAlignment="Center" Margin="18,0"
                             IsVisible="{Binding !IsReplayMode}">
                     <TextBlock Text="{loc:T TopBar_SessionLabel}" Foreground="#7788AA"
                                VerticalAlignment="Center" FontSize="12" />
-                    <TextBox Name="TutSessionName" Text="{Binding SessionName}" Width="200"
+                    <TextBox Name="TutSessionName" Text="{Binding SessionName}" Width="190"
                              Watermark="{loc:T TopBar_SessionNameWatermark}" VerticalAlignment="Center" />
                 </StackPanel>
 
@@ -57,7 +57,7 @@
                               IsChecked="{Binding DualParticipantMode}"
                               IsVisible="{Binding !IsReplayMode}"
                               Margin="0,0,6,0"
-                              Padding="12,7"
+                              Padding="10,7"
                               CornerRadius="6"
                               Background="#252535"
                               Foreground="#CCC"
@@ -74,48 +74,45 @@
                     </Panel>
                 </ToggleButton>
 
-                <!-- Start session -->
-                <Button Grid.Column="3" Name="TutStartSession" Classes="Primary"
-                        Content="{loc:T TopBar_StartSession}"
-                        Command="{Binding StartSessionCommand}"
-                        IsVisible="{Binding !IsReplayMode}"
-                        IsEnabled="{Binding SessionActive, Converter={x:Static BoolConverters.Not}}"
-                        Margin="0,0,6,0" />
+                <!-- Start / Stop: only the applicable one is shown, so the pair costs one slot -->
+                <Panel Grid.Column="3" IsVisible="{Binding !IsReplayMode}" Margin="0,0,6,0">
+                    <Button Name="TutStartSession" Classes="Primary"
+                            Content="{loc:T TopBar_StartSession}"
+                            Command="{Binding StartSessionCommand}"
+                            IsVisible="{Binding SessionActive, Converter={x:Static BoolConverters.Not}}" />
+                    <Button Name="TutStopSession" Classes="Danger"
+                            Content="{loc:T TopBar_StopSession}"
+                            Command="{Binding StopSessionCommand}"
+                            IsVisible="{Binding SessionActive}" />
+                </Panel>
 
-                <!-- Stop session -->
-                <Button Grid.Column="4" Name="TutStopSession" Classes="Danger"
-                        Content="{loc:T TopBar_StopSession}"
-                        Command="{Binding StopSessionCommand}"
-                        IsVisible="{Binding !IsReplayMode}"
-                        IsEnabled="{Binding SessionActive}"
-                        Margin="0,0,6,0" />
-
-                <!-- Export / Trivia / Tutorial -->
-                <StackPanel Grid.Column="5" Orientation="Horizontal" Spacing="6"
-                            VerticalAlignment="Center">
-                    <Button Name="TutExport" Classes="Subtle"
-                            Content="{loc:T TopBar_ExportCsv}"
-                            IsVisible="{Binding !IsReplayMode}"
-                            Click="OnExportClick" />
-                    <Button Name="TutTrivia" Classes="Subtle"
-                            Content="{loc:T TopBar_Trivia}"
-                            IsVisible="{Binding !IsReplayMode}"
-                            Click="OnManageTriviaClick" />
-                    <Button Name="TutTutorialBtn" Classes="Subtle"
-                            Content="{loc:T TopBar_Tutorial}"
-                            ToolTip.Tip="{loc:T TopBar_TutorialTooltip}"
-                            Click="OnTutorialClick" />
-                    <Button Classes="Subtle"
-                            Content="{loc:T Settings_ToolbarButton}"
-                            ToolTip.Tip="{loc:T Settings_Tooltip}"
-                            Click="OnSettingsClick" />
-                </StackPanel>
+                <!-- Everything occasional, behind one menu -->
+                <Button Grid.Column="4" Name="TutMenu" Classes="Subtle"
+                        Content="{loc:T TopBar_MenuButton}"
+                        ToolTip.Tip="{loc:T TopBar_MenuTooltip}">
+                    <Button.Flyout>
+                        <MenuFlyout>
+                            <MenuItem Header="{loc:T TopBar_ExportCsv}"
+                                      Click="OnExportClick"
+                                      IsVisible="{Binding !IsReplayMode}" />
+                            <MenuItem Header="{loc:T TopBar_Trivia}"
+                                      Click="OnManageTriviaClick"
+                                      IsVisible="{Binding !IsReplayMode}" />
+                            <Separator IsVisible="{Binding !IsReplayMode}" />
+                            <MenuItem Header="{loc:T TopBar_Tutorial}" Click="OnTutorialClick" />
+                            <MenuItem Header="{loc:T Settings_ToolbarButton}" Click="OnSettingsClick" />
+                        </MenuFlyout>
+                    </Button.Flyout>
+                </Button>
 
                 <!-- Status -->
-                <Border Grid.Column="6" Background="#1A1D30" CornerRadius="5"
-                        Padding="10,5" Margin="10,0,0,0" VerticalAlignment="Center">
+                <Border Grid.Column="5" Background="#1A1D30" CornerRadius="5"
+                        Padding="10,5" Margin="8,0,0,0" VerticalAlignment="Center"
+                        MaxWidth="260">
                     <TextBlock Text="{Binding StatusMessage}"
-                               Foreground="#7799CC" FontSize="11" />
+                               Foreground="#7799CC" FontSize="11"
+                               TextTrimming="CharacterEllipsis"
+                               ToolTip.Tip="{Binding StatusMessage}" />
                 </Border>
             </Grid>
         </Border>

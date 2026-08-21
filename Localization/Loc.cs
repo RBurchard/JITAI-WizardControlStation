@@ -11,7 +11,7 @@ namespace OcdWizard.ControlStation.Localization;
 ///
 /// XAML binds through the <c>{loc:T Key}</c> markup extension, which produces a binding to
 /// this object's indexer. Changing <see cref="Culture"/> raises <c>PropertyChanged("Item[]")</c>,
-/// which re-evaluates every one of those bindings — so the UI switches language live, with no
+/// which re-evaluates every one of those bindings so the UI switches language live, with no
 /// window reload and no restart.
 ///
 /// C# (view-models, dialogs, code-behind) calls <see cref="Get"/> / <see cref="Format"/>.
@@ -54,7 +54,7 @@ public sealed class Loc : INotifyPropertyChanged
             CultureInfo.CurrentUICulture = value;
             CultureInfo.DefaultThreadCurrentUICulture = value;
 
-            // Avalonia's indexer bindings re-read on PropertyChanged("Item") — NOT on the
+            // Avalonia's indexer bindings re-read on PropertyChanged("Item") NOT on the
             // WPF "Item[]" convention, and not on the null/"" "everything changed" signal.
             // Verified empirically; using the wrong name here silently produces a UI that
             // never switches language. "Item[]" is raised too, for any WPF-style consumer.

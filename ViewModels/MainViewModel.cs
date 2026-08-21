@@ -41,7 +41,7 @@ public partial class MainViewModel : ObservableObject
 
     public ParticipantViewModel Participant1 { get; }
     public ParticipantViewModel Participant2 { get; }
-    public ReplayViewModel Replay { get; } = new();
+    public ReplayViewModel Replay { get; }
     public UsbDeviceSource UsbSource => _usbSource;
 
     private static string DbPath =>
@@ -53,6 +53,7 @@ public partial class MainViewModel : ObservableObject
         Directory.CreateDirectory(Path.GetDirectoryName(DbPath)!);
         _db = new DatabaseService(DbPath);
         _csv = new CsvExportService(_db);
+        Replay = new ReplayViewModel(_db);
         Participant1 = new ParticipantViewModel("P1", _db);
         Participant2 = new ParticipantViewModel("P2", _db);
         _adb.AdbMissing += () => Avalonia.Threading.Dispatcher.UIThread.Post(() => AdbMissing = true);
@@ -69,7 +70,7 @@ public partial class MainViewModel : ObservableObject
         Participant1.UsbDeviceProvider = () => _usbSource.Devices.ToList();
         Participant2.UsbDeviceProvider = () => _usbSource.Devices.ToList();
         // Starting an experiment without an active session orphans its data (it can never be
-        // found again in the Session Picker / export) — auto-start one if needed, and auto-end
+        // found again in the Session Picker / export) auto-start one if needed, and auto-end
         // it once every run has stopped, so a forgotten "Start Session" never loses data.
         Participant1.EnsureSessionStarted = EnsureSessionStartedAsync;
         Participant2.EnsureSessionStarted = EnsureSessionStartedAsync;
@@ -146,7 +147,7 @@ public partial class MainViewModel : ObservableObject
         StatusMessage = Loc.Get("Main_StatusSessionEnded");
     }
 
-    // RunStopped fires on the WebSocket receive thread — hop to the UI thread before touching
+    // RunStopped fires on the WebSocket receive thread hop to the UI thread before touching
     // observable state or showing a dialog.
     private void OnExperimentRunStopped() =>
         Dispatcher.UIThread.Post(() => _ = EndAutoSessionIfIdleAsync());
@@ -202,7 +203,7 @@ public partial class MainViewModel : ObservableObject
 
         if (sessions.Count == 1 && sessions[0].Id == _activeSessionId)
         {
-            // Only one session and it's the active one — skip the picker
+            // Only one session and it's the active one skip the picker
             sessionId = sessions[0].Id;
             sessionName = sessions[0].Name;
         }

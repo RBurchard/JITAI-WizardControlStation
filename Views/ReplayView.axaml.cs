@@ -31,12 +31,18 @@ public partial class ReplayView : UserControl
 
     private void Bind(ReplayViewModel? vm)
     {
+        // The owner is resolved on every call, not just when the view-model changes: DataContext
+        // is assigned before the control is attached, so the first call finds no TopLevel, and an
+        // early return would leave every owner-less command (the Open menu, Save) unable to open a
+        // dialog. Never overwrite a good window with a null from a detached pass.
+        if (vm != null && TopLevel.GetTopLevel(this) is Window window)
+            vm.OwnerWindow = window;
+
         if (ReferenceEquals(_vm, vm)) return;
         if (_vm != null) _vm.TimelineChanged -= RefreshTimeline;
         _vm = vm;
         if (_vm != null)
         {
-            _vm.OwnerWindow = TopLevel.GetTopLevel(this) as Window;
             _vm.TimelineChanged += RefreshTimeline;
             RefreshTimeline();
         }

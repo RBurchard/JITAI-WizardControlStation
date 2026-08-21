@@ -5,15 +5,26 @@
         x:Class="OcdWizard.ControlStation.Views.SessionPickerDialog"
         x:DataType="vm:SessionPickerViewModel"
         Title="{loc:T SessionPicker_DialogTitle}"
-        Width="740" Height="380"
+        Width="780" Height="420"
         WindowStartupLocation="CenterOwner"
-        CanResize="False">
+        CanResize="True">
 
     <Grid RowDefinitions="*,Auto" Margin="12">
 
         <Grid Grid.Row="0" RowDefinitions="Auto,*">
-            <TextBlock Grid.Row="0" Text="{loc:T SessionPicker_Description}"
-                       TextWrapping="Wrap" Margin="0,0,0,8" Foreground="#aaa" FontSize="12" />
+            <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,0,0,8">
+                <TextBlock Grid.Column="0" Text="{loc:T SessionPicker_Description}"
+                           TextWrapping="Wrap" Foreground="#aaa" FontSize="12"
+                           VerticalAlignment="Center" />
+                <!-- Bulk toggles only make sense while assembling a set of rows. -->
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6"
+                            IsVisible="{Binding MultiSelect}">
+                    <Button Classes="Subtle" FontSize="11" Padding="8,4"
+                            Content="{loc:T SessionPicker_SelectAll}" Command="{Binding CheckAllCommand}" />
+                    <Button Classes="Subtle" FontSize="11" Padding="8,4"
+                            Content="{loc:T SessionPicker_SelectNone}" Command="{Binding CheckNoneCommand}" />
+                </StackPanel>
+            </Grid>
 
             <ListBox Grid.Row="1"
                      ItemsSource="{Binding Sessions}"
@@ -21,20 +32,23 @@
                      ScrollViewer.VerticalScrollBarVisibility="Auto">
                 <ListBox.ItemTemplate>
                     <DataTemplate x:DataType="vm:SessionSummaryRow">
-                        <Grid ColumnDefinitions="130,160,160,*,60" Margin="2,4">
-                            <TextBlock Grid.Column="0" Text="{Binding StartDisplay}"
+                        <Grid ColumnDefinitions="Auto,130,160,160,*,60" Margin="2,4">
+                            <CheckBox Grid.Column="0" IsChecked="{Binding IsChecked}"
+                                      VerticalAlignment="Center" Margin="0,0,6,0"
+                                      IsVisible="{Binding $parent[ListBox].((vm:SessionPickerViewModel)DataContext).MultiSelect}" />
+                            <TextBlock Grid.Column="1" Text="{Binding StartDisplay}"
                                        FontFamily="Consolas,Courier New,monospace" FontSize="12"
                                        VerticalAlignment="Center" />
-                            <TextBlock Grid.Column="1" Text="{Binding Summary.Name}"
+                            <TextBlock Grid.Column="2" Text="{Binding Summary.Name}"
                                        TextTrimming="CharacterEllipsis" VerticalAlignment="Center"
                                        FontWeight="SemiBold" Margin="8,0" />
-                            <TextBlock Grid.Column="2" Text="{Binding Summary.Participants}"
+                            <TextBlock Grid.Column="3" Text="{Binding Summary.Participants}"
                                        TextTrimming="CharacterEllipsis" VerticalAlignment="Center"
                                        Foreground="#aaa" FontSize="11" Margin="8,0" />
-                            <TextBlock Grid.Column="3" Text="{Binding Summary.Experiments}"
+                            <TextBlock Grid.Column="4" Text="{Binding Summary.Experiments}"
                                        TextTrimming="CharacterEllipsis" VerticalAlignment="Center"
                                        Foreground="#aaa" FontSize="11" Margin="8,0" />
-                            <TextBlock Grid.Column="4" Text="{Binding Summary.WatchDataCount}"
+                            <TextBlock Grid.Column="5" Text="{Binding Summary.WatchDataCount}"
                                        VerticalAlignment="Center" HorizontalAlignment="Right"
                                        Foreground="#666" FontSize="11"
                                        ToolTip.Tip="{loc:T SessionPicker_SnapshotCountTooltip}" />
@@ -49,7 +63,7 @@
                     Margin="0,12,0,0">
             <TextBlock Text="{loc:T SessionPicker_SamplesLabel}" VerticalAlignment="Center" Foreground="#555" FontSize="11"
                        IsVisible="{Binding SelectedSession, Converter={x:Static ObjectConverters.IsNotNull}}" />
-            <Button Content="{loc:T SessionPicker_ExportButton}" Command="{Binding ConfirmCommand}"
+            <Button Content="{Binding ConfirmLabel}" Command="{Binding ConfirmCommand}"
                     Background="#27AE60" Foreground="White" />
             <Button Content="{loc:T Common_Cancel}" Command="{Binding CancelCommand}" Click="OnCancelClick" />
         </StackPanel>

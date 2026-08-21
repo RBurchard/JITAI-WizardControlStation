@@ -98,7 +98,7 @@ public sealed class ExperimentSyncService : IDisposable
                 _lastSyncedEtag = env.Etag;
                 await _db.UpsertExperimentAsync(env.Experiment.Id, env.Experiment.Name,
                     JsonSerializer.Serialize(env.Experiment, JsonOpts), env.Experiment.Version, env.Experiment.UpdatedAt, "pc");
-                // Do NOT fire RemoteUpdated after push — the ControlStation is the source of
+                // Do NOT fire RemoteUpdated after push the ControlStation is the source of
                 // truth for the experiment definition. Reloading from the phone's response
                 // would clear any UI selections that the phone may not round-trip identically.
                 // Only PullAsync fires RemoteUpdated to reload the UI.

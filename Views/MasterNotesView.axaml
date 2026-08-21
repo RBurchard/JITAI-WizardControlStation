@@ -1,0 +1,137 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:OcdWizard.ControlStation.ViewModels"
+             xmlns:models="using:OcdWizard.ControlStation.Models"
+             xmlns:loc="using:OcdWizard.ControlStation.Localization"
+             x:Class="OcdWizard.ControlStation.Views.MasterNotesView"
+             x:DataType="vm:MasterNotesViewModel">
+    <DockPanel>
+
+        <!-- ── Table toolbar ───────────────────────────────────────────────── -->
+        <Border DockPanel.Dock="Top" Background="#0E1124" Padding="12,7"
+                BorderBrush="#1E2238" BorderThickness="0,0,0,1">
+            <Grid ColumnDefinitions="Auto,Auto,*,Auto">
+
+                <!-- Add -->
+                <Button Grid.Column="0" Classes="Accent" Margin="0,0,6,0"
+                        Content="{loc:T MasterNotes_AddButton}"
+                        ToolTip.Tip="{loc:T MasterNotes_AddTooltip}">
+                    <Button.Flyout>
+                        <MenuFlyout>
+                            <MenuItem Header="{loc:T MasterNotes_AddFromDatabank}"
+                                      Command="{Binding AddFromDatabankCommand}" />
+                            <MenuItem Header="{loc:T MasterNotes_AddFromCsv}"
+                                      Command="{Binding AddFromCsvCommand}" />
+                            <Separator />
+                            <MenuItem Header="{loc:T MasterNotes_AddBlank}"
+                                      Command="{Binding AddBlankRowCommand}" />
+                        </MenuFlyout>
+                    </Button.Flyout>
+                </Button>
+
+                <!-- Row actions -->
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                    <Button Classes="Subtle" Content="{loc:T MasterNotes_OpenInPlayer}"
+                            ToolTip.Tip="{loc:T MasterNotes_OpenInPlayerTooltip}"
+                            Command="{Binding OpenRowInPlayerCommand}"
+                            CommandParameter="{Binding SelectedRow}"
+                            IsEnabled="{Binding SelectedRow, Converter={x:Static ObjectConverters.IsNotNull}}" />
+                    <Button Classes="Subtle" Content="{loc:T MasterNotes_DuplicateRow}"
+                            Command="{Binding DuplicateRowCommand}"
+                            CommandParameter="{Binding SelectedRow}"
+                            IsEnabled="{Binding SelectedRow, Converter={x:Static ObjectConverters.IsNotNull}}" />
+                    <Button Classes="Danger" Padding="10,6" Content="{loc:T MasterNotes_RemoveRow}"
+                            Command="{Binding RemoveRowCommand}"
+                            CommandParameter="{Binding SelectedRow}"
+                            IsEnabled="{Binding SelectedRow, Converter={x:Static ObjectConverters.IsNotNull}}" />
+                </StackPanel>
+
+                <!-- Status -->
+                <TextBlock Grid.Column="2" Text="{Binding StatusMessage}" Foreground="#7799CC"
+                           FontSize="11" VerticalAlignment="Center" Margin="14,0"
+                           TextTrimming="CharacterEllipsis" />
+
+                <!-- Export -->
+                <Button Grid.Column="3" Classes="Primary"
+                        Content="{loc:T MasterNotes_ExportButton}"
+                        IsEnabled="{Binding HasRows}">
+                    <Button.Flyout>
+                        <MenuFlyout>
+                            <MenuItem Header="{loc:T MasterNotes_ExportXlsx}"
+                                      Command="{Binding ExportXlsxCommand}" />
+                            <MenuItem Header="{loc:T MasterNotes_ExportCsv}"
+                                      Command="{Binding ExportCsvCommand}" />
+                        </MenuFlyout>
+                    </Button.Flyout>
+                </Button>
+            </Grid>
+        </Border>
+
+        <Panel>
+
+        <!-- ── Empty state ─────────────────────────────────────────────────── -->
+        <StackPanel IsVisible="{Binding !HasRows}"
+                    HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="10">
+            <TextBlock Text="🗒" FontSize="44" HorizontalAlignment="Center" />
+            <TextBlock Text="{loc:T MasterNotes_EmptyTitle}" FontSize="19" FontWeight="Bold"
+                       Foreground="White" HorizontalAlignment="Center" />
+            <TextBlock Text="{loc:T MasterNotes_EmptyDescription}" Foreground="#7788AA"
+                       HorizontalAlignment="Center" TextWrapping="Wrap" MaxWidth="480"
+                       TextAlignment="Center" />
+            <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center" Margin="0,6,0,0">
+                <Button Classes="Accent" Content="{loc:T MasterNotes_AddFromDatabank}"
+                        Command="{Binding AddFromDatabankCommand}" />
+                <Button Classes="Subtle" Content="{loc:T MasterNotes_AddFromCsv}"
+                        Command="{Binding AddFromCsvCommand}" />
+            </StackPanel>
+        </StackPanel>
+
+        <!-- ── The sheet ───────────────────────────────────────────────────── -->
+        <!-- Column bindings resolve against MasterNoteRow, not the view-model, so compiled
+             bindings are switched off for this subtree rather than fighting the ambient x:DataType. -->
+        <DataGrid Classes="Sheet"
+                  x:CompileBindings="False"
+                  IsVisible="{Binding HasRows}"
+                  ItemsSource="{Binding Rows}"
+                  SelectedItem="{Binding SelectedRow}"
+                  AutoGenerateColumns="False"
+                  CanUserResizeColumns="True"
+                  CanUserSortColumns="True"
+                  CanUserReorderColumns="True"
+                  HeadersVisibility="Column"
+                  IsReadOnly="False"
+                  Margin="6">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="{loc:T MasterNotes_ColParticipant}" Width="145"
+                                    Binding="{Binding Participant}" />
+                <DataGridTextColumn Header="{loc:T MasterNotes_ColRecording}" Width="220"
+                                    Binding="{Binding Recording}" />
+                <DataGridTextColumn Header="{loc:T MasterNotes_ColDateTime}" Width="160"
+                                    Binding="{Binding DateTime}" />
+                <DataGridTextColumn Header="{loc:T MasterNotes_ColExperiment}" Width="150"
+                                    Binding="{Binding Experiment}" />
+                <DataGridTextColumn Header="{loc:T MasterNotes_ColVariantSource}" Width="120"
+                                    Binding="{Binding VariantSource}" />
+                <DataGridTextColumn Header="{loc:T MasterNotes_ColWashDuration}" Width="105"
+                                    Binding="{Binding WashDuration}" />
+                <DataGridTextColumn Header="{loc:T MasterNotes_ColWashSeconds}" Width="80"
+                                    Binding="{Binding WashSeconds}" />
+                <DataGridTextColumn Header="{loc:T MasterNotes_ColInterventionNoticed}" Width="170"
+                                    Binding="{Binding InterventionNoticed}" />
+                <DataGridTextColumn Header="{loc:T MasterNotes_ColWashingInterrupted}" Width="200"
+                                    Binding="{Binding WashingInterrupted}" />
+                <DataGridTextColumn Header="{loc:T MasterNotes_ColAlertType}" Width="210"
+                                    Binding="{Binding AlertType}" />
+                <DataGridTextColumn Header="{loc:T MasterNotes_ColMiniGame}" Width="150"
+                                    Binding="{Binding MiniGame}" />
+                <DataGridTextColumn Header="{loc:T MasterNotes_ColNotes}" Width="420"
+                                    Binding="{Binding Notes}" />
+                <DataGridTextColumn Header="{loc:T MasterNotes_ColSource}" Width="60"
+                                    Binding="{Binding SourceBadge}" IsReadOnly="True" />
+            </DataGrid.Columns>
+        </DataGrid>
+
+        </Panel>
+
+    </DockPanel>
+</UserControl>

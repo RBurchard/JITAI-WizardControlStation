@@ -9,7 +9,7 @@ namespace OcdWizard.ControlStation.Localization;
 /// pattern as <c>ReplaySettings</c> / <c>FirstRunState</c>.
 ///
 /// The stored value is either a language tag ("de") or <see cref="AppLanguages.SystemTag"/>,
-/// which is also the default — a fresh install follows the operating-system language.
+/// which is also the default a fresh install follows the operating-system language.
 /// </summary>
 public static class LanguageSettings
 {
@@ -34,7 +34,7 @@ public static class LanguageSettings
                     return JsonSerializer.Deserialize<Model>(File.ReadAllText(FilePath))?.Tag
                            ?? AppLanguages.SystemTag;
             }
-            catch { /* corrupt/missing settings are non-fatal — fall back to the OS language */ }
+            catch { /* corrupt/missing settings are non-fatal fall back to the OS language */ }
             return AppLanguages.SystemTag;
         }
         set

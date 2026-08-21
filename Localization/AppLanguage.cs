@@ -6,7 +6,7 @@ namespace OcdWizard.ControlStation.Localization;
 /// One language the UI can be shown in.
 /// </summary>
 /// <param name="Tag">BCP-47 tag, e.g. "de". Must match the <c>Strings.&lt;Tag&gt;.resx</c> suffix.</param>
-/// <param name="NativeName">Name in the language itself — what we show in the picker, so a
+/// <param name="NativeName">Name in the language itself what we show in the picker, so a
 /// user who cannot read the current UI language can still find their own.</param>
 /// <param name="EnglishName">Name in English, for logs and tooltips.</param>
 public sealed record AppLanguage(string Tag, string NativeName, string EnglishName);

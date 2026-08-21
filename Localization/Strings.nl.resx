@@ -142,7 +142,7 @@
     <value>Notities / draaiboek van het experiment (gesynchroniseerd met de telefoon)</value>
   </data>
   <data name="Editor_OrSeparator" xml:space="preserve">
-    <value>— of —</value>
+    <value>of —</value>
   </data>
   <data name="Editor_PhoneTaskLabel" xml:space="preserve">
     <value>Telefoontaak:</value>
@@ -367,7 +367,7 @@
     <value>Control Station</value>
   </data>
   <data name="Common_AppWindowTitle" xml:space="preserve">
-    <value>JITAI Wizard — Control Station</value>
+    <value>JITAI Wizard Control Station</value>
   </data>
   <data name="Common_Back" xml:space="preserve">
     <value>◀ Terug</value>
@@ -379,7 +379,7 @@
     <value>bpm</value>
   </data>
   <data name="Heartbeat_Tooltip" xml:space="preserve">
-    <value>Live hartslag (slagen per minuut) — klopt mee op het ritme van de hartslag van de deelnemer</value>
+    <value>Live hartslag (slagen per minuut) klopt mee op het ritme van de hartslag van de deelnemer</value>
   </data>
   <data name="Notes_Label" xml:space="preserve">
     <value>📝  Sessienotities:</value>
@@ -412,7 +412,7 @@
     <value>⬇  CSV exporteren</value>
   </data>
   <data name="TopBar_ModeToggleTooltip" xml:space="preserve">
-    <value>Wisselen tussen live experimentmodus en CSV-afspeelmodus</value>
+    <value>Wisselen tussen live experimentmodus en afspeelmodus (playback + masternotities)</value>
   </data>
   <data name="TopBar_OneWatch" xml:space="preserve">
     <value>👤  1 horloge</value>
@@ -469,7 +469,7 @@
     <value>Dat was de rondleiding! 🚀</value>
   </data>
   <data name="Tutorial_Intervention_Body" xml:space="preserve">
-    <value>Stuur handmatig een melding of minigame (quiz, Simon zegt, …) naar het horloge — elke interventie die je activeert, wordt vastgelegd als onderzoeksdata.</value>
+    <value>Stuur handmatig een melding of minigame (quiz, Simon zegt, …) naar het horloge elke interventie die je activeert, wordt vastgelegd als onderzoeksdata.</value>
   </data>
   <data name="Tutorial_Intervention_Title" xml:space="preserve">
     <value>Een interventie versturen</value>
@@ -487,13 +487,13 @@
     <value>Experimentverloop</value>
   </data>
   <data name="Tutorial_Scan_Body" xml:space="preserve">
-    <value>Scannen vindt zowel wifi-apparaten die op het netwerk uitzenden als elke telefoon die via USB-debugging is aangesloten — een USB-verbinding wordt toegevoegd, niet overschreven.</value>
+    <value>Scannen vindt zowel wifi-apparaten die op het netwerk uitzenden als elke telefoon die via USB-debugging is aangesloten een USB-verbinding wordt toegevoegd, niet overschreven.</value>
   </data>
   <data name="Tutorial_Scan_Title" xml:space="preserve">
     <value>Zoeken naar apparaten</value>
   </data>
   <data name="Tutorial_Sensors_Body" xml:space="preserve">
-    <value>De ruwe realtime uitlezingen — hartslag en versnellingswaarden per as — rechtstreeks van het horloge.</value>
+    <value>De ruwe realtime uitlezingen hartslag en versnellingswaarden per as rechtstreeks van het horloge.</value>
   </data>
   <data name="Tutorial_Sensors_Title" xml:space="preserve">
     <value>Live sensoren</value>
@@ -523,7 +523,7 @@
     <value>Eén of twee horloges</value>
   </data>
   <data name="Tutorial_Welcome_Body" xml:space="preserve">
-    <value>Deze korte rondleiding wijst elk onderdeel van de cockpit aan dat je gebruikt om een sessie te draaien. Gebruik Volgende / Terug om erdoorheen te lopen, of Overslaan om er direct in te duiken — je kunt hem altijd opnieuw openen met de Tutorial-knop.</value>
+    <value>Deze korte rondleiding wijst elk onderdeel van de cockpit aan dat je gebruikt om een sessie te draaien. Gebruik Volgende / Terug om erdoorheen te lopen, of Overslaan om er direct in te duiken je kunt hem altijd opnieuw openen met de Tutorial-knop.</value>
   </data>
   <data name="Tutorial_Welcome_Title" xml:space="preserve">
     <value>Welkom bij de JITAI Wizard Control Station 👋</value>
@@ -628,7 +628,7 @@
     <value>📎  Experiment-JSON bijvoegen</value>
   </data>
   <data name="Replay_EmptyDescription" xml:space="preserve">
-    <value>Importeer een sessie-CSV (Control Station- of telefoonexport) om de opname opnieuw te beleven.</value>
+    <value>Open een opgenomen sessie rechtstreeks uit de databank, of importeer een sessie-CSV (Control Station- of telefoonexport) om de opname opnieuw te beleven.</value>
   </data>
   <data name="Replay_EmptyTitle" xml:space="preserve">
     <value>Afspeelmodus</value>
@@ -649,7 +649,7 @@
     <value>📝  Notities:</value>
   </data>
   <data name="Replay_NotesWatermark" xml:space="preserve">
-    <value>Sessienotities (bewerkbaar — wordt met markers opgeslagen)</value>
+    <value>Sessienotities (bewerkbaar wordt met markers opgeslagen)</value>
   </data>
   <data name="Replay_OverlayExperimentLoadFailed" xml:space="preserve">
     <value>Laden van experiment mislukt</value>
@@ -739,10 +739,10 @@
     <value>Opslaan als nieuwe kopie…</value>
   </data>
   <data name="SessionPicker_Description" xml:space="preserve">
-    <value>Kies een sessie om te exporteren. De CSV bevat alle sensordata, logs, interventies en experimentruns voor die sessie.</value>
+    <value>Kies een sessie. Alles wat ervoor is opgenomen sensordata, logs, interventies en experimentruns gaat mee.</value>
   </data>
   <data name="SessionPicker_DialogTitle" xml:space="preserve">
-    <value>Sessie kiezen om te exporteren</value>
+    <value>Sessie kiezen</value>
   </data>
   <data name="SessionPicker_DurationHoursMinutes" xml:space="preserve">
     <value>{0}u {1}m</value>
@@ -820,7 +820,7 @@
     <value>Gereed</value>
   </data>
   <data name="Main_StatusSessionAutoEnded" xml:space="preserve">
-    <value>Experiment beëindigd — sessie automatisch afgesloten</value>
+    <value>Experiment beëindigd sessie automatisch afgesloten</value>
   </data>
   <data name="Main_StatusSessionEnded" xml:space="preserve">
     <value>Sessie beëindigd</value>
@@ -841,10 +841,10 @@
     <value>{0} wifi- + {1} USB-apparaat/apparaten gevonden</value>
   </data>
   <data name="Participant_LogInterventionNotRecorded" xml:space="preserve">
-    <value>Interventie niet vastgelegd — start eerst een sessie en maak verbinding.</value>
+    <value>Interventie niet vastgelegd start eerst een sessie en maak verbinding.</value>
   </data>
   <data name="Participant_LogNoDevicesFound" xml:space="preserve">
-    <value>Geen apparaten gevonden — controleer of de telefoon-app op hetzelfde netwerk draait of USB-debugging is ingeschakeld</value>
+    <value>Geen apparaten gevonden controleer of de telefoon-app op hetzelfde netwerk draait of USB-debugging is ingeschakeld</value>
   </data>
   <data name="Participant_LogParticipantPushFailed" xml:space="preserve">
     <value>Versturen van deelnemer mislukt: {0}</value>
@@ -974,5 +974,191 @@
   </data>
   <data name="Editor_Notification_VibrationSound2_Display" xml:space="preserve">
     <value>Trilling + geluid (lang)</value>
+  </data>
+  <data name="TopBar_MenuButton" xml:space="preserve">
+    <value>☰  Menu</value>
+  </data>
+  <data name="TopBar_MenuTooltip" xml:space="preserve">
+    <value>Export, quiz, tutorial en instellingen</value>
+  </data>
+  <data name="Common_FileType_Xlsx" xml:space="preserve">
+    <value>Excel-werkmap</value>
+  </data>
+  <data name="SessionPicker_SelectAll" xml:space="preserve">
+    <value>Alles selecteren</value>
+  </data>
+  <data name="SessionPicker_SelectNone" xml:space="preserve">
+    <value>Niets selecteren</value>
+  </data>
+  <data name="Replay_OpenButton" xml:space="preserve">
+    <value>📂  Openen ▾</value>
+  </data>
+  <data name="Replay_OpenTooltip" xml:space="preserve">
+    <value>Laad een opname uit de databank of uit een CSV-bestand</value>
+  </data>
+  <data name="Replay_OpenFromDatabank" xml:space="preserve">
+    <value>🗄  Uit de databank…</value>
+  </data>
+  <data name="Replay_ImportCsvMenuItem" xml:space="preserve">
+    <value>⬆  CSV-bestand importeren…</value>
+  </data>
+  <data name="Replay_OpenSessionButton" xml:space="preserve">
+    <value>Openen in afspeelmodus</value>
+  </data>
+  <data name="Replay_SourceDatabank" xml:space="preserve">
+    <value>DATABANK</value>
+  </data>
+  <data name="Replay_SourceFile" xml:space="preserve">
+    <value>BESTAND</value>
+  </data>
+  <data name="Replay_TabPlayer" xml:space="preserve">
+    <value>▶  Speler</value>
+  </data>
+  <data name="Replay_TabMasterNotes" xml:space="preserve">
+    <value>🗒  Masternotities</value>
+  </data>
+  <data name="Replay_TabMasterNotesTooltip" xml:space="preserve">
+    <value>Eén rij per opname de onderzoekstabel</value>
+  </data>
+  <data name="Replay_SpeedTooltip" xml:space="preserve">
+    <value>Afspeelsnelheid</value>
+  </data>
+  <data name="Replay_Speed0_25x" xml:space="preserve">
+    <value>0,25×</value>
+  </data>
+  <data name="Replay_Speed8x" xml:space="preserve">
+    <value>8×</value>
+  </data>
+  <data name="MasterNotes_SheetName" xml:space="preserve">
+    <value>Masternotities</value>
+  </data>
+  <data name="MasterNotes_AddButton" xml:space="preserve">
+    <value>＋  Toevoegen ▾</value>
+  </data>
+  <data name="MasterNotes_AddTooltip" xml:space="preserve">
+    <value>Rijen toevoegen uit de databank, uit CSV-bestanden, of leeg</value>
+  </data>
+  <data name="MasterNotes_AddFromDatabank" xml:space="preserve">
+    <value>🗄  Uit de databank…</value>
+  </data>
+  <data name="MasterNotes_AddFromCsv" xml:space="preserve">
+    <value>⬆  Uit CSV-bestanden…</value>
+  </data>
+  <data name="MasterNotes_AddBlank" xml:space="preserve">
+    <value>＋  Lege rij</value>
+  </data>
+  <data name="MasterNotes_AddSelectedButton" xml:space="preserve">
+    <value>Toevoegen aan masternotities</value>
+  </data>
+  <data name="MasterNotes_OpenInPlayer" xml:space="preserve">
+    <value>▶  Openen</value>
+  </data>
+  <data name="MasterNotes_OpenInPlayerTooltip" xml:space="preserve">
+    <value>Deze opname in de speler laden</value>
+  </data>
+  <data name="MasterNotes_DuplicateRow" xml:space="preserve">
+    <value>⧉  Dupliceren</value>
+  </data>
+  <data name="MasterNotes_RemoveRow" xml:space="preserve">
+    <value>✕  Verwijderen</value>
+  </data>
+  <data name="MasterNotes_ExportButton" xml:space="preserve">
+    <value>⬇  Exporteren ▾</value>
+  </data>
+  <data name="MasterNotes_ExportXlsx" xml:space="preserve">
+    <value>Excel-werkmap (.xlsx)</value>
+  </data>
+  <data name="MasterNotes_ExportCsv" xml:space="preserve">
+    <value>CSV-bestand (.csv)</value>
+  </data>
+  <data name="MasterNotes_ExportXlsxDialogTitle" xml:space="preserve">
+    <value>Masternotities exporteren als Excel-werkmap</value>
+  </data>
+  <data name="MasterNotes_ExportCsvDialogTitle" xml:space="preserve">
+    <value>Masternotities exporteren als CSV</value>
+  </data>
+  <data name="MasterNotes_ImportCsvDialogTitle" xml:space="preserve">
+    <value>Opnamen toevoegen uit CSV-exports</value>
+  </data>
+  <data name="MasterNotes_EmptyTitle" xml:space="preserve">
+    <value>Masternotities</value>
+  </data>
+  <data name="MasterNotes_EmptyDescription" xml:space="preserve">
+    <value>Eén rij per opname: deelnemer, experiment, hoe lang er gewassen werd, of de interventie werd opgemerkt, en je letterlijke opmerkingen. Haal sessies op uit de databank of uit CSV-bestanden van anderen, vul je observaties in, en exporteer de hele tabel naar Excel.</value>
+  </data>
+  <data name="MasterNotes_StatusLoaded" xml:space="preserve">
+    <value>{0} rij(en) hersteld.</value>
+  </data>
+  <data name="MasterNotes_StatusAdded" xml:space="preserve">
+    <value>{0} toegevoegd, {1} bijgewerkt, {2} mislukt.</value>
+  </data>
+  <data name="MasterNotes_StatusBlankAdded" xml:space="preserve">
+    <value>Lege rij toegevoegd.</value>
+  </data>
+  <data name="MasterNotes_StatusRowRemoved" xml:space="preserve">
+    <value>Rij verwijderd.</value>
+  </data>
+  <data name="MasterNotes_StatusExported" xml:space="preserve">
+    <value>Geëxporteerd naar {0}.</value>
+  </data>
+  <data name="MasterNotes_StatusExportFailed" xml:space="preserve">
+    <value>Export mislukt: {0}</value>
+  </data>
+  <data name="MasterNotes_StatusNoSource" xml:space="preserve">
+    <value>Deze rij is niet gekoppeld aan een opname.</value>
+  </data>
+  <data name="MasterNotes_StatusFileMissing" xml:space="preserve">
+    <value>Bestand bestaat niet meer: {0}</value>
+  </data>
+  <data name="MasterNotes_VariantLogged" xml:space="preserve">
+    <value>gelogd</value>
+  </data>
+  <data name="MasterNotes_VariantNotLogged" xml:space="preserve">
+    <value>niet gelogd</value>
+  </data>
+  <data name="MasterNotes_ExperimentUnknown" xml:space="preserve">
+    <value>ONBEKEND / niet gelogd</value>
+  </data>
+  <data name="MasterNotes_MiniGameNone" xml:space="preserve">
+    <value>Geen (alleen berichten)</value>
+  </data>
+  <data name="MasterNotes_ColParticipant" xml:space="preserve">
+    <value>Deelnemer</value>
+  </data>
+  <data name="MasterNotes_ColRecording" xml:space="preserve">
+    <value>Opname (bestand)</value>
+  </data>
+  <data name="MasterNotes_ColDateTime" xml:space="preserve">
+    <value>Datum / tijd</value>
+  </data>
+  <data name="MasterNotes_ColExperiment" xml:space="preserve">
+    <value>Experiment</value>
+  </data>
+  <data name="MasterNotes_ColVariantSource" xml:space="preserve">
+    <value>Variantbron</value>
+  </data>
+  <data name="MasterNotes_ColWashDuration" xml:space="preserve">
+    <value>Wasduur</value>
+  </data>
+  <data name="MasterNotes_ColWashSeconds" xml:space="preserve">
+    <value>Wasduur (s)</value>
+  </data>
+  <data name="MasterNotes_ColInterventionNoticed" xml:space="preserve">
+    <value>Interventie opgemerkt</value>
+  </data>
+  <data name="MasterNotes_ColWashingInterrupted" xml:space="preserve">
+    <value>Wassen onderbroken</value>
+  </data>
+  <data name="MasterNotes_ColAlertType" xml:space="preserve">
+    <value>Waarschuwingstype</value>
+  </data>
+  <data name="MasterNotes_ColMiniGame" xml:space="preserve">
+    <value>Minigame</value>
+  </data>
+  <data name="MasterNotes_ColNotes" xml:space="preserve">
+    <value>Notities (letterlijk)</value>
+  </data>
+  <data name="MasterNotes_ColSource" xml:space="preserve">
+    <value>Bron</value>
   </data>
 </root>

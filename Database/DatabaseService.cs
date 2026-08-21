@@ -131,7 +131,7 @@ public class DatabaseService
     {
         if (batch.Snapshots == null || batch.Snapshots.Count == 0) return;
 
-        // One writer at a time on this hot path — avoids concurrent SQLite locking.
+        // One writer at a time on this hot path avoids concurrent SQLite locking.
         await _writeGate.WaitAsync();
         try
         {
@@ -140,7 +140,7 @@ public class DatabaseService
             using var tx = conn.BeginTransaction();
 
             // Explicit parameters (bypass Dapper inference, which bound nothing here)
-            // built once and reused per row — the documented Sqlite bulk-insert pattern.
+            // built once and reused per row the documented Sqlite bulk-insert pattern.
             using var cmd = conn.CreateCommand();
             cmd.Transaction = tx;
             cmd.CommandText =
@@ -388,7 +388,17 @@ public class DatabaseService
         return result;
     }
 
-    public async Task ExportToCsvAsync(string sessionId, string outputPath)
+    public async Task ExportToCsvAsync(string sessionId, string outputPath) =>
+        await File.WriteAllTextAsync(outputPath, await BuildSessionCsvAsync(sessionId));
+
+    /// <summary>
+    /// Renders one session as the multi-section CSV export text.
+    ///
+    /// Split out from <see cref="ExportToCsvAsync"/> so Replay Mode can open a session straight
+    /// from the databank: it feeds this text to <c>ReplayCsvParser</c> instead of making the
+    /// researcher export to disk and re-import. Both paths therefore see byte-identical data.
+    /// </summary>
+    public async Task<string> BuildSessionCsvAsync(string sessionId)
     {
         using var conn = new SqliteConnection(_connectionString);
         var sb = new StringBuilder();
@@ -415,7 +425,7 @@ public class DatabaseService
             sb.AppendLine();
         }
 
-        // Diagnostic counts — zero counts indicate a data-linkage problem, not an empty session.
+        // Diagnostic counts zero counts indicate a data-linkage problem, not an empty session.
         var totalWd = await conn.ExecuteScalarAsync<long>(
             "SELECT COUNT(*) FROM watch_data wd JOIN participants p ON p.id = wd.participant_id WHERE p.session_id = @sessionId",
             new { sessionId });
@@ -484,7 +494,7 @@ public class DatabaseService
         foreach (var r in distRows)
             sb.AppendLine($"{r.id},{r.experiment_run_id},{r.event_id},{r.intervention_id},{r.started_at},{r.ended_at},{r.response},{r.reaction_time_ms}");
 
-        await File.WriteAllTextAsync(outputPath, sb.ToString());
+        return sb.ToString();
     }
 
     private static string EscapeCsv(string value)
