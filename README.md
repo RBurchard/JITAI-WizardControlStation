@@ -497,4 +497,3 @@ Sent as the body of POST /trigger:
 - The application supports exactly two participants simultaneously. This is a design decision for the current study scope, not a hard technical limit.
 - The HTTP server on the phone runs without authentication. Do not use this system on untrusted networks. For realsies.
 - Intervention responses (what the participant chose or whether they completed a game) are received by the phone from the watch and stored on the phone side. ControlStation receives them via the `/events` WebSocket as `intervention-finished` envelopes, which are written to `distraction_runs`.
-- Currently there is a 90% Failed Trigger chance due to a few comm failures.
