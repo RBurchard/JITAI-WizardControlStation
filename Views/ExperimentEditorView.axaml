@@ -41,37 +41,42 @@
 
             <!-- Watch microgame difficulty. Part of the schedule, not a Control Station
                  preference: pushing this experiment sets the watch up for the condition, so a
-                 wizard never has to remember to dial it in on the wrist as well. -->
-            <Border BorderBrush="#333" BorderThickness="1" CornerRadius="4" Padding="6">
-                <StackPanel Spacing="4">
-                    <TextBlock Text="{loc:T Editor_MicrogamesSectionHeader}" Classes="SectionHeader" />
-                    <StackPanel Orientation="Horizontal" Spacing="10">
-                        <StackPanel Orientation="Horizontal" Spacing="4">
-                            <TextBlock Text="{loc:T Editor_SimonSpeedLabel}" VerticalAlignment="Center"
-                                       FontSize="11" Foreground="#AAA" />
+                 wizard never has to remember to dial it in on the wrist as well.
+
+                 Labels sit above their field instead of beside it. A NumericUpDown spends most
+                 of its width on the two spin buttons, so at the inline width these had left
+                 barely a sliver for the number itself. -->
+            <Border Background="#16192A" BorderBrush="#2A2D45" BorderThickness="1"
+                    CornerRadius="6" Padding="10,6,10,9">
+                <StackPanel Spacing="6">
+                    <TextBlock Text="{loc:T Editor_MicrogamesSectionHeader}" Classes="SectionHeader"
+                               Margin="0,0,0,2" />
+                    <StackPanel Orientation="Horizontal" Spacing="14">
+                        <StackPanel Spacing="3">
+                            <TextBlock Text="{loc:T Editor_SimonSpeedLabel}" FontSize="11" Foreground="#8899BB" />
                             <NumericUpDown Value="{Binding SimonDifficulty}" Minimum="1" Maximum="5"
-                                           Increment="1" FormatString="0" Width="90"
+                                           Increment="1" FormatString="0" Width="124"
+                                           HorizontalContentAlignment="Center"
                                            ToolTip.Tip="{loc:T Editor_SimonSpeedTooltip}" />
                         </StackPanel>
-                        <StackPanel Orientation="Horizontal" Spacing="4">
-                            <TextBlock Text="{loc:T Editor_SimonRoundsLabel}" VerticalAlignment="Center"
-                                       FontSize="11" Foreground="#AAA" />
+                        <StackPanel Spacing="3">
+                            <TextBlock Text="{loc:T Editor_SimonRoundsLabel}" FontSize="11" Foreground="#8899BB" />
                             <NumericUpDown Value="{Binding SimonRounds}" Minimum="2" Maximum="8"
-                                           Increment="1" FormatString="0" Width="90"
+                                           Increment="1" FormatString="0" Width="124"
+                                           HorizontalContentAlignment="Center"
                                            ToolTip.Tip="{loc:T Editor_SimonRoundsTooltip}" />
                         </StackPanel>
-                        <StackPanel Orientation="Horizontal" Spacing="4">
-                            <TextBlock Text="{loc:T Editor_LockDifficultyLabel}" VerticalAlignment="Center"
-                                       FontSize="11" Foreground="#AAA" />
+                        <StackPanel Spacing="3">
+                            <TextBlock Text="{loc:T Editor_LockDifficultyLabel}" FontSize="11" Foreground="#8899BB" />
                             <NumericUpDown Value="{Binding LockDifficulty}" Minimum="1" Maximum="5"
-                                           Increment="1" FormatString="0" Width="90"
+                                           Increment="1" FormatString="0" Width="124"
+                                           HorizontalContentAlignment="Center"
                                            ToolTip.Tip="{loc:T Editor_LockDifficultyTooltip}" />
                         </StackPanel>
-                        <StackPanel Orientation="Horizontal" Spacing="4">
-                            <TextBlock Text="{loc:T Editor_LockPenaltyLabel}" VerticalAlignment="Center"
-                                       FontSize="11" Foreground="#AAA" />
+                        <StackPanel Spacing="3">
+                            <TextBlock Text="{loc:T Editor_LockPenaltyLabel}" FontSize="11" Foreground="#8899BB" />
                             <ComboBox ItemsSource="{Binding LockPenaltyOptions}"
-                                      SelectedItem="{Binding LockPenalty}" Width="130"
+                                      SelectedItem="{Binding LockPenalty}" Width="150"
                                       ToolTip.Tip="{loc:T Editor_LockPenaltyTooltip}" />
                         </StackPanel>
                     </StackPanel>
