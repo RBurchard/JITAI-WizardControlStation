@@ -1,7 +1,8 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Dapper;
@@ -443,6 +444,8 @@ public class DatabaseService
         sb.AppendLine($"# diagnostic: last_write_error={LastWriteError ?? "none"}");
         sb.AppendLine();
 
+        await AppendMinigameSettingsAsync(conn, sessionId, sb);
+
         sb.AppendLine("=== WATCH DATA ===");
         sb.AppendLine("participant_label,participant_key,timestamp,heart_rate,accel_x,accel_y,accel_z,gyro_x,gyro_y,gyro_z,rot_w,rot_x,rot_y,rot_z,baro_hpa,light_lux,step_count");
         var watchRows = await conn.QueryAsync<dynamic>(
@@ -495,6 +498,93 @@ public class DatabaseService
             sb.AppendLine($"{r.id},{r.experiment_run_id},{r.event_id},{r.intervention_id},{r.started_at},{r.ended_at},{r.response},{r.reaction_time_ms}");
 
         return sb.ToString();
+    }
+
+    /// <summary>
+    /// Writes the "=== MINIGAME SETTINGS ===" section: the watch difficulty the participant
+    /// actually faced, plus every change made during the run.
+    ///
+    /// Built from two sources that answer different questions. The <c>schedule</c> row is the
+    /// difficulty stored on the experiment that was run, i.e. what the condition specified. The
+    /// <c>change</c> rows are the phone's game-settings log entries in order, i.e. what actually
+    /// happened, including any adjustment a researcher made mid-session. Without the second, a
+    /// tweak during a run would be invisible and game results could be attributed to a
+    /// difficulty that was not in force at the time.
+    ///
+    /// No new table: the change rows already reach this database through the phone's session-log
+    /// sync, so this reads what is there rather than adding a schema migration for data the
+    /// databank already holds.
+    /// </summary>
+    private static async Task AppendMinigameSettingsAsync(SqliteConnection conn, string sessionId, StringBuilder sb)
+    {
+        sb.AppendLine("=== MINIGAME SETTINGS ===");
+        sb.AppendLine("scope,ts,origin,simon_difficulty,simon_rounds,lock_difficulty,lock_penalty");
+
+        // What the schedule specified, read out of the stored experiment JSON.
+        var expJson = await conn.ExecuteScalarAsync<string?>(
+            "SELECT ex.json FROM experiment_runs er " +
+            "JOIN experiments ex ON ex.id = er.experiment_id " +
+            "WHERE er.session_id = @sessionId ORDER BY er.started_at LIMIT 1",
+            new { sessionId });
+        if (!string.IsNullOrWhiteSpace(expJson))
+        {
+            try
+            {
+                using var doc = JsonDocument.Parse(expJson);
+                if (doc.RootElement.TryGetProperty("gameSettings", out var g))
+                {
+                    sb.AppendLine(
+                        "schedule,,," +
+                        $"{JsonInt(g, "simonDifficulty")},{JsonInt(g, "simonRounds")}," +
+                        $"{JsonInt(g, "lockDifficulty")},{EscapeCsv(JsonStr(g, "lockPenalty"))}");
+                }
+            }
+            catch (JsonException)
+            {
+                // A schedule we cannot parse must not take the whole export down; the change
+                // rows below still describe the run.
+            }
+        }
+
+        // What actually happened, from the phone's game-settings log entries.
+        var rows = await conn.QueryAsync<dynamic>(
+            "SELECT sl.ts, sl.payload_json FROM session_logs sl " +
+            "JOIN experiment_runs er ON er.id = sl.run_id " +
+            "WHERE er.session_id = @sessionId AND sl.kind = 'game-settings' " +
+            "ORDER BY sl.id", new { sessionId });
+        foreach (var r in rows)
+        {
+            var payload = (string?)r.payload_json ?? "";
+            try
+            {
+                using var doc = JsonDocument.Parse(payload);
+                var e = doc.RootElement;
+                sb.AppendLine(
+                    $"change,{r.ts},{EscapeCsv(JsonStr(e, "origin"))}," +
+                    $"{JsonInt(e, "simon_difficulty")},{JsonInt(e, "simon_rounds")}," +
+                    $"{JsonInt(e, "lock_difficulty")},{EscapeCsv(JsonStr(e, "lock_penalty"))}");
+            }
+            catch (JsonException)
+            {
+                sb.AppendLine($"change,{r.ts},{EscapeCsv(payload)},,,,");
+            }
+        }
+
+        sb.AppendLine();
+    }
+
+    /// <summary>Reads a property as text, tolerating a value written as a number.</summary>
+    private static string JsonStr(JsonElement obj, string name) =>
+        obj.TryGetProperty(name, out var v)
+            ? (v.ValueKind == JsonValueKind.String ? v.GetString() ?? "" : v.ToString())
+            : "";
+
+    /// <summary>Reads a property as an integer, tolerating a value written as a string.</summary>
+    private static string JsonInt(JsonElement obj, string name)
+    {
+        if (!obj.TryGetProperty(name, out var v)) return "";
+        if (v.ValueKind == JsonValueKind.Number) return v.GetRawText();
+        return int.TryParse(v.GetString(), out var parsed) ? parsed.ToString() : "";
     }
 
     private static string EscapeCsv(string value)

@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+﻿<?xml version='1.0' encoding='utf-8'?>
 <root>
   <resheader name="resmimetype">
     <value>text/microsoft-resx</value>
@@ -1160,5 +1160,32 @@
   </data>
   <data name="MasterNotes_ColSource" xml:space="preserve">
     <value>Qu.</value>
+  </data>
+  <data name="Editor_MicrogamesSectionHeader" xml:space="preserve">
+    <value>Uhr-Minispiele</value>
+  </data>
+  <data name="Editor_SimonSpeedLabel" xml:space="preserve">
+    <value>Simon-Tempo</value>
+  </data>
+  <data name="Editor_SimonSpeedTooltip" xml:space="preserve">
+    <value>Wie schnell die Simon-Folge aufleuchtet (1 langsam, 5 schnell). Die Zeit zum Nachtippen wird nie kürzer.</value>
+  </data>
+  <data name="Editor_SimonRoundsLabel" xml:space="preserve">
+    <value>Runden</value>
+  </data>
+  <data name="Editor_SimonRoundsTooltip" xml:space="preserve">
+    <value>Wie viele Simon-Runden geschafft werden müssen.</value>
+  </data>
+  <data name="Editor_LockDifficultyLabel" xml:space="preserve">
+    <value>Schloss-Stufe</value>
+  </data>
+  <data name="Editor_LockDifficultyTooltip" xml:space="preserve">
+    <value>Wie still das Handgelenk in Stufe 1 bleiben muss und wie lang der Strahlengang in Stufe 2 ist.</value>
+  </data>
+  <data name="Editor_LockPenaltyLabel" xml:space="preserve">
+    <value>Strafe bei Fehler</value>
+  </data>
+  <data name="Editor_LockPenaltyTooltip" xml:space="preserve">
+    <value>Was ein Fehler kostet: STUN verliert nichts, PUSHBACK wirft zurück, RESET startet die Stufe neu.</value>
   </data>
 </root>

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -268,6 +268,18 @@ public partial class ExperimentEditorViewModel : ObservableObject
     [ObservableProperty] private string _experimentId = Guid.NewGuid().ToString();
     [ObservableProperty] private string _name = Loc.Get("Editor_UntitledExperiment");
     [ObservableProperty] private string _notes = "";
+
+    // Watch microgame difficulty, carried on the experiment so it travels with the condition.
+    // Held as four flat properties rather than a nested object because Avalonia two-way binds
+    // to plain properties far more simply, and they are recombined in ToDto().
+    [ObservableProperty] private int _simonDifficulty = 2;
+    [ObservableProperty] private int _simonRounds = 4;
+    [ObservableProperty] private int _lockDifficulty = 2;
+    [ObservableProperty] private string _lockPenalty = "STUN";
+
+    /// <summary>Penalty values offered by the picker, in ascending severity.</summary>
+    public IReadOnlyList<string> LockPenaltyOptions => MicrogameSettingsDto.PenaltyOptions;
+
     private long _version = 1L;
     private bool _suppressNotify = false;
 
@@ -311,6 +323,12 @@ public partial class ExperimentEditorViewModel : ObservableObject
 
             ExperimentId = dto.Id; Name = dto.Name; Notes = dto.Notes; _version = dto.Version;
 
+            var game = (dto.GameSettings ?? new MicrogameSettingsDto()).Sanitized();
+            SimonDifficulty = game.SimonDifficulty;
+            SimonRounds = game.SimonRounds;
+            LockDifficulty = game.LockDifficulty;
+            LockPenalty = game.LockPenalty;
+
             Events.Clear();
             foreach (var e in dto.Events ?? new())
             {
@@ -348,6 +366,11 @@ public partial class ExperimentEditorViewModel : ObservableObject
         if (!_suppressNotify) NotifyChanged();
     }
 
+    partial void OnSimonDifficultyChanged(int value) { if (!_suppressNotify) NotifyChanged(); }
+    partial void OnSimonRoundsChanged(int value) { if (!_suppressNotify) NotifyChanged(); }
+    partial void OnLockDifficultyChanged(int value) { if (!_suppressNotify) NotifyChanged(); }
+    partial void OnLockPenaltyChanged(string value) { if (!_suppressNotify) NotifyChanged(); }
+
     private void RefreshIndices()
     {
         for (int i = 0; i < Events.Count; i++)
@@ -357,7 +380,8 @@ public partial class ExperimentEditorViewModel : ObservableObject
     public ExperimentDto ToDto() => new(
         ExperimentId, Name, _version, DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(), Notes,
         Events.Select(e => e.ToDto()).ToList(),
-        Triggers.Select(t => t.ToDto()).ToList());
+        Triggers.Select(t => t.ToDto()).ToList(),
+        new MicrogameSettingsDto(SimonDifficulty, SimonRounds, LockDifficulty, LockPenalty).Sanitized());
 
     [RelayCommand]
     private void AddEvent()

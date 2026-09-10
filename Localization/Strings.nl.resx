@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+﻿<?xml version='1.0' encoding='utf-8'?>
 <root>
   <resheader name="resmimetype">
     <value>text/microsoft-resx</value>
@@ -1160,5 +1160,32 @@
   </data>
   <data name="MasterNotes_ColSource" xml:space="preserve">
     <value>Bron</value>
+  </data>
+  <data name="Editor_MicrogamesSectionHeader" xml:space="preserve">
+    <value>Horloge-minigames</value>
+  </data>
+  <data name="Editor_SimonSpeedLabel" xml:space="preserve">
+    <value>Simon-tempo</value>
+  </data>
+  <data name="Editor_SimonSpeedTooltip" xml:space="preserve">
+    <value>Hoe snel de Simon-reeks oplicht (1 traag, 5 snel). De tijd om na te tikken wordt nooit korter.</value>
+  </data>
+  <data name="Editor_SimonRoundsLabel" xml:space="preserve">
+    <value>Rondes</value>
+  </data>
+  <data name="Editor_SimonRoundsTooltip" xml:space="preserve">
+    <value>Hoeveel Simon-rondes gehaald moeten worden.</value>
+  </data>
+  <data name="Editor_LockDifficultyLabel" xml:space="preserve">
+    <value>Slot-niveau</value>
+  </data>
+  <data name="Editor_LockDifficultyTooltip" xml:space="preserve">
+    <value>Hoe stil de pols in fase 1 moet blijven en hoe lang de stralengang in fase 2 is.</value>
+  </data>
+  <data name="Editor_LockPenaltyLabel" xml:space="preserve">
+    <value>Straf bij fout</value>
+  </data>
+  <data name="Editor_LockPenaltyTooltip" xml:space="preserve">
+    <value>Wat een fout kost: STUN verliest niets, PUSHBACK zet terug, RESET herstart de fase.</value>
   </data>
 </root>

@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+﻿<?xml version='1.0' encoding='utf-8'?>
 <root>
   <resheader name="resmimetype">
     <value>text/microsoft-resx</value>
@@ -1161,5 +1161,32 @@
   </data>
   <data name="MasterNotes_ColSource" xml:space="preserve">
     <value>Src</value>
+  </data>
+  <data name="Editor_MicrogamesSectionHeader" xml:space="preserve">
+    <value>Watch mini-games</value>
+  </data>
+  <data name="Editor_SimonSpeedLabel" xml:space="preserve">
+    <value>Simon speed</value>
+  </data>
+  <data name="Editor_SimonSpeedTooltip" xml:space="preserve">
+    <value>How fast the Simon Says sequence flashes (1 slowest, 5 fastest). The time to tap it back never shrinks.</value>
+  </data>
+  <data name="Editor_SimonRoundsLabel" xml:space="preserve">
+    <value>Rounds</value>
+  </data>
+  <data name="Editor_SimonRoundsTooltip" xml:space="preserve">
+    <value>How many Simon Says rounds must be cleared to finish the game.</value>
+  </data>
+  <data name="Editor_LockDifficultyLabel" xml:space="preserve">
+    <value>Lock difficulty</value>
+  </data>
+  <data name="Editor_LockDifficultyTooltip" xml:space="preserve">
+    <value>How still the wrist must be held in stage 1, and how long the beam corridor runs in stage 2.</value>
+  </data>
+  <data name="Editor_LockPenaltyLabel" xml:space="preserve">
+    <value>Mistake costs</value>
+  </data>
+  <data name="Editor_LockPenaltyTooltip" xml:space="preserve">
+    <value>What a lock-picking mistake costs: STUN loses nothing, PUSHBACK slides back, RESET restarts the stage.</value>
   </data>
 </root>

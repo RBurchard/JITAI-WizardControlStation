@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
 namespace OcdWizard.ControlStation.Models;
@@ -30,7 +30,15 @@ public record ExperimentDto(
     [property: JsonPropertyName("updatedAt")] long UpdatedAt = 0L,
     [property: JsonPropertyName("notes")] string Notes = "",
     [property: JsonPropertyName("events")] List<ExperimentEventDto>? Events = null,
-    [property: JsonPropertyName("triggers")] List<TriggerDto>? Triggers = null
+    [property: JsonPropertyName("triggers")] List<TriggerDto>? Triggers = null,
+    /// <summary>
+    /// Watch microgame difficulty for this schedule.
+    ///
+    /// Nullable only so an older schedule file deserializes; consumers treat null as the
+    /// defaults. It must be carried through every edit, or a Push from here would silently
+    /// strip the difficulty the phone and watch had agreed on.
+    /// </summary>
+    [property: JsonPropertyName("gameSettings")] MicrogameSettingsDto? GameSettings = null
 );
 
 public record ExperimentEnvelopeDto(
