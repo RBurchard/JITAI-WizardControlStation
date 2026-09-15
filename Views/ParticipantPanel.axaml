@@ -75,6 +75,13 @@
                                         Content="{loc:T Participant_DisconnectButton}"
                                         Command="{Binding DisconnectCommand}" />
                             </Grid>
+                            <!-- Full sensor rate for a few minutes without a run, for checking fit
+                                 and signal during setup. The watch idles again on its own. -->
+                            <Button Classes="Subtle" HorizontalAlignment="Stretch"
+                                    Content="{loc:T Participant_WakeWatchButton}"
+                                    ToolTip.Tip="{loc:T Participant_WakeWatchTooltip}"
+                                    Command="{Binding WakeWatchCommand}"
+                                    IsEnabled="{Binding IsConnected}" />
                             <!-- Participant name / ID editable here or on the phone; kept in sync. -->
                             <Grid ColumnDefinitions="Auto,*">
                                 <TextBlock Grid.Column="0" Text="{loc:T Participant_ParticipantFieldLabel}"

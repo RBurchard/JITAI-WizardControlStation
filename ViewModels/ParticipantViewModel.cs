@@ -235,6 +235,18 @@ public partial class ParticipantViewModel : ObservableObject, IMotionSource
         AppendLog(Loc.Get("Common_Disconnected"));
     }
 
+    /// <summary>Minutes the "Wake watch" button asks for. Mirrors the phone's own button.</summary>
+    public const int WakeWatchMinutes = 5;
+
+    [RelayCommand]
+    private async Task WakeWatchAsync()
+    {
+        var ok = await _device.WakeWatchAsync(WakeWatchMinutes);
+        AppendLog(ok
+            ? Loc.Format("Participant_LogWakeWatchSent", WakeWatchMinutes)
+            : Loc.Get("Participant_LogWakeWatchFailed"));
+    }
+
     [RelayCommand]
     private async Task StartExperimentAsync()
     {

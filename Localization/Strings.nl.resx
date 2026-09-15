@@ -240,6 +240,18 @@
   <data name="Participant_DisconnectButton" xml:space="preserve">
     <value>Verbinding verbreken</value>
   </data>
+  <data name="Participant_WakeWatchButton" xml:space="preserve">
+    <value>Horloge wekken (5 min)</value>
+  </data>
+  <data name="Participant_WakeWatchTooltip" xml:space="preserve">
+    <value>Houdt het horloge 5 minuten op volle sensorsnelheid zonder een run te starten, bijv. om hartslag en beweging te controleren bij het omdoen. Een run die in die tijd start houdt het wakker zolang die loopt.</value>
+  </data>
+  <data name="Participant_LogWakeWatchSent" xml:space="preserve">
+    <value>Horloge {0} min gewekt</value>
+  </data>
+  <data name="Participant_LogWakeWatchFailed" xml:space="preserve">
+    <value>Horloge wekken mislukt</value>
+  </data>
   <data name="Participant_EventLogSectionTitle" xml:space="preserve">
     <value>🔔  Gebeurtenislogboek</value>
   </data>

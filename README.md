@@ -187,6 +187,12 @@ ControlStation sends a GET request to `/status` on the device to verify it is re
 
 If the WebSocket drops for any reason, it automatically attempts to reconnect with a 3-second delay between attempts.
 
+### Waking the Watch
+
+Between runs the watch drops into a low-power profile after five quiet minutes: one sensor snapshot a minute, no motion sensors, heart rate only when the OS measures it anyway. Live sensors on the Control Station are therefore sparse until a run starts.
+
+"Wake watch (5 min)" in the connection card (enabled once connected) sends `POST /watch/wake` to the phone, which relays it to the watch. The watch collects at full rate for five minutes, then idles again on its own unless a run has started in the meantime, in which case the run keeps it awake for as long as it runs. Use it while fitting the watch to check heart rate and motion before pressing Start.
+
 ### Disconnecting
 
 Click "Disconnect" to close the HTTP and WebSocket connections for that participant. The session remains active and the other participant is unaffected.
@@ -445,6 +451,7 @@ All HTTP requests use a 10-second timeout. The base URL is `http://{device-ip}:8
 | POST | /experiment/control | Send a run command: start, auto, pause, stop, next, prev |
 | POST | /trigger | Send an InterventionRequest to the phone (forwarded to the watch) |
 | POST | /trigger/fire | Fire a manual trigger event by trigger ID |
+| POST | /watch/wake | Hold the watch at full sensor rate for `{"minutes": n}` without starting a run ("Wake watch" button) |
 | GET | /logs?since=\{id\}&limit=\{n\} | Poll experiment log entries since a given log ID |
 | GET | /trivia | Pull the current trivia question bank from the phone |
 | POST | /trivia | Push the full trivia question list to the phone |

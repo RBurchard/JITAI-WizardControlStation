@@ -240,6 +240,18 @@
   <data name="Participant_DisconnectButton" xml:space="preserve">
     <value>Trennen</value>
   </data>
+  <data name="Participant_WakeWatchButton" xml:space="preserve">
+    <value>Uhr wecken (5 Min)</value>
+  </data>
+  <data name="Participant_WakeWatchTooltip" xml:space="preserve">
+    <value>Hält die Uhr 5 Minuten lang auf voller Sensorrate, ohne einen Durchlauf zu starten, z. B. um Puls und Bewegung beim Anlegen zu prüfen. Ein in dieser Zeit gestarteter Durchlauf hält sie so lange wach, wie er läuft.</value>
+  </data>
+  <data name="Participant_LogWakeWatchSent" xml:space="preserve">
+    <value>Uhr für {0} Min geweckt</value>
+  </data>
+  <data name="Participant_LogWakeWatchFailed" xml:space="preserve">
+    <value>Uhr wecken fehlgeschlagen</value>
+  </data>
   <data name="Participant_EventLogSectionTitle" xml:space="preserve">
     <value>🔔  Ereignisprotokoll</value>
   </data>

@@ -177,6 +177,25 @@ public class DeviceConnection : IDisposable
         catch { return false; }
     }
 
+    /// <summary>
+    /// Asks the phone to hold the watch at full collection rate for <paramref name="minutes"/>
+    /// without starting a run, so the researcher can check fit and signal while setting up.
+    /// The watch treats it as a delay on its idle timer only: a run that starts inside the
+    /// window keeps the watch awake on its own afterwards, so there is nothing to cancel.
+    /// </summary>
+    public async Task<bool> WakeWatchAsync(int minutes)
+    {
+        if (_baseUrl == null) return false;
+        try
+        {
+            var payload = JsonSerializer.Serialize(new { minutes });
+            var content = new StringContent(payload, Encoding.UTF8, "application/json");
+            var resp = await _http.PostAsync($"{_baseUrl}/watch/wake", content);
+            return resp.IsSuccessStatusCode;
+        }
+        catch { return false; }
+    }
+
     public async Task PostParticipantAsync(string id, string sessionId, string label, string deviceIp)
     {
         if (_baseUrl == null) return;

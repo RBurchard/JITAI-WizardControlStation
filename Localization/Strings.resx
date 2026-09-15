@@ -240,6 +240,18 @@
   <data name="Participant_DisconnectButton" xml:space="preserve">
     <value>Disconnect</value>
   </data>
+  <data name="Participant_WakeWatchButton" xml:space="preserve">
+    <value>Wake watch (5 min)</value>
+  </data>
+  <data name="Participant_WakeWatchTooltip" xml:space="preserve">
+    <value>Hold the watch at full sensor rate for 5 minutes without starting a run, e.g. to check heart rate and motion while fitting it. A run started in that time keeps it awake for as long as it runs.</value>
+  </data>
+  <data name="Participant_LogWakeWatchSent" xml:space="preserve">
+    <value>Watch woken for {0} min</value>
+  </data>
+  <data name="Participant_LogWakeWatchFailed" xml:space="preserve">
+    <value>Wake watch failed</value>
+  </data>
   <data name="Participant_EventLogSectionTitle" xml:space="preserve">
     <value>🔔  Event Log</value>
   </data>
