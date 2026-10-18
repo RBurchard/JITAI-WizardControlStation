@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  <b>Latest release:</b> <a href="https://github.com/RBurchard/JITAI-WizardControlStation/releases">v2.0.0</a> &middot; Windows x64 (.NET runtime bundled)
+  <b>Latest release:</b> <a href="https://github.com/RBurchard/JITAI-WizardControlStation/releases">v2.1.0-beta</a> &middot; Windows x64 (.NET runtime bundled)
 </p>
 
 _The researcher-facing desktop application for running intervention studies with the JITAI Wizard wearable system._
@@ -51,7 +51,7 @@ For documentation on the Android phone and watch apps, see the [JITAI-WizardAndr
 
 > Just want to run it? Grab the latest build from the [**Releases page**](https://github.com/RBurchard/JITAI-WizardControlStation/releases) -- the .NET 10 runtime is bundled, so nothing else needs installing.
 
-1. Download **`JITAI-WizardControlStation-v2.0.0-win-x64.zip`** from the Releases page.
+1. Download **`JITAI-WizardControlStation-v2.1.0-beta-win-x64.zip`** from the Releases page.
 2. Extract the ZIP anywhere (for example `C:\JITAI-Wizard`). Keep all files together -- the `.exe` needs the DLLs and `Assets`/`Database` folders beside it.
 3. Run **`OcdWizard.ControlStation.exe`**.
 4. On first launch, Windows SmartScreen may warn about an unrecognized app (the build is unsigned) -- click **More info → Run anyway**.
@@ -159,7 +159,7 @@ Before triggering any interventions or connecting to devices, a session must be 
 1. Enter a name in the Session Name field (default: "New Session").
 2. Click "Start Session." A GUID is generated for the session and stored in the database along with the session name and start timestamp.
 3. The two participant panels become active.
-4. When the study is complete, click "Stop Session." The end timestamp is recorded in the database.
+4. When the study is complete, click "Stop Session." The end timestamp is recorded in the database, and whatever is in the session notes box is saved with it (the box and its Save button are disabled once the session has ended, so notes typed during a run no longer need a separate click on Save).
 
 Session data (sensor readings, interventions, responses) is associated with the current session ID throughout its lifetime. Stopping a session does not disconnect devices or discard buffered data.
 
@@ -415,6 +415,8 @@ Structured event log streamed from the phone in real time during experiment runs
 Click "Export CSV" in the top toolbar. A session picker dialog opens listing all sessions stored in the database with their date, name, participant identifiers, experiment names, and number of sensor samples.
 
 Select the session you want to export and click "Export Selected." A save dialog opens to choose the output file path.
+
+Numbers are always written with a decimal point, whatever the PC's regional settings. Replay Mode reads the same text when it opens a session from the databank. A file exported by an older build on a PC that uses a decimal comma has damaged sensor rows; Replay Mode skips those rows and shows how many next to the file name, and the session can simply be exported again from the databank.
 
 The exported CSV contains six sections separated by blank lines:
 
