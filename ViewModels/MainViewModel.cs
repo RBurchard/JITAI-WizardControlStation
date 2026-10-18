@@ -135,10 +135,25 @@ public partial class MainViewModel : ObservableObject
         StatusMessage = Loc.Get("Main_StatusSessionNotesSaved");
     }
 
+    /// <summary>
+    /// Writes the notes box to the session it describes. An empty box is left alone, so it can never
+    /// blank out notes that were already saved for that session.
+    /// </summary>
+    private async Task FlushSessionNotesAsync()
+    {
+        if (_activeSessionId == null || string.IsNullOrWhiteSpace(SessionNotes)) return;
+        await _db.UpdateSessionNotesAsync(_activeSessionId, SessionNotes);
+    }
+
     [RelayCommand]
     private async Task StopSessionAsync()
     {
         if (_activeSessionId == null) return;
+        // Persist the notes before anything else. The box and its Save button are disabled as soon as the
+        // session ends and the box is cleared when the next one starts, so notes that were typed but never
+        // saved with the button used to vanish right here. Both the Stop button and the auto-end after a
+        // run come through this method.
+        await FlushSessionNotesAsync();
         var now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
         await _db.EndSessionAsync(_activeSessionId, now);
         SessionNameState.SaveLastUsedName(SessionName);
