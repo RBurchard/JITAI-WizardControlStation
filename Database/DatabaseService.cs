@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Text.Json;
@@ -414,13 +415,13 @@ public class DatabaseService
             var start = DateTimeOffset.FromUnixTimeMilliseconds((long)session.started_at).ToLocalTime();
             var endMs = session.ended_at as long?;
             var end = endMs.HasValue
-                ? DateTimeOffset.FromUnixTimeMilliseconds(endMs.Value).ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss")
+                ? DateTimeOffset.FromUnixTimeMilliseconds(endMs.Value).ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture)
                 : "active";
             sb.AppendLine("=== SESSION ===");
             sb.AppendLine($"id,{session.id}");
             sb.AppendLine($"name,{EscapeCsv((string?)session.name ?? (string?)session.notes ?? "(unnamed)")}");
             sb.AppendLine($"notes,{EscapeCsv((string?)session.notes ?? "")}");
-            sb.AppendLine($"started_at,{start:yyyy-MM-dd HH:mm:ss}");
+            sb.AppendLine($"started_at,{start.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture)}");
             sb.AppendLine($"ended_at,{end}");
             sb.AppendLine($"participants,{session.pkeys ?? ""}");
             sb.AppendLine();
@@ -453,7 +454,7 @@ public class DatabaseService
             "JOIN participants p ON p.id = wd.participant_id WHERE p.session_id = @sessionId " +
             "ORDER BY wd.timestamp", new { sessionId });
         foreach (var r in watchRows)
-            sb.AppendLine($"{r.label},{r.participant_key},{r.timestamp},{r.heart_rate},{r.accel_x},{r.accel_y},{r.accel_z},{r.gyro_x},{r.gyro_y},{r.gyro_z},{r.rot_w},{r.rot_x},{r.rot_y},{r.rot_z},{r.baro_hpa},{r.light_lux},{r.step_count}");
+            sb.AppendLine($"{r.label},{r.participant_key},{Num(r.timestamp)},{Num(r.heart_rate)},{Num(r.accel_x)},{Num(r.accel_y)},{Num(r.accel_z)},{Num(r.gyro_x)},{Num(r.gyro_y)},{Num(r.gyro_z)},{Num(r.rot_w)},{Num(r.rot_x)},{Num(r.rot_y)},{Num(r.rot_z)},{Num(r.baro_hpa)},{Num(r.light_lux)},{Num(r.step_count)}");
 
         sb.AppendLine();
         sb.AppendLine("=== SESSION LOGS ===");
@@ -586,6 +587,21 @@ public class DatabaseService
         if (v.ValueKind == JsonValueKind.Number) return v.GetRawText();
         return int.TryParse(v.GetString(), out var parsed) ? parsed.ToString() : "";
     }
+
+    /// <summary>
+    /// Formats a numeric cell for the CSV, always with a decimal point.
+    ///
+    /// Plain string interpolation uses the PC's regional format. On a comma-decimal setup (German
+    /// region, say) <c>0.47</c> is written as <c>0,47</c>, and since a comma is also the field
+    /// separator that splits one value into two columns, shifting every cell after it. The replay
+    /// then reads orientation and acceleration out of the wrong columns and the model flips out.
+    /// </summary>
+    private static string Num(object? value) => value switch
+    {
+        null => "",
+        IFormattable f => f.ToString(null, CultureInfo.InvariantCulture),
+        _ => value.ToString() ?? "",
+    };
 
     private static string EscapeCsv(string value)
     {

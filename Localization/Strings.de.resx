@@ -1023,6 +1023,9 @@
   <data name="Replay_SourceFile" xml:space="preserve">
     <value>DATEI</value>
   </data>
+  <data name="Replay_SourceSkippedRows" xml:space="preserve">
+    <value>{0} · {1} DEFEKTE ZEILEN ÜBERSPRUNGEN</value>
+  </data>
   <data name="Replay_TabPlayer" xml:space="preserve">
     <value>▶  Player</value>
   </data>

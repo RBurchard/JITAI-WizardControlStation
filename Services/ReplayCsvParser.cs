@@ -45,6 +45,7 @@ public static class ReplayCsvParser
 
         string section = "";
         Dictionary<string, int>? header = null;
+        int watchColumns = 0, skippedWatchRows = 0;
 
         int i = 0;
         while (i < lines.Count)
@@ -91,7 +92,11 @@ public static class ReplayCsvParser
                     break;
                 }
                 case SECTION_WATCH:
-                    if (header == null) { header = BuildHeader(fields); break; }
+                    if (header == null) { header = BuildHeader(fields); watchColumns = fields.Count; break; }
+                    // More fields than the header means a decimal comma split a value in two (an export made on a
+                    // PC with a comma decimal separator before the exporter was fixed). Every column after the split
+                    // is shifted, so the row would feed garbage orientation into the motion model: skip it.
+                    if (HasExtraFields(fields, watchColumns)) { skippedWatchRows++; break; }
                     AddWatchRow(participants, header, fields, sessionId);
                     break;
                 case SECTION_LOGS:
@@ -138,6 +143,7 @@ public static class ReplayCsvParser
             NotesLineStart = notesLineStart,
             NotesLineCount = notesLineCount,
             SessionHeaderLine = sessionHeaderLine,
+            SkippedWatchRows = skippedWatchRows,
         };
     }
 
@@ -180,6 +186,14 @@ public static class ReplayCsvParser
         }
         var raw = sb.ToString();
         return (CsvUtil.SplitCsv(raw), raw, consumed);
+    }
+
+    /// <summary>True when a record has non-empty fields beyond the header's column count (trailing blanks are fine).</summary>
+    private static bool HasExtraFields(List<string> fields, int columns)
+    {
+        for (int c = columns; c < fields.Count; c++)
+            if (fields[c].Trim().Length > 0) return true;
+        return false;
     }
 
     private static Dictionary<string, int> BuildHeader(List<string> fields)

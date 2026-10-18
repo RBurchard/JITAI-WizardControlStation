@@ -202,7 +202,9 @@ public partial class ReplayViewModel : ObservableObject
         _maxTs = data.MaxTs;
 
         ImportedFileName = displayName;
-        SourceLabel = sourceLabel;
+        SourceLabel = data.SkippedWatchRows > 0
+            ? Loc.Format("Replay_SourceSkippedRows", sourceLabel, data.SkippedWatchRows)
+            : sourceLabel;
         SessionName = Loc.Format("Replay_SessionNameFormat",
             string.IsNullOrWhiteSpace(data.Session.Name) ? Loc.Get("Replay_SessionUnnamed") : data.Session.Name);
         HasExperiment = data.HasExperiment;

@@ -86,6 +86,9 @@ public sealed class ReplayData
     /// <summary>Index of the <c>=== SESSION ===</c> header line, or -1 (used to insert a missing notes row).</summary>
     public int SessionHeaderLine { get; init; } = -1;
 
+    /// <summary>Watch rows left out because they had more fields than the header (a decimal-comma export).</summary>
+    public int SkippedWatchRows { get; init; }
+
     public bool HasExperiment => Runs.Count > 0;
     public long DurationMs => Math.Max(0, MaxTs - MinTs);
 }

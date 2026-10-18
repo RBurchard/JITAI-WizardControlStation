@@ -103,6 +103,16 @@ public sealed class MotionVisualizer : Control
         _recon.Reset();
     }
 
+    /// <summary>
+    /// Replay seek: drop queued samples and clear velocity + trail so they re-warm from the samples
+    /// that follow, but keep the pose reference and accept timestamps older than the last processed.
+    /// </summary>
+    public void ResetForSeek()
+    {
+        lock (_lock) _pending.Clear();
+        _recon.ResetForSeek();
+    }
+
     /// <summary>Clear velocity trail only orientation reference unchanged.</summary>
     public void ResetVelocity()
     {

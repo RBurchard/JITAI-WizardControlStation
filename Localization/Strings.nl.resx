@@ -1023,6 +1023,9 @@
   <data name="Replay_SourceFile" xml:space="preserve">
     <value>BESTAND</value>
   </data>
+  <data name="Replay_SourceSkippedRows" xml:space="preserve">
+    <value>{0} · {1} DEFECTE RIJEN OVERGESLAGEN</value>
+  </data>
   <data name="Replay_TabPlayer" xml:space="preserve">
     <value>▶  Speler</value>
   </data>

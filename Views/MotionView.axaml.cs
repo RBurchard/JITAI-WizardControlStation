@@ -62,8 +62,9 @@ public partial class MotionView : UserControl
     private void OnMotionSamples(IReadOnlyList<WatchDataSnapshot> samples)
         => _visualizer?.EnqueueSamples(samples);
 
-    // Replay seeking backwards clears the reconstructor so orientation + trail re-warm cleanly.
-    private void OnMotionReset() => _visualizer?.Reset();
+    // Replay seeking backwards clears velocity + trail so they re-warm cleanly. This must NOT be the
+    // user-facing Reset(), which re-zeroes the pose to the current one and discards older samples.
+    private void OnMotionReset() => _visualizer?.ResetForSeek();
 
     private void OnResetVelocityClick(object? sender, RoutedEventArgs e) => _visualizer?.ResetVelocity();
     private void OnResetClick(object? sender, RoutedEventArgs e) => _visualizer?.Reset();

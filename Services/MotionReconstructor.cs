@@ -102,6 +102,25 @@ public sealed class MotionReconstructor
         _trailCount    = 0;
     }
 
+    /// <summary>
+    /// Clear velocity and trail ahead of a replay seek, keeping the orientation reference.
+    ///
+    /// <see cref="Reset"/> is wrong for a seek on two counts. It re-zeroes the pose to wherever the
+    /// playhead happened to be, so the same instant of a recording would look different depending on
+    /// where you seeked from. And it sets the in-flight cut-off to the last timestamp processed, but a
+    /// backward seek deliberately feeds samples OLDER than that, so every re-warm sample would be
+    /// discarded and the hand would sit frozen until playback caught up with where it had been.
+    /// </summary>
+    public void ResetForSeek()
+    {
+        _discardBefore = 0;
+        _velocity      = Vector3.Zero;
+        _lastTs        = 0;
+        _stillSinceMs  = 0;
+        _trailStart    = 0;
+        _trailCount    = 0;
+    }
+
     public void Step(WatchDataSnapshot s)
     {
         // Discard samples that were already in-flight when ResetVelocity was called.
