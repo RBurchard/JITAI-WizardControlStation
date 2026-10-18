@@ -1,9 +1,9 @@
 {
   "id": "exp-distraction-combo",
   "name": "Hand-washing - Distraction Combo (No Games)",
-  "version": 1,
-  "updatedAt": 1781100000000,
-  "notes": "Hand-washing JITAI study - DISTRACTION COMBO variant (no microgames).\n\nWizard of Oz: ODI is presented to the participant as a real AI on the watch; the experimenter secretly drives it. Participants are NOT told the aim of the study or that ODI's messages are interventions.\n\nThis variant needs no tutorial - it can be run on its own. As soon as washing starts, ODI fires a quick combo of three nagging messages (no games, escalating notifications) to interrupt the washing.\n\nFlow:\n1. Welcome - ODI introduces itself on the watch.\n2. Dirty Hands - participant soils their hands.\n3. Wait (increase urge) - build the urge to wash.\n4. Wash Hands - participant starts washing. >>> START the HW timer now. <<<\n5-7. Distraction Combo - ODI fires three quick nags that try to stop the washing.\n8. Reaction - record whether the participant FOLLOWED or IGNORED (use the watch-note button).\n9. Finish Washing - participant stops. >>> STOP the HW timer and note the total duration. <<<\n10. Questionnaire.\n\n(Times are not final. Use MANUAL control if unfamiliar with the app.)\n",
+  "version": 2,
+  "updatedAt": 1792323558163,
+  "notes": "Hand-washing JITAI study - DISTRACTION COMBO variant (no microgames).\n\nWizard of Oz: ODI is presented to the participant as a real AI on the watch; the experimenter secretly drives it. Participants are NOT told the aim of the study or that ODI's messages are interventions.\n\nThis variant needs no tutorial - it can be run on its own. As soon as washing starts, ODI fires a quick combo of three nagging messages (no games, escalating notifications) to interrupt the washing.\n\nFlow:\n1. Welcome - ODI introduces itself on the watch.\n2. Dirty Hands - participant soils their hands.\n3. Wait (increase urge) - build the urge to wash.\n4. Wash Hands - participant starts washing. >>> START the HW timer now. <<<\n5-7. Distraction Combo - ODI fires three quick nags that try to stop the washing.\n8. Reaction - record whether the participant FOLLOWED or IGNORED (use the watch-note button).\n9. Finish Washing - participant stops. >>> STOP the HW timer and note the total duration. <<<\n10. Questionnaire.\n\n(Times are not final. Use MANUAL control if unfamiliar with the app.)\n\nMicrogame settings (applied to the watch when this schedule is loaded): Simon Says difficulty 3/5 with 4 rounds, Lock Picking difficulty 3/5, mistake cost STUN (medium). This variant plays no microgames; the values are pinned so every condition starts the watch from the same known state.\n",
   "events": [
     {
       "id": "evt-welcome",
@@ -123,5 +123,11 @@
       },
       "enabled": true
     }
-  ]
+  ],
+  "gameSettings": {
+    "simonDifficulty": 3,
+    "simonRounds": 4,
+    "lockDifficulty": 3,
+    "lockPenalty": "STUN"
+  }
 }

@@ -1,0 +1,133 @@
+{
+  "id": "exp-distraction-combo-de",
+  "name": "DE - Handhygiene - Ablenkungs-Kombi - Ohne Spiele",
+  "version": 1,
+  "updatedAt": 1792323558163,
+  "notes": "Händewasch-JITAI-Studie – Variante ABLENKUNGS-KOMBI (ohne Minispiele).\n\nWizard of Oz: ODI wird der Versuchsperson als echte KI auf der Uhr präsentiert; die Versuchsleitung steuert sie heimlich. Die Versuchspersonen werden NICHT über das Ziel der Studie oder darüber informiert, dass die Nachrichten von ODI Interventionen sind.\n\nDiese Variante braucht kein Tutorial und kann eigenständig durchgeführt werden. Sobald das Waschen beginnt, sendet ODI eine schnelle Kombination aus drei hartnäckigen Nachrichten (keine Spiele, eskalierende Benachrichtigungen), um das Waschen zu unterbrechen.\n\nAblauf:\n1. Begrüßung – ODI stellt sich auf der Uhr vor.\n2. Hände schmutzig machen – die Versuchsperson macht sich die Hände schmutzig.\n3. Warten (Drang steigern) – den Drang zum Waschen aufbauen.\n4. Hände waschen – die Versuchsperson beginnt mit dem Waschen. >>> Jetzt den HW-Timer STARTEN. <<<\n5.-7. Ablenkungs-Kombi – ODI sendet drei kurze Nachrichten, die das Waschen unterbrechen sollen.\n8. Reaktion – festhalten, ob die Versuchsperson BEFOLGT oder IGNORIERT hat (Notiz-Button).\n9. Waschen beenden – die Versuchsperson hört auf. >>> HW-Timer STOPPEN und die Gesamtdauer notieren. <<<\n10. Fragebogen.\n\n(Die Zeiten sind nicht endgültig. Wer die App nicht kennt, sollte die MANUELLE Steuerung nutzen.)\n\nMinispiel-Einstellungen (werden beim Laden dieses Ablaufs auf die Uhr übertragen): Simon sagt Schwierigkeit 3/5 mit 4 Runden, Schlossknacken Schwierigkeit 3/5, Strafe bei Fehler: Betäuben (STUN) (mittlere Schwierigkeit). Diese Variante spielt keine Minispiele; die Werte sind festgelegt, damit jede Bedingung mit demselben bekannten Zustand der Uhr beginnt.\n",
+  "events": [
+    {
+      "id": "evt-welcome",
+      "duration": 30,
+      "type": "Begrüßung / Anweisungen",
+      "intervention": {
+        "id": "iv-welcome",
+        "type": "Text",
+        "notification": "VIBRATION1",
+        "message": "Hallo! Ich bin ODI. Ich leiste dir Gesellschaft und nehme ein paar Messwerte auf, während du deinen Dingen nachgehst. Lass dich von mir nicht stören!",
+        "durationSeconds": 10
+      },
+      "kind": {
+        "kind": "Timed"
+      }
+    },
+    {
+      "id": "evt-dirty-hands",
+      "duration": 60,
+      "type": "Hände schmutzig machen",
+      "kind": {
+        "kind": "Timed"
+      }
+    },
+    {
+      "id": "evt-wait-urge",
+      "duration": 15,
+      "type": "Warten (Drang steigern)",
+      "kind": {
+        "kind": "Timed"
+      }
+    },
+    {
+      "id": "evt-wash-hands",
+      "duration": 30,
+      "type": "Hände waschen - HW-Timer STARTEN",
+      "kind": {
+        "kind": "Timed"
+      }
+    },
+    {
+      "id": "evt-combo-1",
+      "duration": 15,
+      "type": "Ablenkungs-Kombi 1/3",
+      "intervention": {
+        "id": "iv-combo-1",
+        "type": "Text",
+        "notification": "VIBRATION1",
+        "message": "Hey – du bist schon eine Weile dabei. Alles in Ordnung?",
+        "durationSeconds": 10
+      },
+      "kind": {
+        "kind": "Timed"
+      }
+    },
+    {
+      "id": "evt-combo-2",
+      "duration": 15,
+      "type": "Ablenkungs-Kombi 2/3",
+      "intervention": {
+        "id": "iv-combo-2",
+        "type": "Yes/No",
+        "notification": "VIBRATION_SOUND",
+        "message": "Immer noch dabei? Musst du wirklich noch weiter waschen?",
+        "durationSeconds": 12
+      },
+      "kind": {
+        "kind": "Timed"
+      }
+    },
+    {
+      "id": "evt-combo-3",
+      "duration": 15,
+      "type": "Ablenkungs-Kombi 3/3",
+      "intervention": {
+        "id": "iv-combo-3",
+        "type": "Text",
+        "notification": "ANNOY_VIBRATION_SOUND",
+        "message": "Vielleicht eine kleine Pause davon? Lass uns zusammen kurz innehalten.",
+        "durationSeconds": 12
+      },
+      "kind": {
+        "kind": "Timed"
+      }
+    },
+    {
+      "id": "evt-reaction",
+      "duration": 10,
+      "type": "Reaktion - Befolgt / Ignoriert notieren",
+      "kind": {
+        "kind": "Timed"
+      }
+    },
+    {
+      "id": "evt-finish-washing",
+      "duration": 120,
+      "type": "Waschen beenden - HW-Timer STOPPEN",
+      "kind": {
+        "kind": "Timed"
+      }
+    },
+    {
+      "id": "evt-questionnaire",
+      "duration": 5,
+      "type": "Fragebogen",
+      "kind": {
+        "kind": "Timed"
+      }
+    }
+  ],
+  "triggers": [
+    {
+      "id": "trg-researcher-cue",
+      "name": "Researcher cue",
+      "kind": {
+        "kind": "Manual"
+      },
+      "enabled": true
+    }
+  ],
+  "gameSettings": {
+    "simonDifficulty": 3,
+    "simonRounds": 4,
+    "lockDifficulty": 3,
+    "lockPenalty": "STUN"
+  }
+}

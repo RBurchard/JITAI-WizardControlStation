@@ -1,0 +1,154 @@
+{
+  "id": "default-10min-experiment-de",
+  "name": "DE - Handhygiene-JITAI-Studie - Standard",
+  "version": 1,
+  "updatedAt": 1792323558163,
+  "notes": "Händewasch-JITAI-Studie – eine Wiederholung\n\n(Die Zeiten sind nicht endgültig. Passe sie für den AUTO-Modus bei Bedarf an! Wer die App nicht kennt, sollte die manuelle Steuerung nutzen.)\n\nODI wird der Versuchsperson als echte KI auf der Uhr präsentiert; die Versuchsleitung steuert sie heimlich (Wizard of Oz). Die Versuchspersonen werden NICHT über das Ziel der Studie oder die Art der Intervention informiert.\n\nAblauf:\n1. Begrüßung / Anweisungen – ODI stellt sich auf der Uhr vor.\n2.-3. Ablenkungsaufgaben (Schlossknacken, Simon sagt) – machen die Versuchsperson mit dem Feedback der Uhr vertraut.\n4.-5. Eingewöhnung abgeschlossen. Die Versuchsleitung kann zur Versuchsperson zurückkehren (ODI hat sie angeschrieben), damit sich diese jetzt die Hände schmutzig macht.\n6. Warten (Drang steigern) – ca. 60 s mit schmutzigen Händen, um den Drang zum Waschen aufzubauen.\n7. Hände waschen – die Versuchsperson beginnt mit dem Waschen. >>> Jetzt den Händewasch-Timer (HW) STARTEN. <<<\n8. Intervention (Waschen stoppen) – ca. 15 s nach Beginn des Waschens löst ODI die JITAI aus, die das Waschen unterbrechen soll. Die Interventionskonfiguration je Bedingung variieren.\n9. Reaktion – festhalten, ob die Versuchsperson die Intervention BEFOLGT oder IGNORIERT hat (Notiz-Button). Wird sie ignoriert und weitergewaschen, zurück zu Schritt 6 springen und die Intervention bei Bedarf wiederholen.\n10. Waschen beenden – die Versuchsperson hört auf. >>> HW-Timer STOPPEN und die Gesamtdauer notieren. <<<\n11. Fragebogen – den Fragebogen nach dem Experiment vorgeben.\n\nMinispiel-Einstellungen (werden beim Laden dieses Ablaufs auf die Uhr übertragen): Simon sagt Schwierigkeit 3/5 mit 4 Runden, Schlossknacken Schwierigkeit 3/5, Strafe bei Fehler: Betäuben (STUN) (mittlere Schwierigkeit).\n",
+  "events": [
+    {
+      "id": "evt-welcome",
+      "duration": 30,
+      "type": "Begrüßung / Anweisungen",
+      "intervention": {
+        "id": "iv-welcome",
+        "type": "Text",
+        "notification": "VIBRATION1",
+        "message": "Willkommen! ODI ist gleich bei dir. Während du diese Nachricht liest, hat ODI genug Zeit, zum Leben zu erwachen!",
+        "durationSeconds": 10
+      },
+      "kind": {
+        "kind": "Timed"
+      }
+    },
+    {
+      "id": "evt-distraction-1",
+      "duration": 5,
+      "type": "Ablenkungsaufgabe 1: Schlossknacken (Tutorial)",
+      "intervention": {
+        "id": "iv-distraction-1",
+        "type": "Text",
+        "notification": "VIBRATION_SOUND",
+        "message": "Neue Person erkannt. Tutorial-Modus aktiviert. Bitte erledige die folgenden Aufgaben, damit du dich mit meinem System vertraut machen kannst und ich genug Zeit habe, deine Baseline-Körpersprache aufzuzeichnen :)",
+        "durationSeconds": 30,
+        "gameType": "LOCK_PICKING"
+      },
+      "gameType": "LOCK_PICKING",
+      "kind": {
+        "kind": "WaitForPrevious"
+      }
+    },
+    {
+      "id": "evt-distraction-2",
+      "duration": 5,
+      "type": "Ablenkungsaufgabe 2: Simon sagt (Tutorial)",
+      "intervention": {
+        "id": "iv-distraction-2",
+        "type": "Timer",
+        "notification": "VIBRATION_SOUND",
+        "message": "Bei mir ist fast alles fertig! Wie wäre es mit einer Runde Simon sagt? Dann bin ich bestimmt so weit.",
+        "durationSeconds": 30,
+        "gameType": "SIMON_SAYS"
+      },
+      "gameType": "SIMON_SAYS",
+      "kind": {
+        "kind": "WaitForPrevious"
+      }
+    },
+    {
+      "id": "evt-TutDone",
+      "duration": 30,
+      "type": "Eingewöhnung abgeschlossen",
+      "intervention": {
+        "id": "iv-dirty-hands",
+        "type": "Text",
+        "notification": "VIBRATION1",
+        "message": "Wunderbar. Ich habe jetzt deine Basisdaten. Gib mir einen Moment, während ich sie speichere.",
+        "durationSeconds": 15
+      },
+      "kind": {
+        "kind": "Timed"
+      }
+    },
+    {
+      "id": "evt-dirty-Hands",
+      "duration": 60,
+      "type": "Hände schmutzig machen",
+      "kind": {
+        "kind": "Timed"
+      }
+    },
+    {
+      "id": "evt-WaitingForUrge",
+      "duration": 15,
+      "type": "Warten (Drang steigern)",
+      "kind": {
+        "kind": "Timed"
+      }
+    },
+    {
+      "id": "evt-wash-hands",
+      "duration": 30,
+      "type": "Hände waschen - HW-Timer STARTEN",
+      "kind": {
+        "kind": "Timed"
+      }
+    },
+    {
+      "id": "evt-intervention",
+      "duration": 30,
+      "type": "Intervention (Waschen stoppen)",
+      "intervention": {
+        "id": "552dad3a",
+        "type": "Text",
+        "notification": "VIBRATION1",
+        "message": "Hey! Warte kurz! Du scheinst deine Hände ziemlich oft aneinander gerieben zu haben. Alles okay? Lass uns schnell etwas zusammen machen!",
+        "durationSeconds": 30,
+        "gameType": "SIMON_SAYS"
+      },
+      "gameType": "SIMON_SAYS",
+      "kind": {
+        "kind": "Timed"
+      }
+    },
+    {
+      "id": "evt-reaction",
+      "duration": 10,
+      "type": "Reaktion - Befolgt / Ignoriert notieren",
+      "kind": {
+        "kind": "Timed"
+      }
+    },
+    {
+      "id": "evt-finish-washing",
+      "duration": 120,
+      "type": "Waschen beenden - HW-Timer STOPPEN",
+      "kind": {
+        "kind": "Timed"
+      }
+    },
+    {
+      "id": "evt-questionnaire",
+      "duration": 5,
+      "type": "Fragebogen",
+      "kind": {
+        "kind": "Timed"
+      }
+    }
+  ],
+  "triggers": [
+    {
+      "id": "trg-researcher-cue",
+      "name": "Researcher cue",
+      "kind": {
+        "kind": "Manual"
+      },
+      "enabled": true
+    }
+  ],
+  "gameSettings": {
+    "simonDifficulty": 3,
+    "simonRounds": 4,
+    "lockDifficulty": 3,
+    "lockPenalty": "STUN"
+  }
+}
