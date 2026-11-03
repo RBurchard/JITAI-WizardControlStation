@@ -1,0 +1,27 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:loc="using:OcdWizard.ControlStation.Localization"
+        x:Class="OcdWizard.ControlStation.Views.SettingsDialog"
+        Title="{loc:T Settings_Title}"
+        Width="360" Height="360"
+        WindowStartupLocation="CenterOwner"
+        CanResize="False"
+        Background="#12152A">
+
+    <Grid RowDefinitions="Auto,*,Auto" Margin="20">
+
+        <TextBlock Grid.Row="0" Text="{loc:T Settings_Language}" Classes="SectionHeader" Margin="0,0,0,8" />
+
+        <ListBox Grid.Row="1" Name="LanguageList" SelectionChanged="OnLanguageSelected"
+                  Background="Transparent" BorderThickness="0">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding}" Padding="6,10" FontSize="14" Foreground="White" />
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+
+        <Button Grid.Row="2" Content="{loc:T Common_Close}" Click="OnCloseClick"
+                HorizontalAlignment="Right" Margin="0,16,0,0" />
+    </Grid>
+</Window>

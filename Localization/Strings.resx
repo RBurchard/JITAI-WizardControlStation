@@ -1,0 +1,1207 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Settings_Title" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="Settings_Language" xml:space="preserve">
+    <value>Language</value>
+  </data>
+  <data name="Settings_LanguageSystem" xml:space="preserve">
+    <value>System default</value>
+  </data>
+  <data name="Common_Close" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="Settings_Tooltip" xml:space="preserve">
+    <value>Change the app language</value>
+  </data>
+  <data name="Settings_ToolbarButton" xml:space="preserve">
+    <value>⚙  Settings</value>
+  </data>
+  <data name="Common_AnswerAWatermark" xml:space="preserve">
+    <value>Answer A</value>
+  </data>
+  <data name="Common_AnswerBWatermark" xml:space="preserve">
+    <value>Answer B</value>
+  </data>
+  <data name="Common_AnswerCWatermark" xml:space="preserve">
+    <value>Answer C</value>
+  </data>
+  <data name="Common_AnswerDWatermark" xml:space="preserve">
+    <value>Answer D</value>
+  </data>
+  <data name="Common_AnswerLetterA" xml:space="preserve">
+    <value>A</value>
+  </data>
+  <data name="Common_AnswerLetterB" xml:space="preserve">
+    <value>B</value>
+  </data>
+  <data name="Common_AnswerLetterC" xml:space="preserve">
+    <value>C</value>
+  </data>
+  <data name="Common_AnswerLetterD" xml:space="preserve">
+    <value>D</value>
+  </data>
+  <data name="Common_CancelIcon" xml:space="preserve">
+    <value>✕  Cancel</value>
+  </data>
+  <data name="Common_FileType_ExperimentJson" xml:space="preserve">
+    <value>Experiment JSON</value>
+  </data>
+  <data name="Common_ForDuration" xml:space="preserve">
+    <value>for</value>
+  </data>
+  <data name="Common_IdWatermark" xml:space="preserve">
+    <value>Id</value>
+  </data>
+  <data name="Common_NameWatermark" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="Common_None" xml:space="preserve">
+    <value>None</value>
+  </data>
+  <data name="Common_UnitSeconds" xml:space="preserve">
+    <value>s</value>
+  </data>
+  <data name="Editor_AddEventButton" xml:space="preserve">
+    <value>＋  Add Event</value>
+  </data>
+  <data name="Editor_AddTriggerButton" xml:space="preserve">
+    <value>＋  Add Trigger</value>
+  </data>
+  <data name="Editor_DefaultEventType" xml:space="preserve">
+    <value>Distraction</value>
+  </data>
+  <data name="Editor_DefaultTriggerName" xml:space="preserve">
+    <value>Trigger</value>
+  </data>
+  <data name="Editor_EventsSectionHeader" xml:space="preserve">
+    <value>EVENTS</value>
+  </data>
+  <data name="Editor_ExperimentNameWatermark" xml:space="preserve">
+    <value>Experiment name</value>
+  </data>
+  <data name="Editor_ExportButton" xml:space="preserve">
+    <value>💾  Export</value>
+  </data>
+  <data name="Editor_ExportExperimentDialogTitle" xml:space="preserve">
+    <value>Export Experiment</value>
+  </data>
+  <data name="Editor_ExportTooltip" xml:space="preserve">
+    <value>Save this experiment to a .json file</value>
+  </data>
+  <data name="Editor_HasInterventionTooltip" xml:space="preserve">
+    <value>Has Intervention</value>
+  </data>
+  <data name="Editor_ImportButton" xml:space="preserve">
+    <value>📂  Import</value>
+  </data>
+  <data name="Editor_ImportExperimentDialogTitle" xml:space="preserve">
+    <value>Import Experiment</value>
+  </data>
+  <data name="Editor_ImportTooltip" xml:space="preserve">
+    <value>Load an experiment from a .json file</value>
+  </data>
+  <data name="Editor_InterventionDisplayAsLabel" xml:space="preserve">
+    <value>Display as:</value>
+  </data>
+  <data name="Editor_InterventionMessageLabel" xml:space="preserve">
+    <value>Message:</value>
+  </data>
+  <data name="Editor_InterventionMessageWatermark" xml:space="preserve">
+    <value>Text shown to participant</value>
+  </data>
+  <data name="Editor_InterventionNotifyLabel" xml:space="preserve">
+    <value>Notify:</value>
+  </data>
+  <data name="Editor_MicrogameLabel" xml:space="preserve">
+    <value>Microgame:</value>
+  </data>
+  <data name="Editor_MicrogamePhoneTaskHint" xml:space="preserve">
+    <value>(selecting one clears the other)</value>
+  </data>
+  <data name="Editor_MoveEventDownTooltip" xml:space="preserve">
+    <value>Move event down</value>
+  </data>
+  <data name="Editor_MoveEventUpTooltip" xml:space="preserve">
+    <value>Move event up</value>
+  </data>
+  <data name="Editor_NotesWatermark" xml:space="preserve">
+    <value>Experiment notes / rundown (synced with the phone)</value>
+  </data>
+  <data name="Editor_OrSeparator" xml:space="preserve">
+    <value>or —</value>
+  </data>
+  <data name="Editor_PhoneTaskLabel" xml:space="preserve">
+    <value>Phone task:</value>
+  </data>
+  <data name="Editor_PhoneTask_Camera" xml:space="preserve">
+    <value>CAMERA</value>
+  </data>
+  <data name="Editor_PhoneTask_Draw" xml:space="preserve">
+    <value>DRAW</value>
+  </data>
+  <data name="Editor_PullButton" xml:space="preserve">
+    <value>⬇  Pull</value>
+  </data>
+  <data name="Editor_PullTooltip" xml:space="preserve">
+    <value>Pull the experiment from the connected phone</value>
+  </data>
+  <data name="Editor_PushButton" xml:space="preserve">
+    <value>⬆  Push</value>
+  </data>
+  <data name="Editor_PushTooltip" xml:space="preserve">
+    <value>Push this experiment to the connected phone</value>
+  </data>
+  <data name="Editor_RemoveEventTooltip" xml:space="preserve">
+    <value>Remove event</value>
+  </data>
+  <data name="Editor_RemoveTriggerTooltip" xml:space="preserve">
+    <value>Remove trigger</value>
+  </data>
+  <data name="Editor_TriggerAboveCheckBox" xml:space="preserve">
+    <value>above</value>
+  </data>
+  <data name="Editor_TriggerEnabledCheckBox" xml:space="preserve">
+    <value>On</value>
+  </data>
+  <data name="Editor_TriggerHzLabel" xml:space="preserve">
+    <value>Hz:</value>
+  </data>
+  <data name="Editor_TriggerKind_HeartRate" xml:space="preserve">
+    <value>HeartRate</value>
+  </data>
+  <data name="Editor_TriggerKind_Manual" xml:space="preserve">
+    <value>Manual</value>
+  </data>
+  <data name="Editor_TriggerKind_RapidMovement" xml:space="preserve">
+    <value>RapidMovement</value>
+  </data>
+  <data name="Editor_TriggerKind_RepeatingMovement" xml:space="preserve">
+    <value>RepeatingMovement</value>
+  </data>
+  <data name="Editor_TriggerThresholdLabel" xml:space="preserve">
+    <value>Threshold:</value>
+  </data>
+  <data name="Editor_TriggersSectionHeader" xml:space="preserve">
+    <value>TRIGGERS</value>
+  </data>
+  <data name="Editor_UnitBpm" xml:space="preserve">
+    <value>BPM</value>
+  </data>
+  <data name="Editor_UnitG" xml:space="preserve">
+    <value>g</value>
+  </data>
+  <data name="Editor_UntitledExperiment" xml:space="preserve">
+    <value>Untitled</value>
+  </data>
+  <data name="Editor_WaitForActionIdWatermark" xml:space="preserve">
+    <value>action id</value>
+  </data>
+  <data name="Editor_WaitForTriggerIdWatermark" xml:space="preserve">
+    <value>trigger id</value>
+  </data>
+  <data name="Participant_AccelXLabel" xml:space="preserve">
+    <value>Accel ΔX</value>
+  </data>
+  <data name="Participant_AccelYLabel" xml:space="preserve">
+    <value>Accel ΔY</value>
+  </data>
+  <data name="Participant_AccelZLabel" xml:space="preserve">
+    <value>Accel ΔZ</value>
+  </data>
+  <data name="Participant_BpmValueFormat" xml:space="preserve">
+    <value>{0:F0} bpm</value>
+  </data>
+  <data name="Participant_ConnectButton" xml:space="preserve">
+    <value>🔌  Connect</value>
+  </data>
+  <data name="Participant_ConnectionSectionHeader" xml:space="preserve">
+    <value>📡  CONNECTION</value>
+  </data>
+  <data name="Participant_DeviceComboPlaceholder" xml:space="preserve">
+    <value>Tap Scan to discover devices…</value>
+  </data>
+  <data name="Participant_DeviceIpWatermark" xml:space="preserve">
+    <value>Device IP  (e.g. 192.168.1.42)</value>
+  </data>
+  <data name="Participant_DisconnectButton" xml:space="preserve">
+    <value>Disconnect</value>
+  </data>
+  <data name="Participant_WakeWatchButton" xml:space="preserve">
+    <value>Wake watch (5 min)</value>
+  </data>
+  <data name="Participant_WakeWatchTooltip" xml:space="preserve">
+    <value>Hold the watch at full sensor rate for 5 minutes without starting a run, e.g. to check heart rate and motion while fitting it. A run started in that time keeps it awake for as long as it runs.</value>
+  </data>
+  <data name="Participant_LogWakeWatchSent" xml:space="preserve">
+    <value>Watch woken for {0} min</value>
+  </data>
+  <data name="Participant_LogWakeWatchFailed" xml:space="preserve">
+    <value>Wake watch failed</value>
+  </data>
+  <data name="Participant_EventLogSectionTitle" xml:space="preserve">
+    <value>🔔  Event Log</value>
+  </data>
+  <data name="Participant_ExperimentEditorSectionTitle" xml:space="preserve">
+    <value>✏  Experiment Editor</value>
+  </data>
+  <data name="Participant_ExperimentRunnerSectionTitle" xml:space="preserve">
+    <value>▶  Experiment Runner</value>
+  </data>
+  <data name="Participant_GameTypeLabel" xml:space="preserve">
+    <value>Game type</value>
+  </data>
+  <data name="Participant_HeartRateLabel" xml:space="preserve">
+    <value>Heart Rate</value>
+  </data>
+  <data name="Participant_LiveSensorsSectionTitle" xml:space="preserve">
+    <value>💓  Live Sensors</value>
+  </data>
+  <data name="Participant_MotionTrackerSectionTitle" xml:space="preserve">
+    <value>🖐  Motion Tracker</value>
+  </data>
+  <data name="Participant_NotificationLabel" xml:space="preserve">
+    <value>Notification</value>
+  </data>
+  <data name="Participant_ParticipantFieldLabel" xml:space="preserve">
+    <value>Participant</value>
+  </data>
+  <data name="Participant_ParticipantIdBadge" xml:space="preserve">
+    <value>ID: {0}</value>
+  </data>
+  <data name="Participant_ParticipantKeyWatermark" xml:space="preserve">
+    <value>Participant name / ID (synced with phone)</value>
+  </data>
+  <data name="Participant_ScanButton" xml:space="preserve">
+    <value>🔍  Scan</value>
+  </data>
+  <data name="Participant_SendInterventionSectionTitle" xml:space="preserve">
+    <value>📣  Send Intervention</value>
+  </data>
+  <data name="Participant_SyncedLogsSectionTitle" xml:space="preserve">
+    <value>📋  Synced Logs</value>
+  </data>
+  <data name="Participant_TriggerInterventionButton" xml:space="preserve">
+    <value>📣  Trigger Intervention</value>
+  </data>
+  <data name="Participant_TriviaCorrectAnswerLabel" xml:space="preserve">
+    <value>Correct:</value>
+  </data>
+  <data name="Participant_TriviaQuestionHeader" xml:space="preserve">
+    <value>Trivia Question</value>
+  </data>
+  <data name="Participant_TriviaQuestionWatermark" xml:space="preserve">
+    <value>Question text…</value>
+  </data>
+  <data name="Runner_AutoButton" xml:space="preserve">
+    <value>⏩ Auto</value>
+  </data>
+  <data name="Runner_NextButton" xml:space="preserve">
+    <value>▶ Next</value>
+  </data>
+  <data name="Runner_NowRunningLabel" xml:space="preserve">
+    <value>NOW RUNNING</value>
+  </data>
+  <data name="Runner_PauseButton" xml:space="preserve">
+    <value>⏸ Pause</value>
+  </data>
+  <data name="Runner_PrevButton" xml:space="preserve">
+    <value>◀ Prev</value>
+  </data>
+  <data name="Runner_RunIdLabel" xml:space="preserve">
+    <value>Run: {0}</value>
+  </data>
+  <data name="Runner_StartButton" xml:space="preserve">
+    <value>▶ Start</value>
+  </data>
+  <data name="Runner_StopButton" xml:space="preserve">
+    <value>■ Stop</value>
+  </data>
+  <data name="Trivia_AddQuestionButton" xml:space="preserve">
+    <value>+ Add</value>
+  </data>
+  <data name="Trivia_AnswersLabel" xml:space="preserve">
+    <value>Answers:</value>
+  </data>
+  <data name="Trivia_NewAnswerA" xml:space="preserve">
+    <value>Answer A</value>
+  </data>
+  <data name="Trivia_NewAnswerB" xml:space="preserve">
+    <value>Answer B</value>
+  </data>
+  <data name="Trivia_NewAnswerC" xml:space="preserve">
+    <value>Answer C</value>
+  </data>
+  <data name="Trivia_NewAnswerD" xml:space="preserve">
+    <value>Answer D</value>
+  </data>
+  <data name="Trivia_NewQuestionPlaceholder" xml:space="preserve">
+    <value>New question?</value>
+  </data>
+  <data name="Trivia_PushToDevicesButton" xml:space="preserve">
+    <value>Push to Devices</value>
+  </data>
+  <data name="Trivia_QuestionLabel" xml:space="preserve">
+    <value>Question:</value>
+  </data>
+  <data name="Trivia_RemoveQuestionButton" xml:space="preserve">
+    <value>Remove</value>
+  </data>
+  <data name="Trivia_SaveLocallyButton" xml:space="preserve">
+    <value>Save Locally</value>
+  </data>
+  <data name="Trivia_StatusPushedToDevices" xml:space="preserve">
+    <value>Pushed to {0}/{1} device(s).</value>
+  </data>
+  <data name="Trivia_StatusSavedLocally" xml:space="preserve">
+    <value>Saved locally.</value>
+  </data>
+  <data name="Trivia_WindowTitle" xml:space="preserve">
+    <value>Trivia Question Editor</value>
+  </data>
+  <data name="Common_AppName" xml:space="preserve">
+    <value>JITAI Wizard</value>
+  </data>
+  <data name="Common_AppSubtitle" xml:space="preserve">
+    <value>Control Station</value>
+  </data>
+  <data name="Common_AppWindowTitle" xml:space="preserve">
+    <value>JITAI Wizard Control Station</value>
+  </data>
+  <data name="Common_Back" xml:space="preserve">
+    <value>◀ Back</value>
+  </data>
+  <data name="Common_Next" xml:space="preserve">
+    <value>Next ▶</value>
+  </data>
+  <data name="Heartbeat_BpmUnit" xml:space="preserve">
+    <value>bpm</value>
+  </data>
+  <data name="Heartbeat_Tooltip" xml:space="preserve">
+    <value>Live heart rate (beats per minute) pulses in time with the participant's heartbeat</value>
+  </data>
+  <data name="Notes_Label" xml:space="preserve">
+    <value>📝  Session notes:</value>
+  </data>
+  <data name="Notes_SaveButton" xml:space="preserve">
+    <value>💾  Save Notes</value>
+  </data>
+  <data name="Notes_Watermark" xml:space="preserve">
+    <value>Notes about the running session (e.g. 'Participant felt uncomfortable around 4 min')</value>
+  </data>
+  <data name="Panel_DefaultTitle" xml:space="preserve">
+    <value>Panel</value>
+  </data>
+  <data name="Panel_DockBackTooltip" xml:space="preserve">
+    <value>Dock back</value>
+  </data>
+  <data name="Panel_PopOutTooltip" xml:space="preserve">
+    <value>Pop out into its own window</value>
+  </data>
+  <data name="Startup_StartingSessionBody" xml:space="preserve">
+    <value>Please wait while the devices get ready.</value>
+  </data>
+  <data name="Startup_StartingSessionTitle" xml:space="preserve">
+    <value>Starting Session…</value>
+  </data>
+  <data name="TopBar_ExperimentMode" xml:space="preserve">
+    <value>🧪  Experiment Mode</value>
+  </data>
+  <data name="TopBar_ExportCsv" xml:space="preserve">
+    <value>⬇  Export CSV</value>
+  </data>
+  <data name="TopBar_ModeToggleTooltip" xml:space="preserve">
+    <value>Switch between live Experiment Mode and Replay Mode (playback + Master Notes)</value>
+  </data>
+  <data name="TopBar_OneWatch" xml:space="preserve">
+    <value>👤  1 Watch</value>
+  </data>
+  <data name="TopBar_ReplayMode" xml:space="preserve">
+    <value>🎞  Replay Mode</value>
+  </data>
+  <data name="TopBar_SessionLabel" xml:space="preserve">
+    <value>Session:</value>
+  </data>
+  <data name="TopBar_SessionNameWatermark" xml:space="preserve">
+    <value>e.g. Participant_01</value>
+  </data>
+  <data name="TopBar_StartSession" xml:space="preserve">
+    <value>▶  Start Session</value>
+  </data>
+  <data name="TopBar_StopSession" xml:space="preserve">
+    <value>■  Stop Session</value>
+  </data>
+  <data name="TopBar_Trivia" xml:space="preserve">
+    <value>📋  Trivia</value>
+  </data>
+  <data name="TopBar_Tutorial" xml:space="preserve">
+    <value>❔  Tutorial</value>
+  </data>
+  <data name="TopBar_TutorialTooltip" xml:space="preserve">
+    <value>Replay the guided tour of the Control Station</value>
+  </data>
+  <data name="TopBar_TwoWatches" xml:space="preserve">
+    <value>👥  2 Watches</value>
+  </data>
+  <data name="TopBar_WatchCountToggleTooltip" xml:space="preserve">
+    <value>Toggle between 1 and 2 participant slots</value>
+  </data>
+  <data name="Tutorial_Connection_Body" xml:space="preserve">
+    <value>Type the phone's IP, or press Scan to auto-discover devices. Pick one from the list, then Connect to start streaming its live data.</value>
+  </data>
+  <data name="Tutorial_Connection_Title" xml:space="preserve">
+    <value>Connect a watch</value>
+  </data>
+  <data name="Tutorial_DoneButton" xml:space="preserve">
+    <value>Done ✓</value>
+  </data>
+  <data name="Tutorial_Export_Body" xml:space="preserve">
+    <value>Export any session to CSV for analysis. The trivia question bank is managed from the Trivia button right next to it.</value>
+  </data>
+  <data name="Tutorial_Export_Title" xml:space="preserve">
+    <value>Export your data</value>
+  </data>
+  <data name="Tutorial_Finish_Body" xml:space="preserve">
+    <value>You're ready to run a session. Press this Tutorial button whenever you'd like to see these tips again. Good luck!</value>
+  </data>
+  <data name="Tutorial_Finish_Title" xml:space="preserve">
+    <value>That's the tour! 🚀</value>
+  </data>
+  <data name="Tutorial_Intervention_Body" xml:space="preserve">
+    <value>Manually fire a notification or mini-game (trivia, Simon Says, …) to the watch every intervention you trigger is logged as research data.</value>
+  </data>
+  <data name="Tutorial_Intervention_Title" xml:space="preserve">
+    <value>Send an intervention</value>
+  </data>
+  <data name="Tutorial_Motion_Body" xml:space="preserve">
+    <value>A live 3D model of the wrist plus the reconstructed motion trail. The little heart up here beats in time with the participant's current BPM, so you can read heart rate at a glance while watching their movement.</value>
+  </data>
+  <data name="Tutorial_Motion_Title" xml:space="preserve">
+    <value>Motion &amp; rotation tracker</value>
+  </data>
+  <data name="Tutorial_Runner_Body" xml:space="preserve">
+    <value>Drive the experiment on the watch: start, pause, step between events and follow the live countdown for the active task.</value>
+  </data>
+  <data name="Tutorial_Runner_Title" xml:space="preserve">
+    <value>Experiment runner</value>
+  </data>
+  <data name="Tutorial_Scan_Body" xml:space="preserve">
+    <value>Scan now finds both Wi-Fi devices broadcasting on the network and any phone attached over USB debugging a USB connection is folded in, not overwritten.</value>
+  </data>
+  <data name="Tutorial_Scan_Title" xml:space="preserve">
+    <value>Scan for devices</value>
+  </data>
+  <data name="Tutorial_Sensors_Body" xml:space="preserve">
+    <value>The raw real-time read-outs heart rate and per-axis accelerometer deltas straight off the watch.</value>
+  </data>
+  <data name="Tutorial_Sensors_Title" xml:space="preserve">
+    <value>Live sensors</value>
+  </data>
+  <data name="Tutorial_SessionName_Body" xml:space="preserve">
+    <value>Give each recording session a clear name (e.g. the participant code). It's stored alongside every data row you later export.</value>
+  </data>
+  <data name="Tutorial_SessionName_Title" xml:space="preserve">
+    <value>Name your session</value>
+  </data>
+  <data name="Tutorial_SkipButton" xml:space="preserve">
+    <value>Skip tour</value>
+  </data>
+  <data name="Tutorial_StartStop_Body" xml:space="preserve">
+    <value>When you're set up, Start Session begins recording and Stop Session ends it. Notes you type during a run are saved against the session.</value>
+  </data>
+  <data name="Tutorial_StartStop_Title" xml:space="preserve">
+    <value>Start &amp; stop recording</value>
+  </data>
+  <data name="Tutorial_StepCounter" xml:space="preserve">
+    <value>STEP {0} OF {1}</value>
+  </data>
+  <data name="Tutorial_WatchToggle_Body" xml:space="preserve">
+    <value>Switch between a single participant and a side-by-side dual-participant layout when two watches are streaming at once.</value>
+  </data>
+  <data name="Tutorial_WatchToggle_Title" xml:space="preserve">
+    <value>One or two watches</value>
+  </data>
+  <data name="Tutorial_Welcome_Body" xml:space="preserve">
+    <value>This quick tour points out each part of the cockpit you'll use to run a session. Use Next / Back to step through it, or Skip to jump straight in you can reopen it any time with the Tutorial button.</value>
+  </data>
+  <data name="Tutorial_Welcome_Title" xml:space="preserve">
+    <value>Welcome to the JITAI Wizard Control Station 👋</value>
+  </data>
+  <data name="Common_BpmValueFormat" xml:space="preserve">
+    <value>{0:F0} bpm</value>
+  </data>
+  <data name="Common_Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Common_FileType_SessionCsv" xml:space="preserve">
+    <value>Session CSV</value>
+  </data>
+  <data name="Common_Go" xml:space="preserve">
+    <value>Go</value>
+  </data>
+  <data name="Common_HeartRateLabel" xml:space="preserve">
+    <value>Heart Rate</value>
+  </data>
+  <data name="Common_MotionTrackerPanelTitle" xml:space="preserve">
+    <value>🖐  Motion Tracker</value>
+  </data>
+  <data name="Common_StepsLabel" xml:space="preserve">
+    <value>Steps</value>
+  </data>
+  <data name="Log_SyncedLogsHeader" xml:space="preserve">
+    <value>Synced Logs</value>
+  </data>
+  <data name="Marker_AddButton" xml:space="preserve">
+    <value>Add Marker</value>
+  </data>
+  <data name="Marker_DialogTitle" xml:space="preserve">
+    <value>Name this marker</value>
+  </data>
+  <data name="Marker_NameLabel" xml:space="preserve">
+    <value>Marker name</value>
+  </data>
+  <data name="Marker_NameWatermark" xml:space="preserve">
+    <value>e.g. Handwashing began</value>
+  </data>
+  <data name="Marker_RecentLabel" xml:space="preserve">
+    <value>Recent</value>
+  </data>
+  <data name="Session_SaveButton" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="Session_SaveDialogLabel" xml:space="preserve">
+    <value>The experiment has ended and the session was closed automatically. Give it a name so you can find it again later:</value>
+  </data>
+  <data name="Session_SaveDialogTitle" xml:space="preserve">
+    <value>Name this session</value>
+  </data>
+  <data name="Motion_AxisMappingHeader" xml:space="preserve">
+    <value>AXIS MAPPING</value>
+  </data>
+  <data name="Motion_FlipCheckbox" xml:space="preserve">
+    <value>flip</value>
+  </data>
+  <data name="Motion_OrientationCaption" xml:space="preserve">
+    <value>Orientation (3D hand)</value>
+  </data>
+  <data name="Motion_PresetDefaultButton" xml:space="preserve">
+    <value>Default (Y,-X,Z)</value>
+  </data>
+  <data name="Motion_PresetLabel" xml:space="preserve">
+    <value>Preset:</value>
+  </data>
+  <data name="Motion_ResetPoseButton" xml:space="preserve">
+    <value>Reset Pose</value>
+  </data>
+  <data name="Motion_ResetVelocityButton" xml:space="preserve">
+    <value>Reset Vel.</value>
+  </data>
+  <data name="Motion_VelocityCaption" xml:space="preserve">
+    <value>Velocity (m/s, 3D)</value>
+  </data>
+  <data name="Motion_VisualXLabel" xml:space="preserve">
+    <value>Visual X =</value>
+  </data>
+  <data name="Motion_VisualYLabel" xml:space="preserve">
+    <value>Visual Y =</value>
+  </data>
+  <data name="Motion_VisualZLabel" xml:space="preserve">
+    <value>Visual Z =</value>
+  </data>
+  <data name="Replay_AccelXLabel" xml:space="preserve">
+    <value>Accel X</value>
+  </data>
+  <data name="Replay_AccelYLabel" xml:space="preserve">
+    <value>Accel Y</value>
+  </data>
+  <data name="Replay_AccelZLabel" xml:space="preserve">
+    <value>Accel Z</value>
+  </data>
+  <data name="Replay_AddMarkerButton" xml:space="preserve">
+    <value>➕  Add Marker</value>
+  </data>
+  <data name="Replay_AttachExperimentDialogTitle" xml:space="preserve">
+    <value>Attach experiment JSON</value>
+  </data>
+  <data name="Replay_AttachExperimentJsonButton" xml:space="preserve">
+    <value>📎  Attach Experiment JSON</value>
+  </data>
+  <data name="Replay_EmptyDescription" xml:space="preserve">
+    <value>Open a recorded session straight from the databank, or import a session CSV (Control Station or phone export) to relive the recording.</value>
+  </data>
+  <data name="Replay_EmptyTitle" xml:space="preserve">
+    <value>Replay Mode</value>
+  </data>
+  <data name="Replay_EventFallbackName" xml:space="preserve">
+    <value>Event {0}</value>
+  </data>
+  <data name="Replay_ImportCsvButton" xml:space="preserve">
+    <value>📂  Import CSV</value>
+  </data>
+  <data name="Replay_ImportCsvDialogTitle" xml:space="preserve">
+    <value>Import session CSV</value>
+  </data>
+  <data name="Replay_NextSampleTooltip" xml:space="preserve">
+    <value>Next sample</value>
+  </data>
+  <data name="Replay_NotesLabel" xml:space="preserve">
+    <value>📝  Notes:</value>
+  </data>
+  <data name="Replay_NotesWatermark" xml:space="preserve">
+    <value>Session notes (editable saved with markers)</value>
+  </data>
+  <data name="Replay_OverlayExperimentLoadFailed" xml:space="preserve">
+    <value>Experiment load failed</value>
+  </data>
+  <data name="Replay_OverlayExperimentRunning" xml:space="preserve">
+    <value>Experiment running</value>
+  </data>
+  <data name="Replay_OverlayImportFailed" xml:space="preserve">
+    <value>Import failed</value>
+  </data>
+  <data name="Replay_OverlayNowLabel" xml:space="preserve">
+    <value>NOW (best-effort)</value>
+  </data>
+  <data name="Replay_OverlayRunTitle" xml:space="preserve">
+    <value>Run: {0}</value>
+  </data>
+  <data name="Replay_PlaybackSpeedFormat" xml:space="preserve">
+    <value>{0:0.#}×</value>
+  </data>
+  <data name="Replay_PrevSampleTooltip" xml:space="preserve">
+    <value>Previous sample</value>
+  </data>
+  <data name="Replay_SampleCountFormat" xml:space="preserve">
+    <value>{0} samples</value>
+  </data>
+  <data name="Replay_SaveAnnotatedCsvDialogTitle" xml:space="preserve">
+    <value>Save annotated CSV</value>
+  </data>
+  <data name="Replay_SaveButton" xml:space="preserve">
+    <value>💾  Save</value>
+  </data>
+  <data name="Replay_SensorsAtPlayheadTitle" xml:space="preserve">
+    <value>💓  Sensors @ playhead</value>
+  </data>
+  <data name="Replay_SessionNameFormat" xml:space="preserve">
+    <value>Session: {0}</value>
+  </data>
+  <data name="Replay_SessionUnnamed" xml:space="preserve">
+    <value>(unnamed)</value>
+  </data>
+  <data name="Replay_Speed0_5x" xml:space="preserve">
+    <value>0.5×</value>
+  </data>
+  <data name="Replay_Speed1x" xml:space="preserve">
+    <value>1×</value>
+  </data>
+  <data name="Replay_Speed2x" xml:space="preserve">
+    <value>2×</value>
+  </data>
+  <data name="Replay_Speed4x" xml:space="preserve">
+    <value>4×</value>
+  </data>
+  <data name="Replay_StepBack100ms" xml:space="preserve">
+    <value>-100</value>
+  </data>
+  <data name="Replay_StepBack1s" xml:space="preserve">
+    <value>-1s</value>
+  </data>
+  <data name="Replay_StepForward100ms" xml:space="preserve">
+    <value>+100</value>
+  </data>
+  <data name="Replay_StepForward1s" xml:space="preserve">
+    <value>+1s</value>
+  </data>
+  <data name="Replay_TimeEntryWatermark" xml:space="preserve">
+    <value>mm:ss.mmm</value>
+  </data>
+  <data name="Replay_TimelineHint" xml:space="preserve">
+    <value>Click to seek · scroll to zoom · right-drag to pan</value>
+  </data>
+  <data name="SaveTarget_DefaultMessage" xml:space="preserve">
+    <value>Where should the edited notes and markers be written?</value>
+  </data>
+  <data name="SaveTarget_DialogTitle" xml:space="preserve">
+    <value>Save annotations</value>
+  </data>
+  <data name="SaveTarget_Heading" xml:space="preserve">
+    <value>Save notes &amp; markers</value>
+  </data>
+  <data name="SaveTarget_MessageWithFileFormat" xml:space="preserve">
+    <value>Write the edited notes and markers to “{0}”, or save a new copy?</value>
+  </data>
+  <data name="SaveTarget_OverwriteButton" xml:space="preserve">
+    <value>Overwrite loaded file</value>
+  </data>
+  <data name="SaveTarget_SaveAsButton" xml:space="preserve">
+    <value>Save as new copy…</value>
+  </data>
+  <data name="SessionPicker_Description" xml:space="preserve">
+    <value>Choose a session. Everything recorded for it sensor data, logs, interventions and experiment runs comes along.</value>
+  </data>
+  <data name="SessionPicker_DialogTitle" xml:space="preserve">
+    <value>Select Session</value>
+  </data>
+  <data name="SessionPicker_DurationHoursMinutes" xml:space="preserve">
+    <value>{0}h {1}m</value>
+  </data>
+  <data name="SessionPicker_DurationMinutesSeconds" xml:space="preserve">
+    <value>{0}m {1}s</value>
+  </data>
+  <data name="SessionPicker_DurationOngoing" xml:space="preserve">
+    <value>ongoing</value>
+  </data>
+  <data name="SessionPicker_ExportButton" xml:space="preserve">
+    <value>Export Selected</value>
+  </data>
+  <data name="SessionPicker_SamplesLabel" xml:space="preserve">
+    <value>samples</value>
+  </data>
+  <data name="SessionPicker_SnapshotCountTooltip" xml:space="preserve">
+    <value>Number of sensor snapshots in this session</value>
+  </data>
+  <data name="Common_Disconnected" xml:space="preserve">
+    <value>Disconnected</value>
+  </data>
+  <data name="Common_FileType_Csv" xml:space="preserve">
+    <value>CSV</value>
+  </data>
+  <data name="Common_SecondsApproxShort" xml:space="preserve">
+    <value>~{0}s</value>
+  </data>
+  <data name="Common_UsbDeviceDisplay" xml:space="preserve">
+    <value>USB {0} ({1})</value>
+  </data>
+  <data name="Common_WifiDeviceDisplay" xml:space="preserve">
+    <value>{0} ({1}:{2})</value>
+  </data>
+  <data name="Device_ErrorAddressEmpty" xml:space="preserve">
+    <value>Address is empty</value>
+  </data>
+  <data name="Device_ErrorAddressNotValidUri" xml:space="preserve">
+    <value>Address is not a valid URI</value>
+  </data>
+  <data name="Device_ErrorInvalidAddress" xml:space="preserve">
+    <value>Invalid address</value>
+  </data>
+  <data name="Device_StatusConnected" xml:space="preserve">
+    <value>Connected</value>
+  </data>
+  <data name="Device_StatusFailed" xml:space="preserve">
+    <value>Failed: {0}</value>
+  </data>
+  <data name="Device_StatusFailedHttp" xml:space="preserve">
+    <value>Failed: {0} {1}{2}</value>
+  </data>
+  <data name="Device_StatusFailedTimeout" xml:space="preserve">
+    <value>Failed: request timed out</value>
+  </data>
+  <data name="Main_DefaultSessionName" xml:space="preserve">
+    <value>New Session</value>
+  </data>
+  <data name="Main_ExportSessionCsvDialogTitle" xml:space="preserve">
+    <value>Export Session CSV</value>
+  </data>
+  <data name="Main_StatusDatabaseReady" xml:space="preserve">
+    <value>Database ready</value>
+  </data>
+  <data name="Main_StatusExportedTo" xml:space="preserve">
+    <value>Exported to {0}</value>
+  </data>
+  <data name="Main_StatusNoActiveSessionForNotes" xml:space="preserve">
+    <value>No active session for notes</value>
+  </data>
+  <data name="Main_StatusNoSessionsInDatabase" xml:space="preserve">
+    <value>No sessions in database</value>
+  </data>
+  <data name="Main_StatusReady" xml:space="preserve">
+    <value>Ready</value>
+  </data>
+  <data name="Main_StatusSessionAutoEnded" xml:space="preserve">
+    <value>Experiment finished session ended automatically</value>
+  </data>
+  <data name="Main_StatusSessionEnded" xml:space="preserve">
+    <value>Session ended</value>
+  </data>
+  <data name="Main_StatusSessionNotesSaved" xml:space="preserve">
+    <value>Session notes saved</value>
+  </data>
+  <data name="Main_StatusSessionStarted" xml:space="preserve">
+    <value>Session started: {0}</value>
+  </data>
+  <data name="Participant_LogAdoptedParticipantFromPhone" xml:space="preserve">
+    <value>Adopted participant '{0}' from phone</value>
+  </data>
+  <data name="Participant_LogConnectedTo" xml:space="preserve">
+    <value>Connected to {0}</value>
+  </data>
+  <data name="Participant_LogFoundDevices" xml:space="preserve">
+    <value>Found {0} Wi-Fi + {1} USB device(s)</value>
+  </data>
+  <data name="Participant_LogInterventionNotRecorded" xml:space="preserve">
+    <value>Intervention not recorded start a session and connect first.</value>
+  </data>
+  <data name="Participant_LogNoDevicesFound" xml:space="preserve">
+    <value>No devices found ensure the phone app is running on the same network or USB debugging is enabled</value>
+  </data>
+  <data name="Participant_LogParticipantPushFailed" xml:space="preserve">
+    <value>Participant push failed: {0}</value>
+  </data>
+  <data name="Participant_LogParticipantSetTo" xml:space="preserve">
+    <value>Participant set to '{0}'</value>
+  </data>
+  <data name="Participant_LogScanning" xml:space="preserve">
+    <value>Scanning for JITAI Wizard devices…</value>
+  </data>
+  <data name="Participant_LogSentCancel" xml:space="preserve">
+    <value>Sent CANCEL</value>
+  </data>
+  <data name="Participant_LogTriggerFailed" xml:space="preserve">
+    <value>Trigger failed</value>
+  </data>
+  <data name="Participant_LogTriggered" xml:space="preserve">
+    <value>Triggered {0} {1}</value>
+  </data>
+  <data name="Participant_LogWatchDataInsertFailed" xml:space="preserve">
+    <value>Watch data insert failed: {0}</value>
+  </data>
+  <data name="Participant_StatusConnecting" xml:space="preserve">
+    <value>Connecting...</value>
+  </data>
+  <data name="Participant_StatusNotConnected" xml:space="preserve">
+    <value>Not connected</value>
+  </data>
+  <data name="Replay_MarkerDetail_ResponseWithReactionTime" xml:space="preserve">
+    <value>{0} (rt {1}s)</value>
+  </data>
+  <data name="Replay_MarkerLabel_Distraction" xml:space="preserve">
+    <value>Distraction</value>
+  </data>
+  <data name="Replay_MarkerLabel_Intervention" xml:space="preserve">
+    <value>Intervention</value>
+  </data>
+  <data name="Replay_MarkerLabel_InterventionSent" xml:space="preserve">
+    <value>Intervention: {0}</value>
+  </data>
+  <data name="Replay_MarkerLabel_Note" xml:space="preserve">
+    <value>Note</value>
+  </data>
+  <data name="Replay_MarkerLabel_Response" xml:space="preserve">
+    <value>Response: {0}</value>
+  </data>
+  <data name="Replay_MarkerLabel_RunEnd" xml:space="preserve">
+    <value>Run end: {0}</value>
+  </data>
+  <data name="Replay_MarkerLabel_RunStart" xml:space="preserve">
+    <value>Run start: {0}</value>
+  </data>
+  <data name="Replay_RunFallbackName" xml:space="preserve">
+    <value>Experiment</value>
+  </data>
+  <data name="Sync_LogPullFailed" xml:space="preserve">
+    <value>Pull failed: {0}</value>
+  </data>
+  <data name="Sync_LogPulledExperiment" xml:space="preserve">
+    <value>Pulled experiment {0} etag={1}</value>
+  </data>
+  <data name="Sync_LogPushFailed" xml:space="preserve">
+    <value>Push failed: {0}</value>
+  </data>
+  <data name="Sync_LogPushedExperiment" xml:space="preserve">
+    <value>Pushed experiment {0} etag={1}</value>
+  </data>
+  <!-- ==== Editor_*_Display : DISPLAY-ONLY strings for enum/ComboBox wire values ====  The underlying stored/compared value (RandomWait, LOCK_PICKING, Yes/No, VIBRATION1, ...) stays an English constant in code; it is serialized to the phone and compared in ObjectConverters.Equal bindings. NEVER bind these _Display keys as the Value/SelectedItem; use them only to render the visible ComboBox/item text via a converter or lookup. -->
+  <data name="Editor_EventKind_RandomWait_Display" xml:space="preserve">
+    <value>Random Wait</value>
+  </data>
+  <data name="Editor_EventKind_Timed_Display" xml:space="preserve">
+    <value>Timed</value>
+  </data>
+  <data name="Editor_EventKind_WaitForAction_Display" xml:space="preserve">
+    <value>Wait for Action</value>
+  </data>
+  <data name="Editor_EventKind_WaitForPrevious_Display" xml:space="preserve">
+    <value>Wait for Previous</value>
+  </data>
+  <data name="Editor_EventKind_WaitForTrigger_Display" xml:space="preserve">
+    <value>Wait for Trigger</value>
+  </data>
+  <data name="Editor_GameType_LockPicking_Display" xml:space="preserve">
+    <value>Lock Picking</value>
+  </data>
+  <data name="Editor_GameType_SimonSays_Display" xml:space="preserve">
+    <value>Simon Says</value>
+  </data>
+  <data name="Editor_GameType_StandStill_Display" xml:space="preserve">
+    <value>Stand Still</value>
+  </data>
+  <data name="Editor_GameType_Trivia_Display" xml:space="preserve">
+    <value>Trivia</value>
+  </data>
+  <data name="Editor_InterventionType_Text_Display" xml:space="preserve">
+    <value>Text</value>
+  </data>
+  <data name="Editor_InterventionType_Timer_Display" xml:space="preserve">
+    <value>Timer</value>
+  </data>
+  <data name="Editor_InterventionType_YesNo_Display" xml:space="preserve">
+    <value>Yes / No</value>
+  </data>
+  <data name="Editor_NoneOption_Display" xml:space="preserve">
+    <value>None</value>
+  </data>
+  <data name="Editor_Notification_AnnoySound_Display" xml:space="preserve">
+    <value>Annoying Sound</value>
+  </data>
+  <data name="Editor_Notification_AnnoyVib_Display" xml:space="preserve">
+    <value>Annoying Vibration</value>
+  </data>
+  <data name="Editor_Notification_AnnoyVibrationSound_Display" xml:space="preserve">
+    <value>Annoying Vibration + Sound</value>
+  </data>
+  <data name="Editor_Notification_Sound_Display" xml:space="preserve">
+    <value>Sound</value>
+  </data>
+  <data name="Editor_Notification_Vibration1_Display" xml:space="preserve">
+    <value>Vibration (Short)</value>
+  </data>
+  <data name="Editor_Notification_Vibration2_Display" xml:space="preserve">
+    <value>Vibration (Long)</value>
+  </data>
+  <data name="Editor_Notification_VibrationSound_Display" xml:space="preserve">
+    <value>Vibration + Sound</value>
+  </data>
+  <data name="Editor_Notification_VibrationSound2_Display" xml:space="preserve">
+    <value>Vibration + Sound (Long)</value>
+  </data>
+  <data name="TopBar_MenuButton" xml:space="preserve">
+    <value>☰  Menu</value>
+  </data>
+  <data name="TopBar_MenuTooltip" xml:space="preserve">
+    <value>Export, trivia, tutorial and settings</value>
+  </data>
+  <data name="Common_FileType_Xlsx" xml:space="preserve">
+    <value>Excel workbook</value>
+  </data>
+  <data name="SessionPicker_SelectAll" xml:space="preserve">
+    <value>Select all</value>
+  </data>
+  <data name="SessionPicker_SelectNone" xml:space="preserve">
+    <value>Select none</value>
+  </data>
+  <data name="Replay_OpenButton" xml:space="preserve">
+    <value>📂  Open ▾</value>
+  </data>
+  <data name="Replay_OpenTooltip" xml:space="preserve">
+    <value>Load a recording from the databank or from a CSV file</value>
+  </data>
+  <data name="Replay_OpenFromDatabank" xml:space="preserve">
+    <value>🗄  From databank…</value>
+  </data>
+  <data name="Replay_ImportCsvMenuItem" xml:space="preserve">
+    <value>⬆  Import CSV file…</value>
+  </data>
+  <data name="Replay_OpenSessionButton" xml:space="preserve">
+    <value>Open in Replay</value>
+  </data>
+  <data name="Replay_SourceDatabank" xml:space="preserve">
+    <value>DATABANK</value>
+  </data>
+  <data name="Replay_SourceFile" xml:space="preserve">
+    <value>FILE</value>
+  </data>
+  <data name="Replay_SourceSkippedRows" xml:space="preserve">
+    <value>{0} · {1} CORRUPT ROWS SKIPPED</value>
+  </data>
+  <data name="Replay_TabPlayer" xml:space="preserve">
+    <value>▶  Player</value>
+  </data>
+  <data name="Replay_TabMasterNotes" xml:space="preserve">
+    <value>🗒  Master Notes</value>
+  </data>
+  <data name="Replay_TabMasterNotesTooltip" xml:space="preserve">
+    <value>One row per recording the research summary table</value>
+  </data>
+  <data name="Replay_SpeedTooltip" xml:space="preserve">
+    <value>Playback speed</value>
+  </data>
+  <data name="Replay_Speed0_25x" xml:space="preserve">
+    <value>0.25×</value>
+  </data>
+  <data name="Replay_Speed8x" xml:space="preserve">
+    <value>8×</value>
+  </data>
+  <data name="MasterNotes_SheetName" xml:space="preserve">
+    <value>Master Notes</value>
+  </data>
+  <data name="MasterNotes_AddButton" xml:space="preserve">
+    <value>＋  Add ▾</value>
+  </data>
+  <data name="MasterNotes_AddTooltip" xml:space="preserve">
+    <value>Add rows from the databank, from CSV files, or blank</value>
+  </data>
+  <data name="MasterNotes_AddFromDatabank" xml:space="preserve">
+    <value>🗄  From databank…</value>
+  </data>
+  <data name="MasterNotes_AddFromCsv" xml:space="preserve">
+    <value>⬆  From CSV files…</value>
+  </data>
+  <data name="MasterNotes_AddBlank" xml:space="preserve">
+    <value>＋  Blank row</value>
+  </data>
+  <data name="MasterNotes_AddSelectedButton" xml:space="preserve">
+    <value>Add to Master Notes</value>
+  </data>
+  <data name="MasterNotes_OpenInPlayer" xml:space="preserve">
+    <value>▶  Open</value>
+  </data>
+  <data name="MasterNotes_OpenInPlayerTooltip" xml:space="preserve">
+    <value>Load this recording in the player</value>
+  </data>
+  <data name="MasterNotes_DuplicateRow" xml:space="preserve">
+    <value>⧉  Duplicate</value>
+  </data>
+  <data name="MasterNotes_RemoveRow" xml:space="preserve">
+    <value>✕  Remove</value>
+  </data>
+  <data name="MasterNotes_ExportButton" xml:space="preserve">
+    <value>⬇  Export ▾</value>
+  </data>
+  <data name="MasterNotes_ExportXlsx" xml:space="preserve">
+    <value>Excel workbook (.xlsx)</value>
+  </data>
+  <data name="MasterNotes_ExportCsv" xml:space="preserve">
+    <value>CSV file (.csv)</value>
+  </data>
+  <data name="MasterNotes_ExportXlsxDialogTitle" xml:space="preserve">
+    <value>Export Master Notes as Excel workbook</value>
+  </data>
+  <data name="MasterNotes_ExportCsvDialogTitle" xml:space="preserve">
+    <value>Export Master Notes as CSV</value>
+  </data>
+  <data name="MasterNotes_ImportCsvDialogTitle" xml:space="preserve">
+    <value>Add recordings from CSV exports</value>
+  </data>
+  <data name="MasterNotes_EmptyTitle" xml:space="preserve">
+    <value>Master Notes</value>
+  </data>
+  <data name="MasterNotes_EmptyDescription" xml:space="preserve">
+    <value>One row per recording: participant, experiment, how long they washed, whether the intervention was noticed, and your verbatim remarks. Pull sessions in from the databank or from CSV files shared by someone else, fill in your observations, and export the whole table to Excel.</value>
+  </data>
+  <data name="MasterNotes_StatusLoaded" xml:space="preserve">
+    <value>{0} row(s) restored.</value>
+  </data>
+  <data name="MasterNotes_StatusAdded" xml:space="preserve">
+    <value>{0} added, {1} refreshed, {2} failed.</value>
+  </data>
+  <data name="MasterNotes_StatusBlankAdded" xml:space="preserve">
+    <value>Blank row added.</value>
+  </data>
+  <data name="MasterNotes_StatusRowRemoved" xml:space="preserve">
+    <value>Row removed.</value>
+  </data>
+  <data name="MasterNotes_StatusExported" xml:space="preserve">
+    <value>Exported to {0}.</value>
+  </data>
+  <data name="MasterNotes_StatusExportFailed" xml:space="preserve">
+    <value>Export failed: {0}</value>
+  </data>
+  <data name="MasterNotes_StatusNoSource" xml:space="preserve">
+    <value>This row is not linked to a recording.</value>
+  </data>
+  <data name="MasterNotes_StatusFileMissing" xml:space="preserve">
+    <value>File no longer exists: {0}</value>
+  </data>
+  <data name="MasterNotes_VariantLogged" xml:space="preserve">
+    <value>logged</value>
+  </data>
+  <data name="MasterNotes_VariantNotLogged" xml:space="preserve">
+    <value>not logged</value>
+  </data>
+  <data name="MasterNotes_ExperimentUnknown" xml:space="preserve">
+    <value>UNKNOWN / not logged</value>
+  </data>
+  <data name="MasterNotes_MiniGameNone" xml:space="preserve">
+    <value>None (messages only)</value>
+  </data>
+  <data name="MasterNotes_ColParticipant" xml:space="preserve">
+    <value>Participant</value>
+  </data>
+  <data name="MasterNotes_ColRecording" xml:space="preserve">
+    <value>Recording (file)</value>
+  </data>
+  <data name="MasterNotes_ColDateTime" xml:space="preserve">
+    <value>Date / time</value>
+  </data>
+  <data name="MasterNotes_ColExperiment" xml:space="preserve">
+    <value>Experiment</value>
+  </data>
+  <data name="MasterNotes_ColVariantSource" xml:space="preserve">
+    <value>Variant source</value>
+  </data>
+  <data name="MasterNotes_ColWashDuration" xml:space="preserve">
+    <value>Wash duration</value>
+  </data>
+  <data name="MasterNotes_ColWashSeconds" xml:space="preserve">
+    <value>Wash dur (s)</value>
+  </data>
+  <data name="MasterNotes_ColInterventionNoticed" xml:space="preserve">
+    <value>Intervention noticed</value>
+  </data>
+  <data name="MasterNotes_ColWashingInterrupted" xml:space="preserve">
+    <value>Washing interrupted</value>
+  </data>
+  <data name="MasterNotes_ColAlertType" xml:space="preserve">
+    <value>Alert type</value>
+  </data>
+  <data name="MasterNotes_ColMiniGame" xml:space="preserve">
+    <value>Mini-game</value>
+  </data>
+  <data name="MasterNotes_ColNotes" xml:space="preserve">
+    <value>Notes (verbatim)</value>
+  </data>
+  <data name="MasterNotes_ColSource" xml:space="preserve">
+    <value>Src</value>
+  </data>
+  <data name="Editor_MicrogamesSectionHeader" xml:space="preserve">
+    <value>Watch mini-games</value>
+  </data>
+  <data name="Editor_SimonSpeedLabel" xml:space="preserve">
+    <value>Simon speed</value>
+  </data>
+  <data name="Editor_SimonSpeedTooltip" xml:space="preserve">
+    <value>How fast the Simon Says sequence flashes (1 slowest, 5 fastest). The time to tap it back never shrinks.</value>
+  </data>
+  <data name="Editor_SimonRoundsLabel" xml:space="preserve">
+    <value>Rounds</value>
+  </data>
+  <data name="Editor_SimonRoundsTooltip" xml:space="preserve">
+    <value>How many Simon Says rounds must be cleared to finish the game.</value>
+  </data>
+  <data name="Editor_LockDifficultyLabel" xml:space="preserve">
+    <value>Lock difficulty</value>
+  </data>
+  <data name="Editor_LockDifficultyTooltip" xml:space="preserve">
+    <value>How still the wrist must be held in stage 1, and how long the beam corridor runs in stage 2.</value>
+  </data>
+  <data name="Editor_LockPenaltyLabel" xml:space="preserve">
+    <value>Mistake costs</value>
+  </data>
+  <data name="Editor_LockPenaltyTooltip" xml:space="preserve">
+    <value>What a lock-picking mistake costs: STUN loses nothing, PUSHBACK slides back, RESET restarts the stage.</value>
+  </data>
+</root>

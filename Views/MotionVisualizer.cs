@@ -26,7 +26,7 @@ public sealed class MotionVisualizer : Control
     private List<WatchDataSnapshot> _pending = new();
     private DispatcherTimer? _timer;
 
-    // Cached drawing resources — created once, reused every frame.
+    // Cached drawing resources created once, reused every frame.
     private readonly ImmutableSolidColorBrush _bg = new(Color.Parse("#101020"));
     private readonly Pen _handPen = new(new SolidColorBrush(Color.Parse("#A8DADC")), 1.6);
     private readonly Pen _fingerPen = new(new SolidColorBrush(Color.Parse("#C7E9EA")), 1.4);
@@ -103,7 +103,17 @@ public sealed class MotionVisualizer : Control
         _recon.Reset();
     }
 
-    /// <summary>Clear velocity trail only — orientation reference unchanged.</summary>
+    /// <summary>
+    /// Replay seek: drop queued samples and clear velocity + trail so they re-warm from the samples
+    /// that follow, but keep the pose reference and accept timestamps older than the last processed.
+    /// </summary>
+    public void ResetForSeek()
+    {
+        lock (_lock) _pending.Clear();
+        _recon.ResetForSeek();
+    }
+
+    /// <summary>Clear velocity trail only orientation reference unchanged.</summary>
     public void ResetVelocity()
     {
         // Flush pending queue first so queued high-velocity samples can't
@@ -170,7 +180,7 @@ public sealed class MotionVisualizer : Control
         // Thumb
         ctx.DrawLine(_fingerPen, P(0.45f, 0.70f, 0.11f), P(0.78f, 1.00f, 0.11f));
 
-        // Watch body — a thin box so roll/pitch/yaw are all legible.
+        // Watch body a thin box so roll/pitch/yaw are all legible.
         var bx = new[]
         {
             P(-0.5f, -0.5f, 0f), P(0.5f, -0.5f, 0f), P(0.5f, 0.5f, 0f), P(-0.5f, 0.5f, 0f),

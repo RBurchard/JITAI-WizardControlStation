@@ -3,3 +3,7 @@ obj/
 /bin
 /obj
 *.zip
+/\#Temp
+
+# Local release staging (dotnet publish output)
+publish-v*/

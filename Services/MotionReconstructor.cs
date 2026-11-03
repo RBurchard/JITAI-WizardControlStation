@@ -9,21 +9,21 @@ namespace OcdWizard.ControlStation.Services;
 /// <summary>
 /// Turns watch sensor snapshots into two outputs:
 ///
-///  1. Orientation — from Android's fused rotation vector (drift-stable, accurate).
+///  1. Orientation from Android's fused rotation vector (drift-stable, accurate).
 ///     Drives the 3D hand model directly.
 ///
-///  2. Velocity trail — one integration of world-frame linear acceleration with a
+///  2. Velocity trail one integration of world-frame linear acceleration with a
 ///     short 250 ms decay. This is what actually works from a consumer IMU:
 ///     - Zero drift (decays to zero when still within ~500 ms)
 ///     - Faithfully shows the shape and direction of each motion burst
 ///     - Distinguishable patterns per gesture (clap / hand-wash / jumping jacks)
-///     Double-integrating to position is deliberately NOT done — it always drifts
+///     Double-integrating to position is deliberately NOT done it always drifts
 ///     within 1-2 s and produces fake movement unrelated to real hand motion.
 ///
 /// Two quaternions are used deliberately:
-///  - Orientation: (Y,-X,Z) remapped quaternion — empirically confirmed correct for the
+///  - Orientation: (Y,-X,Z) remapped quaternion empirically confirmed correct for the
 ///    hand model display.
-///  - Physics: original un-remapped quaternion — Android guarantees this maps device→world
+///  - Physics: original un-remapped quaternion Android guarantees this maps device→world
 ///    ENU so gravity removal (aWorld.Z -= g) is exact at every wrist orientation.
 /// </summary>
 public sealed class MotionReconstructor
@@ -91,10 +91,29 @@ public sealed class MotionReconstructor
         ResetVelocity();
     }
 
-    /// <summary>Clear velocity and trail only — orientation reference is unchanged.</summary>
+    /// <summary>Clear velocity and trail only orientation reference is unchanged.</summary>
     public void ResetVelocity()
     {
         _discardBefore = _lastTs; // reject any samples already in-flight
+        _velocity      = Vector3.Zero;
+        _lastTs        = 0;
+        _stillSinceMs  = 0;
+        _trailStart    = 0;
+        _trailCount    = 0;
+    }
+
+    /// <summary>
+    /// Clear velocity and trail ahead of a replay seek, keeping the orientation reference.
+    ///
+    /// <see cref="Reset"/> is wrong for a seek on two counts. It re-zeroes the pose to wherever the
+    /// playhead happened to be, so the same instant of a recording would look different depending on
+    /// where you seeked from. And it sets the in-flight cut-off to the last timestamp processed, but a
+    /// backward seek deliberately feeds samples OLDER than that, so every re-warm sample would be
+    /// discarded and the hand would sit frozen until playback caught up with where it had been.
+    /// </summary>
+    public void ResetForSeek()
+    {
+        _discardBefore = 0;
         _velocity      = Vector3.Zero;
         _lastTs        = 0;
         _stillSinceMs  = 0;
@@ -153,7 +172,7 @@ public sealed class MotionReconstructor
         }
 
         // --- Velocity integration with exponential decay ---
-        // One integration only — no position. Decays in ~500 ms when hand is still.
+        // One integration only no position. Decays in ~500 ms when hand is still.
         var decay = MathF.Exp(-dt / VelocityTau);
         _velocity = _velocity * decay + aWorld * dt;
 

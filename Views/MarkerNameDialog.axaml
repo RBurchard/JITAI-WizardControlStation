@@ -1,0 +1,24 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:loc="using:OcdWizard.ControlStation.Localization"
+        x:Class="OcdWizard.ControlStation.Views.MarkerNameDialog"
+        Title="{loc:T Marker_DialogTitle}"
+        Width="460" SizeToContent="Height"
+        WindowStartupLocation="CenterOwner"
+        CanResize="False">
+    <StackPanel Margin="16" Spacing="12">
+        <TextBlock Text="{loc:T Marker_NameLabel}" Foreground="#8899BB" FontSize="12" />
+        <TextBox x:Name="NameBox" Watermark="{loc:T Marker_NameWatermark}"
+                 KeyDown="OnNameKeyDown" />
+
+        <StackPanel x:Name="QuickPicksLabel" Spacing="6" IsVisible="False">
+            <TextBlock Text="{loc:T Marker_RecentLabel}" Foreground="#667" FontSize="11" />
+            <WrapPanel x:Name="QuickPicks" Orientation="Horizontal" />
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8" Margin="0,4,0,0">
+            <Button Content="{loc:T Marker_AddButton}" Classes="Primary" Click="OnOkClick" />
+            <Button Content="{loc:T Common_Cancel}" Classes="Subtle" Click="OnCancelClick" />
+        </StackPanel>
+    </StackPanel>
+</Window>

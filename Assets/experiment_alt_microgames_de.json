@@ -1,0 +1,105 @@
+{
+  "id": "exp-alt-microgame-de",
+  "name": "DE - Handhygiene - Alternatives Minispiel - Schlossknacken",
+  "version": 1,
+  "updatedAt": 1792323558163,
+  "notes": "Händewasch-JITAI-Studie – Variante ALTERNATIVES MINISPIEL (Schlossknacken).\n\nWizard of Oz: ODI wird der Versuchsperson als echte KI auf der Uhr präsentiert; die Versuchsleitung steuert sie heimlich. Die Versuchspersonen werden NICHT über das Ziel der Studie oder darüber informiert, dass die Aufgabe von ODI eine Intervention ist.\n\nDiese Variante braucht kein Tutorial und kann eigenständig durchgeführt werden. Die Stopp-Intervention nutzt ein ANDERES Minispiel als die Standardstudie (dort Simon sagt): Hier startet ODI kurz nach Beginn des Waschens das Spiel Schlossknacken.\n\nAblauf:\n1. Begrüßung – ODI stellt sich auf der Uhr vor.\n2. Hände schmutzig machen – die Versuchsperson macht sich die Hände schmutzig.\n3. Warten (Drang steigern) – den Drang zum Waschen aufbauen.\n4. Hände waschen – die Versuchsperson beginnt mit dem Waschen. >>> Jetzt den HW-Timer STARTEN. <<<\n5. Intervention (Schlossknacken) – ODI löst die JITAI aus, die das Waschen unterbrechen soll.\n6. Reaktion – festhalten, ob die Versuchsperson BEFOLGT oder IGNORIERT hat (Notiz-Button).\n7. Waschen beenden – die Versuchsperson hört auf. >>> HW-Timer STOPPEN und die Gesamtdauer notieren. <<<\n8. Fragebogen.\n\n(Die Zeiten sind nicht endgültig. Wer die App nicht kennt, sollte die MANUELLE Steuerung nutzen.)\n\nMinispiel-Einstellungen (werden beim Laden dieses Ablaufs auf die Uhr übertragen): Simon sagt Schwierigkeit 3/5 mit 4 Runden, Schlossknacken Schwierigkeit 3/5, Strafe bei Fehler: Betäuben (STUN) (mittlere Schwierigkeit).\n",
+  "events": [
+    {
+      "id": "evt-welcome",
+      "duration": 30,
+      "type": "Begrüßung / Anweisungen",
+      "intervention": {
+        "id": "iv-welcome",
+        "type": "Text",
+        "notification": "VIBRATION1",
+        "message": "Hallo! Ich bin ODI. Ich melde mich ab und zu mit einer kleinen Aufgabe, während ich ein paar Messwerte aufnehme. Los geht's, sobald du bereit bist!",
+        "durationSeconds": 10
+      },
+      "kind": {
+        "kind": "Timed"
+      }
+    },
+    {
+      "id": "evt-dirty-hands",
+      "duration": 60,
+      "type": "Hände schmutzig machen",
+      "kind": {
+        "kind": "Timed"
+      }
+    },
+    {
+      "id": "evt-wait-urge",
+      "duration": 15,
+      "type": "Warten (Drang steigern)",
+      "kind": {
+        "kind": "Timed"
+      }
+    },
+    {
+      "id": "evt-wash-hands",
+      "duration": 30,
+      "type": "Hände waschen - HW-Timer STARTEN",
+      "kind": {
+        "kind": "Timed"
+      }
+    },
+    {
+      "id": "evt-intervention",
+      "duration": 50,
+      "type": "Intervention (Waschen stoppen) - Schlossknacken",
+      "intervention": {
+        "id": "iv-intervention",
+        "type": "Text",
+        "notification": "VIBRATION_SOUND",
+        "message": "Hey! Warte einen Moment – kurze Aufgabe mit mir, bevor du weitermachst. Kannst du mir helfen, das Schloss zu knacken?",
+        "durationSeconds": 45,
+        "gameType": "LOCK_PICKING"
+      },
+      "gameType": "LOCK_PICKING",
+      "kind": {
+        "kind": "Timed"
+      }
+    },
+    {
+      "id": "evt-reaction",
+      "duration": 10,
+      "type": "Reaktion - Befolgt / Ignoriert notieren",
+      "kind": {
+        "kind": "Timed"
+      }
+    },
+    {
+      "id": "evt-finish-washing",
+      "duration": 120,
+      "type": "Waschen beenden - HW-Timer STOPPEN",
+      "kind": {
+        "kind": "Timed"
+      }
+    },
+    {
+      "id": "evt-questionnaire",
+      "duration": 5,
+      "type": "Fragebogen",
+      "kind": {
+        "kind": "Timed"
+      }
+    }
+  ],
+  "triggers": [
+    {
+      "id": "trg-researcher-cue",
+      "name": "Researcher cue",
+      "kind": {
+        "kind": "Manual"
+      },
+      "enabled": true
+    }
+  ],
+  "gameSettings": {
+    "simonDifficulty": 3,
+    "simonRounds": 4,
+    "lockDifficulty": 3,
+    "lockPenalty": "STUN"
+  }
+}

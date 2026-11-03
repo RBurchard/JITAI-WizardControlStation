@@ -1,7 +1,9 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Dapper;
@@ -102,6 +104,14 @@ public class DatabaseService
             new { id, notes });
     }
 
+    public async Task UpdateSessionNameAsync(string id, string? name)
+    {
+        using var conn = new SqliteConnection(_connectionString);
+        await conn.ExecuteAsync(
+            "UPDATE sessions SET name = @name WHERE id = @id",
+            new { id, name });
+    }
+
     public async Task EndSessionAsync(string id, long endedAt)
     {
         using var conn = new SqliteConnection(_connectionString);
@@ -123,7 +133,7 @@ public class DatabaseService
     {
         if (batch.Snapshots == null || batch.Snapshots.Count == 0) return;
 
-        // One writer at a time on this hot path — avoids concurrent SQLite locking.
+        // One writer at a time on this hot path avoids concurrent SQLite locking.
         await _writeGate.WaitAsync();
         try
         {
@@ -132,7 +142,7 @@ public class DatabaseService
             using var tx = conn.BeginTransaction();
 
             // Explicit parameters (bypass Dapper inference, which bound nothing here)
-            // built once and reused per row — the documented Sqlite bulk-insert pattern.
+            // built once and reused per row the documented Sqlite bulk-insert pattern.
             using var cmd = conn.CreateCommand();
             cmd.Transaction = tx;
             cmd.CommandText =
@@ -380,7 +390,17 @@ public class DatabaseService
         return result;
     }
 
-    public async Task ExportToCsvAsync(string sessionId, string outputPath)
+    public async Task ExportToCsvAsync(string sessionId, string outputPath) =>
+        await File.WriteAllTextAsync(outputPath, await BuildSessionCsvAsync(sessionId));
+
+    /// <summary>
+    /// Renders one session as the multi-section CSV export text.
+    ///
+    /// Split out from <see cref="ExportToCsvAsync"/> so Replay Mode can open a session straight
+    /// from the databank: it feeds this text to <c>ReplayCsvParser</c> instead of making the
+    /// researcher export to disk and re-import. Both paths therefore see byte-identical data.
+    /// </summary>
+    public async Task<string> BuildSessionCsvAsync(string sessionId)
     {
         using var conn = new SqliteConnection(_connectionString);
         var sb = new StringBuilder();
@@ -395,19 +415,19 @@ public class DatabaseService
             var start = DateTimeOffset.FromUnixTimeMilliseconds((long)session.started_at).ToLocalTime();
             var endMs = session.ended_at as long?;
             var end = endMs.HasValue
-                ? DateTimeOffset.FromUnixTimeMilliseconds(endMs.Value).ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss")
+                ? DateTimeOffset.FromUnixTimeMilliseconds(endMs.Value).ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture)
                 : "active";
             sb.AppendLine("=== SESSION ===");
             sb.AppendLine($"id,{session.id}");
             sb.AppendLine($"name,{EscapeCsv((string?)session.name ?? (string?)session.notes ?? "(unnamed)")}");
             sb.AppendLine($"notes,{EscapeCsv((string?)session.notes ?? "")}");
-            sb.AppendLine($"started_at,{start:yyyy-MM-dd HH:mm:ss}");
+            sb.AppendLine($"started_at,{start.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture)}");
             sb.AppendLine($"ended_at,{end}");
             sb.AppendLine($"participants,{session.pkeys ?? ""}");
             sb.AppendLine();
         }
 
-        // Diagnostic counts — zero counts indicate a data-linkage problem, not an empty session.
+        // Diagnostic counts zero counts indicate a data-linkage problem, not an empty session.
         var totalWd = await conn.ExecuteScalarAsync<long>(
             "SELECT COUNT(*) FROM watch_data wd JOIN participants p ON p.id = wd.participant_id WHERE p.session_id = @sessionId",
             new { sessionId });
@@ -425,6 +445,8 @@ public class DatabaseService
         sb.AppendLine($"# diagnostic: last_write_error={LastWriteError ?? "none"}");
         sb.AppendLine();
 
+        await AppendMinigameSettingsAsync(conn, sessionId, sb);
+
         sb.AppendLine("=== WATCH DATA ===");
         sb.AppendLine("participant_label,participant_key,timestamp,heart_rate,accel_x,accel_y,accel_z,gyro_x,gyro_y,gyro_z,rot_w,rot_x,rot_y,rot_z,baro_hpa,light_lux,step_count");
         var watchRows = await conn.QueryAsync<dynamic>(
@@ -432,7 +454,7 @@ public class DatabaseService
             "JOIN participants p ON p.id = wd.participant_id WHERE p.session_id = @sessionId " +
             "ORDER BY wd.timestamp", new { sessionId });
         foreach (var r in watchRows)
-            sb.AppendLine($"{r.label},{r.participant_key},{r.timestamp},{r.heart_rate},{r.accel_x},{r.accel_y},{r.accel_z},{r.gyro_x},{r.gyro_y},{r.gyro_z},{r.rot_w},{r.rot_x},{r.rot_y},{r.rot_z},{r.baro_hpa},{r.light_lux},{r.step_count}");
+            sb.AppendLine($"{r.label},{r.participant_key},{Num(r.timestamp)},{Num(r.heart_rate)},{Num(r.accel_x)},{Num(r.accel_y)},{Num(r.accel_z)},{Num(r.gyro_x)},{Num(r.gyro_y)},{Num(r.gyro_z)},{Num(r.rot_w)},{Num(r.rot_x)},{Num(r.rot_y)},{Num(r.rot_z)},{Num(r.baro_hpa)},{Num(r.light_lux)},{Num(r.step_count)}");
 
         sb.AppendLine();
         sb.AppendLine("=== SESSION LOGS ===");
@@ -476,8 +498,110 @@ public class DatabaseService
         foreach (var r in distRows)
             sb.AppendLine($"{r.id},{r.experiment_run_id},{r.event_id},{r.intervention_id},{r.started_at},{r.ended_at},{r.response},{r.reaction_time_ms}");
 
-        await File.WriteAllTextAsync(outputPath, sb.ToString());
+        return sb.ToString();
     }
+
+    /// <summary>
+    /// Writes the "=== MINIGAME SETTINGS ===" section: the watch difficulty the participant
+    /// actually faced, plus every change made during the run.
+    ///
+    /// Built from two sources that answer different questions. The <c>schedule</c> row is the
+    /// difficulty stored on the experiment that was run, i.e. what the condition specified. The
+    /// <c>change</c> rows are the phone's game-settings log entries in order, i.e. what actually
+    /// happened, including any adjustment a researcher made mid-session. Without the second, a
+    /// tweak during a run would be invisible and game results could be attributed to a
+    /// difficulty that was not in force at the time.
+    ///
+    /// No new table: the change rows already reach this database through the phone's session-log
+    /// sync, so this reads what is there rather than adding a schema migration for data the
+    /// databank already holds.
+    /// </summary>
+    private static async Task AppendMinigameSettingsAsync(SqliteConnection conn, string sessionId, StringBuilder sb)
+    {
+        sb.AppendLine("=== MINIGAME SETTINGS ===");
+        sb.AppendLine("scope,ts,origin,simon_difficulty,simon_rounds,lock_difficulty,lock_penalty");
+
+        // What the schedule specified, read out of the stored experiment JSON.
+        var expJson = await conn.ExecuteScalarAsync<string?>(
+            "SELECT ex.json FROM experiment_runs er " +
+            "JOIN experiments ex ON ex.id = er.experiment_id " +
+            "WHERE er.session_id = @sessionId ORDER BY er.started_at LIMIT 1",
+            new { sessionId });
+        if (!string.IsNullOrWhiteSpace(expJson))
+        {
+            try
+            {
+                using var doc = JsonDocument.Parse(expJson);
+                if (doc.RootElement.TryGetProperty("gameSettings", out var g))
+                {
+                    sb.AppendLine(
+                        "schedule,,," +
+                        $"{JsonInt(g, "simonDifficulty")},{JsonInt(g, "simonRounds")}," +
+                        $"{JsonInt(g, "lockDifficulty")},{EscapeCsv(JsonStr(g, "lockPenalty"))}");
+                }
+            }
+            catch (JsonException)
+            {
+                // A schedule we cannot parse must not take the whole export down; the change
+                // rows below still describe the run.
+            }
+        }
+
+        // What actually happened, from the phone's game-settings log entries.
+        var rows = await conn.QueryAsync<dynamic>(
+            "SELECT sl.ts, sl.payload_json FROM session_logs sl " +
+            "JOIN experiment_runs er ON er.id = sl.run_id " +
+            "WHERE er.session_id = @sessionId AND sl.kind = 'game-settings' " +
+            "ORDER BY sl.id", new { sessionId });
+        foreach (var r in rows)
+        {
+            var payload = (string?)r.payload_json ?? "";
+            try
+            {
+                using var doc = JsonDocument.Parse(payload);
+                var e = doc.RootElement;
+                sb.AppendLine(
+                    $"change,{r.ts},{EscapeCsv(JsonStr(e, "origin"))}," +
+                    $"{JsonInt(e, "simon_difficulty")},{JsonInt(e, "simon_rounds")}," +
+                    $"{JsonInt(e, "lock_difficulty")},{EscapeCsv(JsonStr(e, "lock_penalty"))}");
+            }
+            catch (JsonException)
+            {
+                sb.AppendLine($"change,{r.ts},{EscapeCsv(payload)},,,,");
+            }
+        }
+
+        sb.AppendLine();
+    }
+
+    /// <summary>Reads a property as text, tolerating a value written as a number.</summary>
+    private static string JsonStr(JsonElement obj, string name) =>
+        obj.TryGetProperty(name, out var v)
+            ? (v.ValueKind == JsonValueKind.String ? v.GetString() ?? "" : v.ToString())
+            : "";
+
+    /// <summary>Reads a property as an integer, tolerating a value written as a string.</summary>
+    private static string JsonInt(JsonElement obj, string name)
+    {
+        if (!obj.TryGetProperty(name, out var v)) return "";
+        if (v.ValueKind == JsonValueKind.Number) return v.GetRawText();
+        return int.TryParse(v.GetString(), out var parsed) ? parsed.ToString() : "";
+    }
+
+    /// <summary>
+    /// Formats a numeric cell for the CSV, always with a decimal point.
+    ///
+    /// Plain string interpolation uses the PC's regional format. On a comma-decimal setup (German
+    /// region, say) <c>0.47</c> is written as <c>0,47</c>, and since a comma is also the field
+    /// separator that splits one value into two columns, shifting every cell after it. The replay
+    /// then reads orientation and acceleration out of the wrong columns and the model flips out.
+    /// </summary>
+    private static string Num(object? value) => value switch
+    {
+        null => "",
+        IFormattable f => f.ToString(null, CultureInfo.InvariantCulture),
+        _ => value.ToString() ?? "",
+    };
 
     private static string EscapeCsv(string value)
     {

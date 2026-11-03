@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using OcdWizard.ControlStation.Localization;
 using OcdWizard.ControlStation.Models;
 
 namespace OcdWizard.ControlStation.Services;
@@ -29,7 +30,7 @@ public class DeviceConnection : IDisposable
         if (!TryBuildUris(address, out var baseUrl, out var wsUrl, out var error))
         {
             IsConnected = false;
-            StatusChanged?.Invoke($"Failed: {error}");
+            StatusChanged?.Invoke(Loc.Format("Device_StatusFailed", error));
             return false;
         }
 
@@ -43,31 +44,31 @@ public class DeviceConnection : IDisposable
             if (!resp.IsSuccessStatusCode)
             {
                 IsConnected = false;
-                StatusChanged?.Invoke($"Failed: {(int)resp.StatusCode} {resp.ReasonPhrase}{FormatBody(body)}");
+                StatusChanged?.Invoke(Loc.Format("Device_StatusFailedHttp", (int)resp.StatusCode, resp.ReasonPhrase, FormatBody(body)));
                 return false;
             }
 
             IsConnected = true;
-            StatusChanged?.Invoke("Connected");
+            StatusChanged?.Invoke(Loc.Get("Device_StatusConnected"));
             _ = StartWebSocketAsync();
             return true;
         }
         catch (TaskCanceledException)
         {
             IsConnected = false;
-            StatusChanged?.Invoke("Failed: request timed out");
+            StatusChanged?.Invoke(Loc.Get("Device_StatusFailedTimeout"));
             return false;
         }
         catch (HttpRequestException ex)
         {
             IsConnected = false;
-            StatusChanged?.Invoke($"Failed: {ex.Message}");
+            StatusChanged?.Invoke(Loc.Format("Device_StatusFailed", ex.Message));
             return false;
         }
         catch (Exception ex)
         {
             IsConnected = false;
-            StatusChanged?.Invoke($"Failed: {ex.Message}");
+            StatusChanged?.Invoke(Loc.Format("Device_StatusFailed", ex.Message));
             return false;
         }
     }
@@ -76,11 +77,11 @@ public class DeviceConnection : IDisposable
     {
         baseUrl = "";
         wsUrl = "";
-        error = "Invalid address";
+        error = Loc.Get("Device_ErrorInvalidAddress");
 
         if (string.IsNullOrWhiteSpace(address))
         {
-            error = "Address is empty";
+            error = Loc.Get("Device_ErrorAddressEmpty");
             return false;
         }
 
@@ -95,7 +96,7 @@ public class DeviceConnection : IDisposable
 
         if (!Uri.TryCreate(trimmed, UriKind.Absolute, out var baseUri))
         {
-            error = "Address is not a valid URI";
+            error = Loc.Get("Device_ErrorAddressNotValidUri");
             return false;
         }
 
@@ -176,6 +177,25 @@ public class DeviceConnection : IDisposable
         catch { return false; }
     }
 
+    /// <summary>
+    /// Asks the phone to hold the watch at full collection rate for <paramref name="minutes"/>
+    /// without starting a run, so the researcher can check fit and signal while setting up.
+    /// The watch treats it as a delay on its idle timer only: a run that starts inside the
+    /// window keeps the watch awake on its own afterwards, so there is nothing to cancel.
+    /// </summary>
+    public async Task<bool> WakeWatchAsync(int minutes)
+    {
+        if (_baseUrl == null) return false;
+        try
+        {
+            var payload = JsonSerializer.Serialize(new { minutes });
+            var content = new StringContent(payload, Encoding.UTF8, "application/json");
+            var resp = await _http.PostAsync($"{_baseUrl}/watch/wake", content);
+            return resp.IsSuccessStatusCode;
+        }
+        catch { return false; }
+    }
+
     public async Task PostParticipantAsync(string id, string sessionId, string label, string deviceIp)
     {
         if (_baseUrl == null) return;
@@ -237,7 +257,7 @@ public class DeviceConnection : IDisposable
     {
         _wsCts?.Cancel();
         IsConnected = false;
-        StatusChanged?.Invoke("Disconnected");
+        StatusChanged?.Invoke(Loc.Get("Common_Disconnected"));
     }
 
     public void Dispose()

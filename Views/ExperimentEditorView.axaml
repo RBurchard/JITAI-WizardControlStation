@@ -1,6 +1,7 @@
-<UserControl xmlns="https://github.com/avaloniaui"
+﻿<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:OcdWizard.ControlStation.ViewModels"
+             xmlns:loc="using:OcdWizard.ControlStation.Localization"
              x:Class="OcdWizard.ControlStation.Views.ExperimentEditorView"
              x:DataType="vm:ExperimentEditorViewModel">
     <UserControl.Styles>
@@ -18,55 +19,114 @@
     <DockPanel Margin="8">
         <StackPanel DockPanel.Dock="Top" Spacing="6" Margin="0,0,0,8">
             <Grid ColumnDefinitions="*,Auto,Auto,Auto,Auto">
-                <TextBox Grid.Column="0" Text="{Binding Name}" Watermark="Experiment name" />
-                <Button Grid.Column="1" Classes="Subtle" Content="📂  Import"
+                <TextBox Grid.Column="0" Text="{Binding Name}" Watermark="{loc:T Editor_ExperimentNameWatermark}" />
+                <Button Grid.Column="1" Classes="Subtle" Content="{loc:T Editor_ImportButton}"
                         Click="OnImportExperimentClick" Margin="6,0,0,0"
-                        ToolTip.Tip="Load an experiment from a .json file" />
-                <Button Grid.Column="2" Classes="Subtle" Content="💾  Export"
+                        ToolTip.Tip="{loc:T Editor_ImportTooltip}" />
+                <Button Grid.Column="2" Classes="Subtle" Content="{loc:T Editor_ExportButton}"
                         Click="OnExportExperimentClick" Margin="6,0,0,0"
-                        ToolTip.Tip="Save this experiment to a .json file" />
-                <Button Grid.Column="3" Classes="Subtle" Content="⬇  Pull"
+                        ToolTip.Tip="{loc:T Editor_ExportTooltip}" />
+                <Button Grid.Column="3" Classes="Subtle" Content="{loc:T Editor_PullButton}"
                         Command="{Binding PullCommand}" Margin="6,0,0,0"
-                        ToolTip.Tip="Pull the experiment from the connected phone" />
-                <Button Grid.Column="4" Classes="Accent" Content="⬆  Push"
+                        ToolTip.Tip="{loc:T Editor_PullTooltip}" />
+                <Button Grid.Column="4" Classes="Accent" Content="{loc:T Editor_PushButton}"
                         Command="{Binding SaveCommand}" Margin="6,0,0,0"
-                        ToolTip.Tip="Push this experiment to the connected phone" />
+                        ToolTip.Tip="{loc:T Editor_PushTooltip}" />
             </Grid>
             <TextBox Text="{Binding Notes}"
-                     Watermark="Experiment notes / rundown (synced with the phone)"
+                     Watermark="{loc:T Editor_NotesWatermark}"
                      AcceptsReturn="True" TextWrapping="Wrap"
                      MinHeight="48" MaxHeight="120"
                      ScrollViewer.VerticalScrollBarVisibility="Auto" />
+
+            <!-- Watch microgame difficulty. Part of the schedule, not a Control Station
+                 preference: pushing this experiment sets the watch up for the condition, so a
+                 wizard never has to remember to dial it in on the wrist as well.
+
+                 Labels sit above their field instead of beside it. A NumericUpDown spends most
+                 of its width on the two spin buttons, so at the inline width these had left
+                 barely a sliver for the number itself. -->
+            <Border Background="#16192A" BorderBrush="#2A2D45" BorderThickness="1"
+                    CornerRadius="6" Padding="10,6,10,9">
+                <StackPanel Spacing="6">
+                    <TextBlock Text="{loc:T Editor_MicrogamesSectionHeader}" Classes="SectionHeader"
+                               Margin="0,0,0,2" />
+                    <StackPanel Orientation="Horizontal" Spacing="14">
+                        <StackPanel Spacing="3">
+                            <TextBlock Text="{loc:T Editor_SimonSpeedLabel}" FontSize="11" Foreground="#8899BB" />
+                            <NumericUpDown Value="{Binding SimonDifficulty}" Minimum="1" Maximum="5"
+                                           Increment="1" FormatString="0" Width="124"
+                                           HorizontalContentAlignment="Center"
+                                           ToolTip.Tip="{loc:T Editor_SimonSpeedTooltip}" />
+                        </StackPanel>
+                        <StackPanel Spacing="3">
+                            <TextBlock Text="{loc:T Editor_SimonRoundsLabel}" FontSize="11" Foreground="#8899BB" />
+                            <NumericUpDown Value="{Binding SimonRounds}" Minimum="2" Maximum="8"
+                                           Increment="1" FormatString="0" Width="124"
+                                           HorizontalContentAlignment="Center"
+                                           ToolTip.Tip="{loc:T Editor_SimonRoundsTooltip}" />
+                        </StackPanel>
+                        <StackPanel Spacing="3">
+                            <TextBlock Text="{loc:T Editor_LockDifficultyLabel}" FontSize="11" Foreground="#8899BB" />
+                            <NumericUpDown Value="{Binding LockDifficulty}" Minimum="1" Maximum="5"
+                                           Increment="1" FormatString="0" Width="124"
+                                           HorizontalContentAlignment="Center"
+                                           ToolTip.Tip="{loc:T Editor_LockDifficultyTooltip}" />
+                        </StackPanel>
+                        <StackPanel Spacing="3">
+                            <TextBlock Text="{loc:T Editor_LockPenaltyLabel}" FontSize="11" Foreground="#8899BB" />
+                            <ComboBox ItemsSource="{Binding LockPenaltyOptions}"
+                                      SelectedItem="{Binding LockPenalty}" Width="150"
+                                      ToolTip.Tip="{loc:T Editor_LockPenaltyTooltip}" />
+                        </StackPanel>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
         </StackPanel>
         <StackPanel DockPanel.Dock="Bottom" Spacing="4">
-            <TextBlock Text="TRIGGERS" Classes="SectionHeader" />
+            <TextBlock Text="{loc:T Editor_TriggersSectionHeader}" Classes="SectionHeader" />
             <ItemsControl ItemsSource="{Binding Triggers}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate DataType="vm:TriggerEditModel">
                         <Border BorderBrush="#333" BorderThickness="1" CornerRadius="4" Padding="6" Margin="0,2">
                             <Grid ColumnDefinitions="*,120,*,80,Auto" RowDefinitions="Auto,Auto">
-                                <TextBox Grid.Row="0" Grid.Column="0" Text="{Binding Name}" Watermark="Name" Margin="0,0,4,0" />
+                                <TextBox Grid.Row="0" Grid.Column="0" Text="{Binding Name}" Watermark="{loc:T Common_NameWatermark}" Margin="0,0,4,0" />
                                 <ComboBox Grid.Row="0" Grid.Column="1" SelectedItem="{Binding KindLabel}"
                                           ItemsSource="{x:Static vm:TriggerEditModel.Kinds}"
-                                          Margin="0,0,4,0" />
-                                <TextBox Grid.Row="0" Grid.Column="2" Text="{Binding Id}" Watermark="Id" Margin="0,0,4,0" />
-                                <CheckBox Grid.Row="0" Grid.Column="3" IsChecked="{Binding Enabled}" Content="On" />
+                                          Margin="0,0,4,0">
+                                    <ComboBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock>
+                                                <TextBlock.Text>
+                                                    <MultiBinding Converter="{x:Static vm:WireValueDisplayConverter.Instance}"
+                                                                  ConverterParameter="TriggerKind">
+                                                        <Binding />
+                                                        <Binding Source="{x:Static loc:Loc.Instance}" Path="LanguageTag" />
+                                                    </MultiBinding>
+                                                </TextBlock.Text>
+                                            </TextBlock>
+                                        </DataTemplate>
+                                    </ComboBox.ItemTemplate>
+                                </ComboBox>
+                                <TextBox Grid.Row="0" Grid.Column="2" Text="{Binding Id}" Watermark="{loc:T Common_IdWatermark}" Margin="0,0,4,0" />
+                                <CheckBox Grid.Row="0" Grid.Column="3" IsChecked="{Binding Enabled}" Content="{loc:T Editor_TriggerEnabledCheckBox}" />
                                 <Button Grid.Row="0" Grid.Column="4" Content="✕"
                                         Command="{Binding $parent[ItemsControl].((vm:ExperimentEditorViewModel)DataContext).RemoveTriggerCommand}"
-                                        CommandParameter="{Binding}" />
+                                        CommandParameter="{Binding}"
+                                        ToolTip.Tip="{loc:T Editor_RemoveTriggerTooltip}" />
                                 <!-- Kind-specific parameter row -->
                                 <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="5"
                                             Orientation="Horizontal" Spacing="6" Margin="0,4,0,0">
                                     <!-- RapidMovement: accel threshold -->
-                                    <TextBlock Text="Threshold:" VerticalAlignment="Center" FontSize="11"
+                                    <TextBlock Text="{loc:T Editor_TriggerThresholdLabel}" VerticalAlignment="Center" FontSize="11"
                                                IsVisible="{Binding KindLabel, Converter={x:Static ObjectConverters.Equal}, ConverterParameter='RapidMovement'}" />
                                     <NumericUpDown Value="{Binding AccelThreshold}" Minimum="0" Maximum="20"
                                                    Increment="0.1" FormatString="0.0" Width="90"
                                                    IsVisible="{Binding KindLabel, Converter={x:Static ObjectConverters.Equal}, ConverterParameter='RapidMovement'}" />
-                                    <TextBlock Text="g" VerticalAlignment="Center" FontSize="11" Foreground="#888"
+                                    <TextBlock Text="{loc:T Editor_UnitG}" VerticalAlignment="Center" FontSize="11" Foreground="#888"
                                                IsVisible="{Binding KindLabel, Converter={x:Static ObjectConverters.Equal}, ConverterParameter='RapidMovement'}" />
                                     <!-- RepeatingMovement: minHz, maxHz, sustainSec -->
-                                    <TextBlock Text="Hz:" VerticalAlignment="Center" FontSize="11"
+                                    <TextBlock Text="{loc:T Editor_TriggerHzLabel}" VerticalAlignment="Center" FontSize="11"
                                                IsVisible="{Binding KindLabel, Converter={x:Static ObjectConverters.Equal}, ConverterParameter='RepeatingMovement'}" />
                                     <NumericUpDown Value="{Binding MinHz}" Minimum="0" Maximum="20"
                                                    Increment="0.1" FormatString="0.0" Width="80"
@@ -76,27 +136,27 @@
                                     <NumericUpDown Value="{Binding MaxHz}" Minimum="0" Maximum="20"
                                                    Increment="0.1" FormatString="0.0" Width="80"
                                                    IsVisible="{Binding KindLabel, Converter={x:Static ObjectConverters.Equal}, ConverterParameter='RepeatingMovement'}" />
-                                    <TextBlock Text="for" VerticalAlignment="Center" FontSize="11"
+                                    <TextBlock Text="{loc:T Common_ForDuration}" VerticalAlignment="Center" FontSize="11"
                                                IsVisible="{Binding KindLabel, Converter={x:Static ObjectConverters.Equal}, ConverterParameter='RepeatingMovement'}" />
                                     <NumericUpDown Value="{Binding SustainSec}" Minimum="0" Maximum="60"
                                                    Increment="0.5" FormatString="0.0" Width="80"
                                                    IsVisible="{Binding KindLabel, Converter={x:Static ObjectConverters.Equal}, ConverterParameter='RepeatingMovement'}" />
-                                    <TextBlock Text="s" VerticalAlignment="Center" FontSize="11" Foreground="#888"
+                                    <TextBlock Text="{loc:T Common_UnitSeconds}" VerticalAlignment="Center" FontSize="11" Foreground="#888"
                                                IsVisible="{Binding KindLabel, Converter={x:Static ObjectConverters.Equal}, ConverterParameter='RepeatingMovement'}" />
                                     <!-- HeartRate: bpm, above/below, sustainSec -->
                                     <NumericUpDown Value="{Binding Bpm}" Minimum="40" Maximum="220"
                                                    Increment="1" FormatString="0" Width="80"
                                                    IsVisible="{Binding KindLabel, Converter={x:Static ObjectConverters.Equal}, ConverterParameter='HeartRate'}" />
-                                    <TextBlock Text="BPM" VerticalAlignment="Center" FontSize="11"
+                                    <TextBlock Text="{loc:T Editor_UnitBpm}" VerticalAlignment="Center" FontSize="11"
                                                IsVisible="{Binding KindLabel, Converter={x:Static ObjectConverters.Equal}, ConverterParameter='HeartRate'}" />
-                                    <CheckBox Content="above" IsChecked="{Binding Above}"
+                                    <CheckBox Content="{loc:T Editor_TriggerAboveCheckBox}" IsChecked="{Binding Above}"
                                               IsVisible="{Binding KindLabel, Converter={x:Static ObjectConverters.Equal}, ConverterParameter='HeartRate'}" />
-                                    <TextBlock Text="for" VerticalAlignment="Center" FontSize="11"
+                                    <TextBlock Text="{loc:T Common_ForDuration}" VerticalAlignment="Center" FontSize="11"
                                                IsVisible="{Binding KindLabel, Converter={x:Static ObjectConverters.Equal}, ConverterParameter='HeartRate'}" />
                                     <NumericUpDown Value="{Binding SustainSec}" Minimum="0" Maximum="60"
                                                    Increment="0.5" FormatString="0.0" Width="80"
                                                    IsVisible="{Binding KindLabel, Converter={x:Static ObjectConverters.Equal}, ConverterParameter='HeartRate'}" />
-                                    <TextBlock Text="s" VerticalAlignment="Center" FontSize="11" Foreground="#888"
+                                    <TextBlock Text="{loc:T Common_UnitSeconds}" VerticalAlignment="Center" FontSize="11" Foreground="#888"
                                                IsVisible="{Binding KindLabel, Converter={x:Static ObjectConverters.Equal}, ConverterParameter='HeartRate'}" />
                                 </StackPanel>
                             </Grid>
@@ -104,13 +164,13 @@
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
-            <Button Classes="Subtle" Content="＋  Add Trigger"
+            <Button Classes="Subtle" Content="{loc:T Editor_AddTriggerButton}"
                     Command="{Binding AddTriggerCommand}" HorizontalAlignment="Left" />
         </StackPanel>
 
         <ScrollViewer>
             <StackPanel>
-                <TextBlock Text="EVENTS" Classes="SectionHeader" />
+                <TextBlock Text="{loc:T Editor_EventsSectionHeader}" Classes="SectionHeader" />
                 <ItemsControl ItemsSource="{Binding Events}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate DataType="vm:ExperimentEventEditModel">
@@ -124,30 +184,47 @@
                                                VerticalAlignment="Center"
                                                Foreground="#888" FontSize="11"
                                                Margin="0,0,4,0" />
-                                    <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Type}" Watermark="Name" Margin="0,0,4,0" />
+                                    <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Type}" Watermark="{loc:T Common_NameWatermark}" Margin="0,0,4,0" />
                                     <ComboBox Grid.Row="0" Grid.Column="2" SelectedItem="{Binding KindLabel}"
                                               ItemsSource="{x:Static vm:ExperimentEventEditModel.Kinds}"
-                                              Margin="0,0,4,0" />
-                                    <TextBlock Grid.Row="0" Grid.Column="3" Text="s" VerticalAlignment="Center" Margin="0,0,2,0" FontSize="11" Foreground="#888" />
+                                              Margin="0,0,4,0">
+                                        <ComboBox.ItemTemplate>
+                                            <DataTemplate>
+                                                <TextBlock>
+                                                    <TextBlock.Text>
+                                                        <MultiBinding Converter="{x:Static vm:WireValueDisplayConverter.Instance}"
+                                                                      ConverterParameter="EventKind">
+                                                            <Binding />
+                                                            <Binding Source="{x:Static loc:Loc.Instance}" Path="LanguageTag" />
+                                                        </MultiBinding>
+                                                    </TextBlock.Text>
+                                                </TextBlock>
+                                            </DataTemplate>
+                                        </ComboBox.ItemTemplate>
+                                    </ComboBox>
+                                    <TextBlock Grid.Row="0" Grid.Column="3" Text="{loc:T Common_UnitSeconds}" VerticalAlignment="Center" Margin="0,0,2,0" FontSize="11" Foreground="#888" />
                                     <NumericUpDown Grid.Row="0" Grid.Column="4"
                                                    Value="{Binding Duration}"
                                                    Minimum="0" Maximum="3600"
                                                    FormatString="0"
                                                    Increment="1"
                                                    Margin="0,0,4,0" />
-                                    <TextBox Grid.Row="0" Grid.Column="5" Text="{Binding Id}" Watermark="Id" Margin="0,0,4,0" />
+                                    <TextBox Grid.Row="0" Grid.Column="5" Text="{Binding Id}" Watermark="{loc:T Common_IdWatermark}" Margin="0,0,4,0" />
                                     <Button Grid.Row="0" Grid.Column="6" Content="↑" Width="24" Padding="0"
                                             Command="{Binding $parent[ItemsControl].((vm:ExperimentEditorViewModel)DataContext).MoveEventUpCommand}"
                                             CommandParameter="{Binding}"
-                                            Margin="0,0,2,0" />
+                                            Margin="0,0,2,0"
+                                            ToolTip.Tip="{loc:T Editor_MoveEventUpTooltip}" />
                                     <Button Grid.Row="0" Grid.Column="7" Content="↓" Width="24" Padding="0"
                                             Command="{Binding $parent[ItemsControl].((vm:ExperimentEditorViewModel)DataContext).MoveEventDownCommand}"
                                             CommandParameter="{Binding}"
-                                            Margin="0,0,2,0" />
+                                            Margin="0,0,2,0"
+                                            ToolTip.Tip="{loc:T Editor_MoveEventDownTooltip}" />
                                     <Button Grid.Row="0" Grid.Column="8" Content="✕"
                                             Command="{Binding $parent[ItemsControl].((vm:ExperimentEditorViewModel)DataContext).RemoveEventCommand}"
-                                            CommandParameter="{Binding}" />
-                                    <CheckBox Grid.Row="0" Grid.Column="9" Content="🔔" ToolTip.Tip="Has Intervention"
+                                            CommandParameter="{Binding}"
+                                            ToolTip.Tip="{loc:T Editor_RemoveEventTooltip}" />
+                                    <CheckBox Grid.Row="0" Grid.Column="9" Content="🔔" ToolTip.Tip="{loc:T Editor_HasInterventionTooltip}"
                                               IsChecked="{Binding HasIntervention}" Margin="6,0,0,0" />
 
                                     <!-- Row 1: kind-specific timing params -->
@@ -160,9 +237,9 @@
                                         <NumericUpDown Value="{Binding RandomMax}" Minimum="0" Maximum="3600"
                                                        FormatString="0" Increment="1" Width="90"
                                                        IsVisible="{Binding KindLabel, Converter={x:Static ObjectConverters.Equal}, ConverterParameter='RandomWait'}" />
-                                        <TextBox Text="{Binding WaitForActionId}" Watermark="action id" Width="160"
+                                        <TextBox Text="{Binding WaitForActionId}" Watermark="{loc:T Editor_WaitForActionIdWatermark}" Width="160"
                                                  IsVisible="{Binding KindLabel, Converter={x:Static ObjectConverters.Equal}, ConverterParameter='WaitForAction'}" />
-                                        <TextBox Text="{Binding WaitForTriggerId}" Watermark="trigger id" Width="160"
+                                        <TextBox Text="{Binding WaitForTriggerId}" Watermark="{loc:T Editor_WaitForTriggerIdWatermark}" Width="160"
                                                  IsVisible="{Binding KindLabel, Converter={x:Static ObjectConverters.Equal}, ConverterParameter='WaitForTrigger'}" />
                                     </StackPanel>
 
@@ -173,33 +250,89 @@
                                         <StackPanel Spacing="6">
                                             <!-- Row A: display type + notification + duration -->
                                             <StackPanel Orientation="Horizontal" Spacing="6" Margin="0,2,0,0">
-                                                <TextBlock Text="Display as:" VerticalAlignment="Center" FontSize="11" Foreground="#AABBDD" />
+                                                <TextBlock Text="{loc:T Editor_InterventionDisplayAsLabel}" VerticalAlignment="Center" FontSize="11" Foreground="#AABBDD" />
                                                 <ComboBox SelectedItem="{Binding InterventionTypeLabel}" MinWidth="90" FontSize="11"
-                                                          ItemsSource="{x:Static vm:ExperimentEventEditModel.InterventionTypeOptions}" />
-                                                <TextBlock Text="Notify:" VerticalAlignment="Center" FontSize="11" Foreground="#AABBDD" Margin="8,0,0,0" />
+                                                          ItemsSource="{x:Static vm:ExperimentEventEditModel.InterventionTypeOptions}">
+                                                    <ComboBox.ItemTemplate>
+                                                        <DataTemplate>
+                                                            <TextBlock>
+                                                                <TextBlock.Text>
+                                                                    <MultiBinding Converter="{x:Static vm:WireValueDisplayConverter.Instance}"
+                                                                                  ConverterParameter="InterventionType">
+                                                                        <Binding />
+                                                                        <Binding Source="{x:Static loc:Loc.Instance}" Path="LanguageTag" />
+                                                                    </MultiBinding>
+                                                                </TextBlock.Text>
+                                                            </TextBlock>
+                                                        </DataTemplate>
+                                                    </ComboBox.ItemTemplate>
+                                                </ComboBox>
+                                                <TextBlock Text="{loc:T Editor_InterventionNotifyLabel}" VerticalAlignment="Center" FontSize="11" Foreground="#AABBDD" Margin="8,0,0,0" />
                                                 <ComboBox SelectedItem="{Binding NotificationLabel}" MinWidth="160" FontSize="11"
-                                                          ItemsSource="{x:Static vm:ExperimentEventEditModel.NotificationOptions}" />
-                                                <TextBlock Text="for" VerticalAlignment="Center" FontSize="11" Foreground="#888" />
+                                                          ItemsSource="{x:Static vm:ExperimentEventEditModel.NotificationOptions}">
+                                                    <ComboBox.ItemTemplate>
+                                                        <DataTemplate>
+                                                            <TextBlock>
+                                                                <TextBlock.Text>
+                                                                    <MultiBinding Converter="{x:Static vm:WireValueDisplayConverter.Instance}"
+                                                                                  ConverterParameter="Notification">
+                                                                        <Binding />
+                                                                        <Binding Source="{x:Static loc:Loc.Instance}" Path="LanguageTag" />
+                                                                    </MultiBinding>
+                                                                </TextBlock.Text>
+                                                            </TextBlock>
+                                                        </DataTemplate>
+                                                    </ComboBox.ItemTemplate>
+                                                </ComboBox>
+                                                <TextBlock Text="{loc:T Common_ForDuration}" VerticalAlignment="Center" FontSize="11" Foreground="#888" />
                                                 <NumericUpDown Value="{Binding InterventionDurationSecs}" Minimum="1" Maximum="3600"
                                                                Increment="1" FormatString="0" MinWidth="100" MaxWidth="120" FontSize="11" />
-                                                <TextBlock Text="s" VerticalAlignment="Center" FontSize="11" Foreground="#888" />
+                                                <TextBlock Text="{loc:T Common_UnitSeconds}" VerticalAlignment="Center" FontSize="11" Foreground="#888" />
                                             </StackPanel>
                                             <!-- Row B: message -->
                                             <StackPanel Orientation="Horizontal" Spacing="6">
-                                                <TextBlock Text="Message:" VerticalAlignment="Center" FontSize="11" Foreground="#AABBDD" />
-                                                <TextBox Text="{Binding InterventionMessage}" Watermark="Text shown to participant"
+                                                <TextBlock Text="{loc:T Editor_InterventionMessageLabel}" VerticalAlignment="Center" FontSize="11" Foreground="#AABBDD" />
+                                                <TextBox Text="{Binding InterventionMessage}" Watermark="{loc:T Editor_InterventionMessageWatermark}"
                                                          MinWidth="260" FontSize="11" />
                                             </StackPanel>
                                             <!-- Row C: microgame OR phone task (mutually exclusive) -->
                                             <StackPanel Orientation="Horizontal" Spacing="6">
-                                                <TextBlock Text="Microgame:" VerticalAlignment="Center" FontSize="11" Foreground="#AABBDD" />
+                                                <TextBlock Text="{loc:T Editor_MicrogameLabel}" VerticalAlignment="Center" FontSize="11" Foreground="#AABBDD" />
                                                 <ComboBox SelectedItem="{Binding GameTypeLabel}" MinWidth="140" FontSize="11"
-                                                          ItemsSource="{x:Static vm:ExperimentEventEditModel.GameTypeOptions}" />
-                                                <TextBlock Text="— or —" VerticalAlignment="Center" FontSize="11" Foreground="#445" Margin="8,0" />
-                                                <TextBlock Text="Phone task:" VerticalAlignment="Center" FontSize="11" Foreground="#AABBDD" />
+                                                          ItemsSource="{x:Static vm:ExperimentEventEditModel.GameTypeOptions}">
+                                                    <ComboBox.ItemTemplate>
+                                                        <DataTemplate>
+                                                            <TextBlock>
+                                                                <TextBlock.Text>
+                                                                    <MultiBinding Converter="{x:Static vm:WireValueDisplayConverter.Instance}"
+                                                                                  ConverterParameter="GameType">
+                                                                        <Binding />
+                                                                        <Binding Source="{x:Static loc:Loc.Instance}" Path="LanguageTag" />
+                                                                    </MultiBinding>
+                                                                </TextBlock.Text>
+                                                            </TextBlock>
+                                                        </DataTemplate>
+                                                    </ComboBox.ItemTemplate>
+                                                </ComboBox>
+                                                <TextBlock Text="{loc:T Editor_OrSeparator}" VerticalAlignment="Center" FontSize="11" Foreground="#445" Margin="8,0" />
+                                                <TextBlock Text="{loc:T Editor_PhoneTaskLabel}" VerticalAlignment="Center" FontSize="11" Foreground="#AABBDD" />
                                                 <ComboBox SelectedItem="{Binding PhoneTaskLabel}" MinWidth="100" FontSize="11"
-                                                          ItemsSource="{x:Static vm:ExperimentEventEditModel.PhoneTaskOptions}" />
-                                                <TextBlock Text="(selecting one clears the other)" VerticalAlignment="Center"
+                                                          ItemsSource="{x:Static vm:ExperimentEventEditModel.PhoneTaskOptions}">
+                                                    <ComboBox.ItemTemplate>
+                                                        <DataTemplate>
+                                                            <TextBlock>
+                                                                <TextBlock.Text>
+                                                                    <MultiBinding Converter="{x:Static vm:WireValueDisplayConverter.Instance}"
+                                                                                  ConverterParameter="PhoneTask">
+                                                                        <Binding />
+                                                                        <Binding Source="{x:Static loc:Loc.Instance}" Path="LanguageTag" />
+                                                                    </MultiBinding>
+                                                                </TextBlock.Text>
+                                                            </TextBlock>
+                                                        </DataTemplate>
+                                                    </ComboBox.ItemTemplate>
+                                                </ComboBox>
+                                                <TextBlock Text="{loc:T Editor_MicrogamePhoneTaskHint}" VerticalAlignment="Center"
                                                            FontSize="10" Foreground="#556" />
                                             </StackPanel>
                                         </StackPanel>
@@ -218,7 +351,7 @@
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
-                <Button Classes="Subtle" Content="＋  Add Event"
+                <Button Classes="Subtle" Content="{loc:T Editor_AddEventButton}"
                         Command="{Binding AddEventCommand}" HorizontalAlignment="Left" Margin="0,6,0,0" />
             </StackPanel>
         </ScrollViewer>

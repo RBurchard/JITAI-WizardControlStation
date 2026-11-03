@@ -1,5 +1,6 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:loc="using:OcdWizard.ControlStation.Localization"
              x:Class="OcdWizard.ControlStation.Controls.TutorialOverlay"
              IsVisible="False" Focusable="True">
     <!-- A near-transparent backdrop that swallows clicks to the UI underneath while the tour runs.
@@ -30,10 +31,10 @@
                 <TextBlock Name="TitleBlock" FontSize="17" FontWeight="Bold" Foreground="White" TextWrapping="Wrap" />
                 <TextBlock Name="BodyBlock" FontSize="13" Foreground="#C5CCE6" TextWrapping="Wrap" LineHeight="19" />
                 <Grid ColumnDefinitions="Auto,*,Auto,Auto" Margin="0,4,0,0">
-                    <Button Name="SkipBtn" Grid.Column="0" Classes="Subtle" Content="Skip tour" Click="OnSkip" />
-                    <Button Name="BackBtn" Grid.Column="2" Classes="Subtle" Content="◀ Back"
+                    <Button Name="SkipBtn" Grid.Column="0" Classes="Subtle" Content="{loc:T Tutorial_SkipButton}" Click="OnSkip" />
+                    <Button Name="BackBtn" Grid.Column="2" Classes="Subtle" Content="{loc:T Common_Back}"
                             Margin="0,0,6,0" Click="OnBack" />
-                    <Button Name="NextBtn" Grid.Column="3" Classes="Accent" Content="Next ▶" Click="OnNext" />
+                    <Button Name="NextBtn" Grid.Column="3" Classes="Accent" Content="{loc:T Common_Next}" Click="OnNext" />
                 </Grid>
             </StackPanel>
         </Border>

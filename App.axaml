@@ -6,6 +6,7 @@
 
     <Application.Styles>
         <FluentTheme />
+        <StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml" />
 
         <!-- ── Global palette ───────────────────────────────────────────── -->
         <Style Selector="Window">
@@ -81,6 +82,28 @@
             <Setter Property="Background" Value="#2255A4" />
         </Style>
 
+
+        <!-- Tab (segmented view switch) -->
+        <Style Selector="Button.Tab">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="#7788AA" />
+            <Setter Property="CornerRadius" Value="5" />
+            <Setter Property="Padding" Value="14,6" />
+            <Setter Property="FontSize" Value="12" />
+        </Style>
+        <Style Selector="Button.Tab:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="#1B2038" />
+            <Setter Property="TextBlock.Foreground" Value="#C8D4F0" />
+        </Style>
+        <Style Selector="Button.Tab.Active /template/ ContentPresenter">
+            <Setter Property="Background" Value="#23305A" />
+            <Setter Property="TextBlock.Foreground" Value="White" />
+        </Style>
+        <Style Selector="Button.Tab.Active">
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+
         <!-- ── Cards / Panels ───────────────────────────────────────────── -->
         <Style Selector="Border.Card">
             <Setter Property="Background" Value="#16192A" />
@@ -116,6 +139,38 @@
             <Setter Property="CornerRadius" Value="5" />
         </Style>
 
+
+        <!-- ── Master Notes grid (Excel-like) ───────────────────────────── -->
+        <Style Selector="DataGrid.Sheet">
+            <Setter Property="Background" Value="#0F1220" />
+            <Setter Property="BorderBrush" Value="#2A2D45" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="GridLinesVisibility" Value="All" />
+            <Setter Property="HorizontalGridLinesBrush" Value="#232741" />
+            <Setter Property="VerticalGridLinesBrush" Value="#232741" />
+            <Setter Property="RowBackground" Value="#141728" />
+            <Setter Property="FontSize" Value="12" />
+        </Style>
+        <Style Selector="DataGrid.Sheet DataGridColumnHeader">
+            <Setter Property="Background" Value="#1B2038" />
+            <Setter Property="Foreground" Value="#C8D4F0" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="Padding" Value="8,6" />
+            <Setter Property="SeparatorBrush" Value="#2A2D45" />
+        </Style>
+        <Style Selector="DataGrid.Sheet DataGridRowHeader">
+            <Setter Property="Background" Value="#1B2038" />
+            <Setter Property="Foreground" Value="#6677AA" />
+        </Style>
+        <Style Selector="DataGrid.Sheet DataGridCell">
+            <Setter Property="Foreground" Value="#E0E0F0" />
+            <Setter Property="Padding" Value="6,3" />
+        </Style>
+        <Style Selector="DataGrid.Sheet DataGridCell:current /template/ Rectangle#CurrencyVisual">
+            <Setter Property="Stroke" Value="#4477CC" />
+        </Style>
+
     </Application.Styles>
 
     <Application.Resources>
@@ -124,5 +179,6 @@
                                          FalseBrush="#444" />
         <converters:IndexToBoolConverter x:Key="IndexToBoolConverter" />
         <converters:AbsValueConverter x:Key="AbsValueConverter" />
+        <converters:EpochMsToClockConverter x:Key="EpochMsToClockConverter" />
     </Application.Resources>
 </Application>

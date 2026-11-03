@@ -1,8 +1,9 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:loc="using:OcdWizard.ControlStation.Localization"
              x:Class="OcdWizard.ControlStation.Controls.HeartbeatView">
     <StackPanel Orientation="Horizontal" Spacing="5" VerticalAlignment="Center"
-                ToolTip.Tip="Live heart rate (beats per minute) — pulses in time with the participant's heartbeat">
+                ToolTip.Tip="{loc:T Heartbeat_Tooltip}">
         <!-- A little heart that beats in time with the live BPM, with the value shown on it. -->
         <Grid Name="HeartRoot" Width="46" Height="44" RenderTransformOrigin="50%,50%">
             <Viewbox Stretch="Uniform" Margin="2">
@@ -15,6 +16,6 @@
                        Margin="0,-2,0,0"
                        FontSize="12" FontWeight="Bold" Foreground="White" />
         </Grid>
-        <TextBlock Text="bpm" FontSize="10" Foreground="#9AA6C8" VerticalAlignment="Center" />
+        <TextBlock Text="{loc:T Heartbeat_BpmUnit}" FontSize="10" Foreground="#9AA6C8" VerticalAlignment="Center" />
     </StackPanel>
 </UserControl>

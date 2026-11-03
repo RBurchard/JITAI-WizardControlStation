@@ -4,13 +4,14 @@ using Avalonia.Controls.Presenters;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
+using OcdWizard.ControlStation.Localization;
 
 namespace OcdWizard.ControlStation.Controls;
 
 public partial class CollapsiblePanel : UserControl
 {
     public static readonly StyledProperty<string> TitleProperty =
-        AvaloniaProperty.Register<CollapsiblePanel, string>(nameof(Title), defaultValue: "Panel");
+        AvaloniaProperty.Register<CollapsiblePanel, string>(nameof(Title), defaultValue: Loc.Get("Panel_DefaultTitle"));
 
     public static readonly StyledProperty<object?> BodyProperty =
         AvaloniaProperty.Register<CollapsiblePanel, object?>(nameof(Body));

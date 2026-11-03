@@ -1,0 +1,82 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:OcdWizard.ControlStation.ViewModels"
+             xmlns:views="using:OcdWizard.ControlStation.Views"
+             xmlns:ctrl="using:OcdWizard.ControlStation.Controls"
+             xmlns:loc="using:OcdWizard.ControlStation.Localization"
+             x:Class="OcdWizard.ControlStation.Views.ReplayParticipantPanel"
+             x:DataType="vm:ReplayParticipantViewModel">
+
+    <Border Classes="Card" Margin="3">
+        <DockPanel>
+            <!-- Header -->
+            <Border DockPanel.Dock="Top" Background="#1A3A6E" CornerRadius="9,9,0,0" Padding="14,10">
+                <Grid ColumnDefinitions="*,Auto">
+                    <TextBlock Grid.Column="0" Text="{Binding Label}" FontSize="16" FontWeight="Bold"
+                               Foreground="White" />
+                    <TextBlock Grid.Column="1"
+                               Text="{Binding SampleCountDisplay}"
+                               Foreground="#AEC2E8" FontSize="11" VerticalAlignment="Center" />
+                </Grid>
+            </Border>
+
+            <ScrollViewer>
+                <StackPanel Spacing="6" Margin="10,8">
+
+                    <!-- Motion tracker (reused from live mode via IMotionSource) -->
+                    <ctrl:CollapsiblePanel Title="{loc:T Common_MotionTrackerPanelTitle}">
+                        <ctrl:CollapsiblePanel.Body>
+                            <views:MotionView DataContext="{Binding}" />
+                        </ctrl:CollapsiblePanel.Body>
+                    </ctrl:CollapsiblePanel>
+
+                    <!-- Sensors at the current playback time -->
+                    <ctrl:CollapsiblePanel Title="{loc:T Replay_SensorsAtPlayheadTitle}">
+                        <ctrl:CollapsiblePanel.Body>
+                            <StackPanel Spacing="5" Margin="10,6">
+                                <Grid ColumnDefinitions="120,*,55">
+                                    <TextBlock Grid.Column="0" Text="{loc:T Common_HeartRateLabel}" VerticalAlignment="Center" FontSize="12" />
+                                    <ProgressBar Grid.Column="1" Minimum="0" Maximum="200"
+                                                 Value="{Binding CurrentBpm}" Height="10" CornerRadius="5"
+                                                 Foreground="#E84393" Margin="6,0" />
+                                    <TextBlock Grid.Column="2" Text="{Binding CurrentBpmDisplay}"
+                                               VerticalAlignment="Center" FontSize="11" />
+                                </Grid>
+                                <Grid ColumnDefinitions="120,*,55">
+                                    <TextBlock Grid.Column="0" Text="{loc:T Replay_AccelXLabel}" VerticalAlignment="Center" FontSize="12" />
+                                    <ProgressBar Grid.Column="1" Minimum="0" Maximum="20"
+                                                 Value="{Binding AccelX, Converter={StaticResource AbsValueConverter}}"
+                                                 Height="10" CornerRadius="5" Foreground="#F4A261" Margin="6,0" />
+                                    <TextBlock Grid.Column="2" Text="{Binding AccelX, StringFormat={}{0:F2}}"
+                                               VerticalAlignment="Center" FontSize="11" />
+                                </Grid>
+                                <Grid ColumnDefinitions="120,*,55">
+                                    <TextBlock Grid.Column="0" Text="{loc:T Replay_AccelYLabel}" VerticalAlignment="Center" FontSize="12" />
+                                    <ProgressBar Grid.Column="1" Minimum="0" Maximum="20"
+                                                 Value="{Binding AccelY, Converter={StaticResource AbsValueConverter}}"
+                                                 Height="10" CornerRadius="5" Foreground="#A8DADC" Margin="6,0" />
+                                    <TextBlock Grid.Column="2" Text="{Binding AccelY, StringFormat={}{0:F2}}"
+                                               VerticalAlignment="Center" FontSize="11" />
+                                </Grid>
+                                <Grid ColumnDefinitions="120,*,55">
+                                    <TextBlock Grid.Column="0" Text="{loc:T Replay_AccelZLabel}" VerticalAlignment="Center" FontSize="12" />
+                                    <ProgressBar Grid.Column="1" Minimum="0" Maximum="20"
+                                                 Value="{Binding AccelZ, Converter={StaticResource AbsValueConverter}}"
+                                                 Height="10" CornerRadius="5" Foreground="#81B29A" Margin="6,0" />
+                                    <TextBlock Grid.Column="2" Text="{Binding AccelZ, StringFormat={}{0:F2}}"
+                                               VerticalAlignment="Center" FontSize="11" />
+                                </Grid>
+                                <Grid ColumnDefinitions="120,*">
+                                    <TextBlock Grid.Column="0" Text="{loc:T Common_StepsLabel}" VerticalAlignment="Center" FontSize="12" />
+                                    <TextBlock Grid.Column="1" Text="{Binding StepCount}" FontSize="12"
+                                               Foreground="#AEC2E8" VerticalAlignment="Center" />
+                                </Grid>
+                            </StackPanel>
+                        </ctrl:CollapsiblePanel.Body>
+                    </ctrl:CollapsiblePanel>
+
+                </StackPanel>
+            </ScrollViewer>
+        </DockPanel>
+    </Border>
+</UserControl>

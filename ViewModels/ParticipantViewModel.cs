@@ -1,18 +1,36 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
+using Avalonia.Data.Converters;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using OcdWizard.ControlStation.Database;
+using OcdWizard.ControlStation.Localization;
 using OcdWizard.ControlStation.Models;
 using OcdWizard.ControlStation.Services;
 using Avalonia.Threading;
 
 namespace OcdWizard.ControlStation.ViewModels;
 
-public partial class ParticipantViewModel : ObservableObject
+/// <summary>
+/// Formats a single value through a resx template (e.g. "{0:F0} bpm", "ID: {0}") via
+/// <see cref="Loc.Format"/>. Bound as a two-input MultiBinding values[0] is the value to format,
+/// values[1] is <see cref="Loc.LanguageTag"/> purely to force re-evaluation, and therefore a live
+/// re-localized label, on a language switch (a plain single-value converter would only refresh
+/// when the formatted value itself changes). ConverterParameter is the resx key of the template.
+/// </summary>
+public sealed class LocalizedFormatConverter : IMultiValueConverter
+{
+    public static readonly LocalizedFormatConverter Instance = new();
+
+    public object? Convert(IList<object?> values, Type targetType, object? parameter, CultureInfo culture) =>
+        Loc.Format((string)parameter!, values.Count > 0 ? values[0] : null);
+}
+
+public partial class ParticipantViewModel : ObservableObject, IMotionSource
 {
     private readonly DatabaseService _db;
     private readonly DeviceConnection _device = new();
@@ -34,7 +52,7 @@ public partial class ParticipantViewModel : ObservableObject
     public IReadOnlyList<string> NotificationTypes { get; } =
         ["VIBRATION1", "VIBRATION2", "SOUND", "VIBRATION_SOUND"];
 
-    [ObservableProperty] private string _connectionStatus = "Not connected";
+    [ObservableProperty] private string _connectionStatus = Loc.Get("Participant_StatusNotConnected");
     [ObservableProperty] private bool _isConnected;
     [ObservableProperty] private float _currentBpm;
     [ObservableProperty] private float _accelX;
@@ -85,11 +103,24 @@ public partial class ParticipantViewModel : ObservableObject
     public Func<IReadOnlyList<DiscoveredDevice>>? UsbDeviceProvider { get; set; }
 
     /// <summary>
+    /// Lets MainViewModel start the session on demand. Invoked before dispatching "start"/"auto"
+    /// so an experiment begun without an active session never orphans its data (no-ops if a
+    /// session is already running).
+    /// </summary>
+    public Func<Task>? EnsureSessionStarted { get; set; }
+
+    /// <summary>
     /// Raised once per received batch with the full ordered snapshot series so the
     /// motion view can reconstruct at the watch's true sample rate (~50 Hz) rather
     /// than sampling only the latest value. Fired from a background thread.
     /// </summary>
     public event Action<IReadOnlyList<WatchDataSnapshot>>? MotionSamplesReceived;
+
+    // Part of IMotionSource; only the replay source ever seeks backward, so the live panel
+    // never raises this. Present so MotionView can bind to the shared interface.
+#pragma warning disable CS0067
+    public event Action? MotionResetRequested;
+#pragma warning restore CS0067
 
     partial void OnSelectedDeviceChanged(DiscoveredDevice? value)
     {
@@ -122,10 +153,10 @@ public partial class ParticipantViewModel : ObservableObject
                 await _device.PostParticipantAsync(_participantId, _sessionId ?? "", value, IpAddress);
                 if (_sessionId != null)
                     await _db.UpsertParticipantAsync(_participantId, _sessionId, Label, IpAddress, value);
-                AppendLog($"Participant set to '{value}'");
+                AppendLog(Loc.Format("Participant_LogParticipantSetTo", value));
             }
             catch (TaskCanceledException) { }
-            catch (Exception ex) { AppendLog($"Participant push failed: {ex.Message}"); }
+            catch (Exception ex) { AppendLog(Loc.Format("Participant_LogParticipantPushFailed", ex.Message)); }
         });
     }
 
@@ -158,7 +189,7 @@ public partial class ParticipantViewModel : ObservableObject
     private async Task ConnectAsync()
     {
         if (string.IsNullOrWhiteSpace(IpAddress)) return;
-        ConnectionStatus = "Connecting...";
+        ConnectionStatus = Loc.Get("Participant_StatusConnecting");
         var ok = await _device.ConnectAsync(IpAddress);
         if (ok)
         {
@@ -175,7 +206,7 @@ public partial class ParticipantViewModel : ObservableObject
             LogSync.Start(baseUrl);
             RunLifecycle.Bind(baseUrl, _participantId, _sessionId);
             await ExperimentSync.PullAsync();
-            AppendLog($"Connected to {IpAddress}");
+            AppendLog(Loc.Format("Participant_LogConnectedTo", IpAddress));
 
             // Reconcile the participant identity with the phone (bidirectional sync): if the
             // phone already has a participant set and we don't, adopt it.
@@ -186,7 +217,7 @@ public partial class ParticipantViewModel : ObservableObject
                 _suppressParticipantPush = true;
                 ParticipantKey = phoneLabel!;
                 _suppressParticipantPush = false;
-                AppendLog($"Adopted participant '{phoneLabel}' from phone");
+                AppendLog(Loc.Format("Participant_LogAdoptedParticipantFromPhone", phoneLabel));
             }
 
             // Push our participant to the phone so it agrees with the Control Station.
@@ -201,12 +232,25 @@ public partial class ParticipantViewModel : ObservableObject
     {
         _device.Disconnect();
         LogSync.Stop();
-        AppendLog("Disconnected");
+        AppendLog(Loc.Get("Common_Disconnected"));
+    }
+
+    /// <summary>Minutes the "Wake watch" button asks for. Mirrors the phone's own button.</summary>
+    public const int WakeWatchMinutes = 5;
+
+    [RelayCommand]
+    private async Task WakeWatchAsync()
+    {
+        var ok = await _device.WakeWatchAsync(WakeWatchMinutes);
+        AppendLog(ok
+            ? Loc.Format("Participant_LogWakeWatchSent", WakeWatchMinutes)
+            : Loc.Get("Participant_LogWakeWatchFailed"));
     }
 
     [RelayCommand]
     private async Task StartExperimentAsync()
     {
+        if (EnsureSessionStarted != null) await EnsureSessionStarted();
         ResetOverlayState();
         await RunLifecycle.DispatchAsync("start");
     }
@@ -214,6 +258,7 @@ public partial class ParticipantViewModel : ObservableObject
     [RelayCommand]
     private async Task StartAutoAsync()
     {
+        if (EnsureSessionStarted != null) await EnsureSessionStarted();
         ResetOverlayState();
         await RunLifecycle.DispatchAsync("auto");
     }
@@ -256,10 +301,10 @@ public partial class ParticipantViewModel : ObservableObject
 
         var req = new InterventionRequest(SelectedNotificationType, GameType: gameType, TriviaQuestion: trivia);
         var ok = await _device.TriggerInterventionAsync(req);
-        AppendLog(ok ? $"Triggered {SelectedNotificationType} {gameType ?? ""}" : "Trigger failed");
+        AppendLog(ok ? Loc.Format("Participant_LogTriggered", SelectedNotificationType, gameType ?? "") : Loc.Get("Participant_LogTriggerFailed"));
 
         // Record the intervention whenever the researcher fires one, regardless of whether
-        // the wear delivery succeeded — the action itself is research data we want to keep.
+        // the wear delivery succeeded the action itself is research data we want to keep.
         if (_participantId != null && _sessionId != null)
         {
             await _db.InsertInterventionAsync(
@@ -269,7 +314,7 @@ public partial class ParticipantViewModel : ObservableObject
         }
         else
         {
-            AppendLog("Intervention not recorded — start a session and connect first.");
+            AppendLog(Loc.Get("Participant_LogInterventionNotRecorded"));
         }
     }
 
@@ -278,14 +323,14 @@ public partial class ParticipantViewModel : ObservableObject
     {
         var req = new InterventionRequest("CANCEL");
         await _device.TriggerInterventionAsync(req);
-        AppendLog("Sent CANCEL");
+        AppendLog(Loc.Get("Participant_LogSentCancel"));
     }
 
     [RelayCommand]
     private async Task ScanAsync()
     {
         IsScanning = true;
-        AppendLog("Scanning for JITAI Wizard devices…");
+        AppendLog(Loc.Get("Participant_LogScanning"));
 
         // USB devices are tracked live by the ADB watcher, so a manual scan must NOT wipe them
         // (previously DiscoveredDevices.Clear() removed any USB-connected phone entirely). Only
@@ -313,8 +358,8 @@ public partial class ParticipantViewModel : ObservableObject
         });
 
         AppendLog(wifi.Count + usb.Count > 0
-            ? $"Found {wifi.Count} Wi-Fi + {usb.Count} USB device(s)"
-            : "No devices found — ensure the phone app is running on the same network or USB debugging is enabled");
+            ? Loc.Format("Participant_LogFoundDevices", wifi.Count, usb.Count)
+            : Loc.Get("Participant_LogNoDevicesFound"));
         IsScanning = false;
     }
 
@@ -348,18 +393,18 @@ public partial class ParticipantViewModel : ObservableObject
 
     private void OnDataReceived(WatchDataBatch batch)
     {
-        // DB insert runs first — completely isolated so nothing else can block it.
+        // DB insert runs first completely isolated so nothing else can block it.
         if (_participantId != null)
         {
             var pid = _participantId;
             _ = Task.Run(async () =>
             {
                 try { await _db.InsertWatchDataBatchAsync(pid, batch); }
-                catch (Exception ex) { AppendLog($"Watch data insert failed: {ex.Message}"); }
+                catch (Exception ex) { AppendLog(Loc.Format("Participant_LogWatchDataInsertFailed", ex.Message)); }
             });
         }
 
-        // UI updates are best-effort — a crash here can never affect data recording.
+        // UI updates are best-effort a crash here can never affect data recording.
         if (batch.Snapshots?.Count > 0)
         {
             var last = batch.Snapshots[^1];
@@ -390,7 +435,7 @@ public partial class ParticipantViewModel : ObservableObject
     }
 
     // Clears all live tracker state so the overlay starts from scratch. Safe to call from any
-    // thread — always posts to the UI thread internally.
+    // thread always posts to the UI thread internally.
     private void ResetOverlayState()
     {
         Dispatcher.UIThread.Post(() =>
@@ -404,7 +449,7 @@ public partial class ParticipantViewModel : ObservableObject
     }
 
     // Surfaces the engine's live state (which event is active + how long it's been running) so
-    // the operator sees where the experiment is and a per-task countdown — for auto and manual runs.
+    // the operator sees where the experiment is and a per-task countdown for auto and manual runs.
     private void OnEngineStateChanged(EngineStateSnapshotDto snap)
     {
         Dispatcher.UIThread.Post(() =>

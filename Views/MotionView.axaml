@@ -3,15 +3,16 @@
              xmlns:vm="using:OcdWizard.ControlStation.ViewModels"
              xmlns:views="using:OcdWizard.ControlStation.Views"
              xmlns:ctrl="using:OcdWizard.ControlStation.Controls"
+             xmlns:loc="using:OcdWizard.ControlStation.Localization"
              x:Class="OcdWizard.ControlStation.Views.MotionView"
-             x:DataType="vm:ParticipantViewModel">
+             x:DataType="vm:IMotionSource">
     <DockPanel>
 
         <!-- Top bar: reset buttons + live heartbeat -->
         <Grid DockPanel.Dock="Top" ColumnDefinitions="Auto,Auto,*,Auto" Margin="6,4">
-            <Button Grid.Column="0" Content="Reset Vel." Click="OnResetVelocityClick"
+            <Button Grid.Column="0" Content="{loc:T Motion_ResetVelocityButton}" Click="OnResetVelocityClick"
                     Padding="6,2" Margin="0,0,4,0" />
-            <Button Grid.Column="1" Content="Reset Pose" Click="OnResetClick"
+            <Button Grid.Column="1" Content="{loc:T Motion_ResetPoseButton}" Click="OnResetClick"
                     Padding="6,2" />
             <!-- Beating heart pulsing at the participant's current BPM. -->
             <ctrl:HeartbeatView Grid.Column="3" Bpm="{Binding CurrentBpm}"
@@ -21,13 +22,13 @@
         <!-- Axis remap panel at the bottom -->
         <Border DockPanel.Dock="Bottom" Background="#12152A" Padding="8,6" Margin="0,4,0,0">
             <StackPanel Spacing="4">
-                <TextBlock Text="AXIS MAPPING" FontSize="10" FontWeight="SemiBold"
+                <TextBlock Text="{loc:T Motion_AxisMappingHeader}" FontSize="10" FontWeight="SemiBold"
                            Foreground="#5566AA" Margin="0,0,0,2" />
 
                 <!-- Presets row -->
                 <StackPanel Orientation="Horizontal" Spacing="4">
-                    <TextBlock Text="Preset:" VerticalAlignment="Center" FontSize="11" Foreground="#8899BB" />
-                    <Button Content="Default (Y,-X,Z)"  Click="OnPreset0" Padding="6,2" FontSize="11" />
+                    <TextBlock Text="{loc:T Motion_PresetLabel}" VerticalAlignment="Center" FontSize="11" Foreground="#8899BB" />
+                    <Button Content="{loc:T Motion_PresetDefaultButton}"  Click="OnPreset0" Padding="6,2" FontSize="11" />
                     <Button Content="(X,-Z,-Y)"         Click="OnPreset1" Padding="6,2" FontSize="11" />
                     <Button Content="(X, Y,-Z)"         Click="OnPreset2" Padding="6,2" FontSize="11" />
                     <Button Content="(Y, X,-Z)"         Click="OnPreset3" Padding="6,2" FontSize="11" />
@@ -38,29 +39,29 @@
                       RowDefinitions="Auto" Margin="0,2,0,0">
 
                     <!-- Visual X -->
-                    <TextBlock Grid.Column="0" Text="Visual X =" FontSize="11"
+                    <TextBlock Grid.Column="0" Text="{loc:T Motion_VisualXLabel}" FontSize="11"
                                Foreground="#AABBDD" VerticalAlignment="Center" Margin="0,0,4,0" />
                     <ComboBox Grid.Column="1" Name="CbSrcX" FontSize="11"
                               SelectionChanged="OnRemapChanged" />
-                    <CheckBox Grid.Column="2" Name="CkFlipX" Content="flip"
+                    <CheckBox Grid.Column="2" Name="CkFlipX" Content="{loc:T Motion_FlipCheckbox}"
                               FontSize="11" Margin="4,0,12,0"
                               IsCheckedChanged="OnRemapChanged" />
 
                     <!-- Visual Y -->
-                    <TextBlock Grid.Column="3" Text="Visual Y =" FontSize="11"
+                    <TextBlock Grid.Column="3" Text="{loc:T Motion_VisualYLabel}" FontSize="11"
                                Foreground="#AABBDD" VerticalAlignment="Center" Margin="0,0,4,0" />
                     <ComboBox Grid.Column="4" Name="CbSrcY" FontSize="11"
                               SelectionChanged="OnRemapChanged" />
-                    <CheckBox Grid.Column="5" Name="CkFlipY" Content="flip"
+                    <CheckBox Grid.Column="5" Name="CkFlipY" Content="{loc:T Motion_FlipCheckbox}"
                               FontSize="11" Margin="4,0,12,0"
                               IsCheckedChanged="OnRemapChanged" />
 
                     <!-- Visual Z -->
-                    <TextBlock Grid.Column="6" Text="Visual Z =" FontSize="11"
+                    <TextBlock Grid.Column="6" Text="{loc:T Motion_VisualZLabel}" FontSize="11"
                                Foreground="#AABBDD" VerticalAlignment="Center" Margin="0,0,4,0" />
                     <ComboBox Grid.Column="7" Name="CbSrcZ" FontSize="11"
                               SelectionChanged="OnRemapChanged" />
-                    <CheckBox Grid.Column="8" Name="CkFlipZ" Content="flip"
+                    <CheckBox Grid.Column="8" Name="CkFlipZ" Content="{loc:T Motion_FlipCheckbox}"
                               FontSize="11" Margin="4,0,0,0"
                               IsCheckedChanged="OnRemapChanged" />
                 </Grid>
@@ -69,9 +70,9 @@
 
         <!-- Visualiser (fills remaining space) -->
         <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,*">
-            <TextBlock Grid.Row="0" Grid.Column="0" Text="Orientation (3D hand)" FontSize="10"
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="{loc:T Motion_OrientationCaption}" FontSize="10"
                        Foreground="#888" Margin="6,0,0,2" />
-            <TextBlock Grid.Row="0" Grid.Column="1" Text="Velocity (m/s, 3D)" FontSize="10"
+            <TextBlock Grid.Row="0" Grid.Column="1" Text="{loc:T Motion_VelocityCaption}" FontSize="10"
                        Foreground="#888" Margin="6,0,0,2" />
             <views:MotionVisualizer Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
                                     Name="Visualizer" MinHeight="180" />

@@ -97,7 +97,7 @@ public partial class HeartbeatView : UserControl
         }
         else
         {
-            // No reading yet — a slow, faint "breathing" pulse so the widget reads as alive.
+            // No reading yet a slow, faint "breathing" pulse so the widget reads as alive.
             _phase = Wrap(_phase + dt / 3.5);
             pulse = 0.25 * (0.5 - 0.5 * Math.Cos(_phase * 2 * Math.PI));
         }
